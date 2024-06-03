@@ -28,6 +28,23 @@
             </div>
         </section>
     </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="alert bg-red-500 text-white p-4 text-lg">
+            {{ message }}
+            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% else %}
+        <div class="alert bg-green-600 text-white p-4 text-lg">
+            {{ message }}
+            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
     <main class="max-w-4xl mx-auto">
         {% block content %}{% endblock %}
     </main>

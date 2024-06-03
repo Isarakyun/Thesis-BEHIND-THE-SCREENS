@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>Behind The Screen | Main page </title>
+</head>
+<body>
+  <div class="fixed left-0 top-0 w-64 h-full bg-[#2c2c34] p-4 z-50 sidebar-menu transition-transform">
+    <a href="/" class="flex items-center pb-4 border-b border-b-white ">
+      <i class="fa-regular fa-message" style="color: #ffffff;"></i>
+      <span class="text-sm font-bold text-white ml-2">New Session</span>
+  </a> 
+
+  <!-- Start Main page -->
+  <main class="w-[calc(100%-256px)] ml-64 bg-[#36333f] min-h-screen">
+    <div class="py-2 px-6 bg-[#36333f] flex items-center shadow-md shadow-black/10">
+     <button type="button" class="text-lg text-gray-600">
+      <i class="fa-solid fa-bars" style="color: #f1f1f0;"></i></button>
+     </button>
+     <ul class="flex items-center text-sm ml-4">  
+    <li class="mr-2">
+      <h2 class="text-[#f1f1f0] hover:text-gray-600 font-medium">Behind The Screens</h2>
+    </li>
+    </div>
+    <div class="flex items-center justify-center">
+      <img src="logo.png" alt="">
+    </div>
+    <div class="flex items-center justify-center mb-20">
+      <form method="POST">
+          <input
+          class="w-96 px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+          id="youtube_url"
+          type="text"
+          placeholder="Input YouTube url here..." 
+          />
+          <button type="button" class="text-[#2c2c34] bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-4 py-2 me-2 ml-2  dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Interpret</button>
+      </form>
+    </div>
+
+    <!-- Interpreted Video Details-->
+    <div class="content flex py-2 ml-28">
+     <img class="w-48 h-48"src="./img/thumbnail2.jpg"> 
+     <div class="item-body px-2 ml-2">
+      <h2 class="text-[#f1f1f0] font-bold"> i swim</h2>
+      <p class="text-gray-300 text-sm">11k views • Streamed 1 day ago</p>
+      <div class="flex mt-2 text-gray-300 text-xs">
+      <img class="rounded"src="./img/hexicon.png" width="30px">
+      <p class="text-sm ml-2">Hex Haywire【NIJISANJI EN】<i class="fa-solid fa-circle-check" style="color: #ffffff;"></i></p>
+    </div>
+    <div class="text-gray-300 text-sm mt-2">
+      <p>【HASHTAGS】・GENERAL: #HexHaywire ・LIVE/CLIPS: #HexLivewire ・ART: #Hexhibition ・FANFICTION: #Ficlings...</p>
+    </div>
+     </div>
+    </div>
+    <!-- Generated Video Analysis-->
+    <h2 class="content flex py-2 ml-28 text-gray-300 text-sm font-bold">Interpretation:</h2>
+   <div class="content flex py-2 ml-28 text-gray-300 text-sm">
+   <p class="text-justify">  <!-- Copy pasta sa net.-->
+  
+  </p>
+   </div>
+</div>
+  </main>
+  </body>
+</html>
