@@ -11,3 +11,8 @@ def home():
 @login_required
 def main():
     return render_template("main.html", user=current_user)
+
+@views.route('/admin')
+# @login_required
+def admin():
+    return render_template("admin.html")

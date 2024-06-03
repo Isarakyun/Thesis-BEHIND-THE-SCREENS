@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- TailwindCSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Iconscout CSS -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+
+    <title>Dashboard</title> 
+</head>
+<body class="font-sans">
+    <nav class="bg-white dark:bg-gray-900 shadow-lg fixed top-0 left-0 h-full w-64">
+        <div class="p-4 flex items-center">
+            <div class="flex items-center">
+                <div class="rounded-full overflow-hidden w-10 h-10">
+                    <img src="./static/BTS-logo.png" alt="Logo">
+                </div>
+                <span class="text-lg font-semibold ml-3">BEHIND THE SCREENS</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col mt-4">
+            <ul class="space-y-1">
+                <li><a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="uil uil-estate text-lg mr-2"></i>
+                    <span>Dahsboard</span>
+                </a></li>
+                <li><a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="uil uil-files-landscapes text-lg mr-2"></i>
+                    <span>Content</span>
+                </a></li>
+                <li><a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="uil uil-chart text-lg mr-2"></i>
+                    <span>Analytics</span>
+                </a></li>
+                <li><a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="uil uil-user text-lg mr-2"></i>
+                    <span>Users</span>
+                </a></li>
+                <li><a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="uil uil-comments text-lg mr-2"></i>
+                    <span>Comments</span>
+                </a></li>
+                <li><a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="uil uil-smile text-lg mr-2"></i>
+                    <span>Emoticons</span>
+                </a></li>
+            </ul>
+            
+            <ul class="mt-auto">
+                <li><a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="uil uil-signout text-lg mr-2"></i>
+                    <span>Logout</span>
+                </a></li>
+                <li class="flex items-center mt-1 px-4 py-2 text-gray-700 dark:text-gray-200">
+                    <i class="uil uil-moon text-lg mr-2"></i>
+                    <span>Dark Mode</span>
+                    <div class="ml-auto">
+                        <div class="mode-toggle bg-gray-300 dark:bg-gray-600 rounded-full w-12 h-6 flex items-center">
+                            <div class="switch bg-white dark:bg-gray-700 w-6 h-6 rounded-full"></div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="ml-64 p-8">
+        <div class="flex justify-between items-center mb-8">
+            <i class="uil uil-bars sidebar-toggle text-2xl"></i>
+
+            <div class="relative w-72">
+                <i class="uil uil-search absolute left-3 top-1/2 transform -translate-y-1/2 text-lg text-gray-400"></i>
+                <input type="text" class="pl-10 pr-4 py-2 w-full rounded-md border border-gray-200 focus:outline-none focus:border-blue-500" placeholder="Search here...">
+            </div>
+            
+            <img src="" alt="Profile" class="w-10 h-10 rounded-full">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-blue-500 p-6 rounded-md text-white">
+                <i class="uil uil-user text-3xl mb-2"></i>
+                <span class="text-lg">Total Users</span>
+                <span class="text-2xl font-semibold block mt-2">50,120</span>
+            </div>
+            <div class="bg-yellow-500 p-6 rounded-md text-white">
+                <i class="uil uil-comments text-3xl mb-2"></i>
+                <span class="text-lg">Comments</span>
+                <span class="text-2xl font-semibold block mt-2">350,120</span>
+            </div>
+            <div class="bg-purple-500 p-6 rounded-md text-white">
