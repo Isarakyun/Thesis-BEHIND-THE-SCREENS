@@ -18,10 +18,14 @@
                 <a href="/#contact" class="hover:opacity-90">Contact Us</a>
             </nav>
             <div class="flex items-center space-x-4">
-                <a href="/login" id="login" class="hover:opacity-90 text-xl">Log In</a>
-                <a href="/sign-up" id="signUp" class="hover:opacity-90 text-xl">Sign Up</a>  
+                {% if user.is_authenticated %}
+                <a href="/" id="home" class="hover:opacity-90 text-xl">Home</a>
+                <a href="/main" id="home" class="hover:opacity-90 text-xl">Analysis</a>
                 <a href="/logout" id="logout" class="hover:opacity-90 text-xl">Logout</a>
-                <a href="/" id="home" class="hover:opacity-90 text-xl">Home</a>               
+                {% else %}
+                <a href="/login" id="login" class="hover:opacity-90 text-xl">Log In</a>
+                <a href="/sign-up" id="signUp" class="hover:opacity-90 text-xl">Sign Up</a>
+                {% endif %}
                 <button id="mobile-open-button" class="text-3xl sm:hidden focus:outline-none">
                     &#9776;
                 </button>
