@@ -564,6 +564,42 @@ video {
 .z-50 {
   z-index: 50;
 }
+.order-1 {
+  order: 1;
+}
+.order-10 {
+  order: 10;
+}
+.order-11 {
+  order: 11;
+}
+.order-12 {
+  order: 12;
+}
+.order-2 {
+  order: 2;
+}
+.order-3 {
+  order: 3;
+}
+.order-4 {
+  order: 4;
+}
+.order-5 {
+  order: 5;
+}
+.order-6 {
+  order: 6;
+}
+.order-7 {
+  order: 7;
+}
+.order-8 {
+  order: 8;
+}
+.order-9 {
+  order: 9;
+}
 .float-right {
   float: right;
 }
@@ -635,9 +671,6 @@ video {
 .mt-2 {
   margin-top: 0.5rem;
 }
-.mt-20 {
-  margin-top: 5rem;
-}
 .mt-24 {
   margin-top: 6rem;
 }
@@ -652,9 +685,6 @@ video {
 }
 .mt-auto {
   margin-top: auto;
-}
-.ml-10 {
-  margin-left: 2.5rem;
 }
 .block {
   display: block;
@@ -728,6 +758,9 @@ video {
 .max-w-6xl {
   max-width: 72rem;
 }
+.max-w-full {
+  max-width: 100%;
+}
 .max-w-md {
   max-width: 28rem;
 }
@@ -749,6 +782,12 @@ video {
 }
 .scroll-mt-40 {
   scroll-margin-top: 10rem;
+}
+.list-inside {
+  list-style-position: inside;
+}
+.list-disc {
+  list-style-type: disc;
 }
 .list-none {
   list-style-type: none;
@@ -821,12 +860,6 @@ video {
 .rounded-md {
   border-radius: 0.375rem;
 }
-.rounded-xl {
-  border-radius: 0.75rem;
-}
-.rounded-2xl {
-  border-radius: 1rem;
-}
 .border {
   border-width: 1px;
 }
@@ -850,10 +883,6 @@ video {
 .border-slate-100 {
   --tw-border-opacity: 1;
   border-color: rgb(241 245 249 / var(--tw-border-opacity));
-}
-.border-slate-900 {
-  --tw-border-opacity: 1;
-  border-color: rgb(15 23 42 / var(--tw-border-opacity));
 }
 .border-b-white {
   --tw-border-opacity: 1;
@@ -894,6 +923,10 @@ video {
 .bg-green-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(22 163 74 / var(--tw-bg-opacity));
+}
+.bg-indigo-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(79 70 229 / var(--tw-bg-opacity));
 }
 .bg-purple-500 {
   --tw-bg-opacity: 1;
@@ -1273,9 +1306,9 @@ video {
   background-color: rgb(3 7 18 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-red-800:hover {
+.hover\:bg-indigo-700:hover {
   --tw-bg-opacity: 1;
-  background-color: rgb(153 27 27 / var(--tw-bg-opacity));
+  background-color: rgb(67 56 202 / var(--tw-bg-opacity));
 }
 
 .hover\:text-gray-100:hover {
@@ -1302,6 +1335,16 @@ video {
   border-color: rgb(59 130 246 / var(--tw-border-opacity));
 }
 
+.focus\:border-indigo-500:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(99 102 241 / var(--tw-border-opacity));
+}
+
+.focus\:bg-indigo-700:focus {
+  --tw-bg-opacity: 1;
+  background-color: rgb(67 56 202 / var(--tw-bg-opacity));
+}
+
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -1316,11 +1359,6 @@ video {
 .focus\:ring-gray-100:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(243 244 246 / var(--tw-ring-opacity));
-}
-
-.active\:bg-red-700:active {
-  --tw-bg-opacity: 1;
-  background-color: rgb(185 28 28 / var(--tw-bg-opacity));
 }
 
 .group.active .group-\[\.active\]\:bg-gray-800 {
@@ -1403,6 +1441,54 @@ video {
 
 @media (min-width: 768px) {
 
+  .md\:order-1 {
+    order: 1;
+  }
+
+  .md\:order-10 {
+    order: 10;
+  }
+
+  .md\:order-11 {
+    order: 11;
+  }
+
+  .md\:order-12 {
+    order: 12;
+  }
+
+  .md\:order-2 {
+    order: 2;
+  }
+
+  .md\:order-3 {
+    order: 3;
+  }
+
+  .md\:order-4 {
+    order: 4;
+  }
+
+  .md\:order-5 {
+    order: 5;
+  }
+
+  .md\:order-6 {
+    order: 6;
+  }
+
+  .md\:order-7 {
+    order: 7;
+  }
+
+  .md\:order-8 {
+    order: 8;
+  }
+
+  .md\:order-9 {
+    order: 9;
+  }
+
   .md\:flex {
     display: flex;
   }
@@ -1448,10 +1534,6 @@ video {
 
 @media (prefers-color-scheme: dark) {
 
-  .dark\:border-none {
-    border-style: none;
-  }
-
   .dark\:border-gray-100 {
     --tw-border-opacity: 1;
     border-color: rgb(243 244 246 / var(--tw-border-opacity));
@@ -1460,6 +1542,11 @@ video {
   .dark\:border-gray-600 {
     --tw-border-opacity: 1;
     border-color: rgb(75 85 99 / var(--tw-border-opacity));
+  }
+
+  .dark\:border-gray-700 {
+    --tw-border-opacity: 1;
+    border-color: rgb(55 65 81 / var(--tw-border-opacity));
   }
 
   .dark\:bg-black {
@@ -1500,6 +1587,11 @@ video {
   .dark\:text-gray-200 {
     --tw-text-opacity: 1;
     color: rgb(229 231 235 / var(--tw-text-opacity));
+  }
+
+  .dark\:text-gray-300 {
+    --tw-text-opacity: 1;
+    color: rgb(209 213 219 / var(--tw-text-opacity));
   }
 
   .dark\:text-indigo-300 {
