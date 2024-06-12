@@ -83,13 +83,14 @@
 
 <hr class="mx-auto bg-black dark:bg-white w-1/2">
 
+
 <section id="analyze" class="p-6 my-12 scroll-mt-20 widescreen:section-min-height tallscreen:section-min-height text-center">
-    <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Analyze Your YouTube Video</h2>
-    <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube video you want to analyze below:</p>
-    <form action="/analyze-youtube" method="post" class="mx-auto max-w-md">
-        <input type="url" name="youtube_url" id="youtube_url" placeholder="Enter YouTube URL here" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 mb-4">
-        <button type="submit" class="w-full px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700">Analyze</button>
-    </form>
+  <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Analyze Your YouTube Playlist</h2>
+  <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube playlist you want to analyze below:</p>
+  <form action="/analyze-youtube" method="post" class="mx-auto max-w-md">
+    <input type="url" name="youtube_url" id="youtube_url" placeholder="Enter YouTube Playlist URL here" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 mb-4" required>
+    <button type="submit" class="w-full px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700">Analyze</button>
+  </form>
 </section>
 
 
