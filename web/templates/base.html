@@ -77,4 +77,49 @@
             </div>
         </section>
     </footer>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Target the form and attach event listener
+  const analyzeForm = document.getElementById('analyzeForm');
+  const animationWindow = document.getElementById('animationWindow');
+  
+  if (analyzeForm) {
+    analyzeForm.addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Optional: Scroll to the analyze section
+      const analyzeSection = document.getElementById('analyze');
+      if (analyzeSection) {
+        analyzeSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      
+      // Show animation
+      animationWindow.style.display = 'block';
+
+      // Perform form submission asynchronously (AJAX)
+      fetch(analyzeForm.action, {
+        method: 'POST',
+        body: new FormData(analyzeForm)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        // Hide animation after successful response or further processing
+        animationWindow.style.display = 'none';
+        // Handle success or further processing as needed
+      })
+      .catch(error => {
+        console.error('Error submitting form:', error);
+        // Hide animation on error if needed
+        animationWindow.style.display = 'none';
+      });
+    });
+  }
+});
+
+    </script>
+    
+
 </html>
