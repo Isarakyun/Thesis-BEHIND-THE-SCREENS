@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white flex justify-center items-center min-h-screen">
+
+    <div class="w-full max-w-4xl mx-auto p-6 bg-gray-800 rounded-lg shadow-md flex gap-8" style="width: 80% height: 80%;">
+        <!-- Left Column -->
+        <div class="w-2/3">
+            <h1 class="text-2xl font-bold mb-6">Account Settings</h1>
+            <!-- Account Details -->
+            <div class="bg-gray-700 p-4 rounded-lg mb-6">
+                <h2 class="text-xl font-semibold mb-4">Account Details</h2>
+                <div class="mb-4">
+                    <label for="email" class="block mb-1">Email</label>
+                    <div class="flex items-center justify-between bg-gray-600 p-2 rounded">
+                        <span id="email">example@gmail.com</span>
+                        <button class="p-1">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V14h3.828l7.586-7.586a2 2 0 000-2.828zM6 13v-2.172l9-9L17.172 4 8.172 13H6zM4 16h8v2H4v-2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block mb-1">Password</label>
+                    <div class="flex items-center justify-between bg-gray-600 p-2 rounded">
+                        <span id="password">********</span>
+                        <button class="p-1">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V14h3.828l7.586-7.586a2 2 0 000-2.828zM6 13v-2.172l9-9L17.172 4 8.172 13H6zM4 16h8v2H4v-2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <a href="#" class="text-blue-400 hover:underline">Log out of all devices</a>
+                </div>
+            </div>
+            <!-- Settings -->
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">Settings</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <span>Enable dark mode</span>
+                    <input type="checkbox" class="toggle-checkbox" id="dark-mode" checked>
+                </div>
+                <p class="mb-4">To manage parental controls for profiles on your account, visit Edit Profiles and select a Profile.</p>
+                <a href="#" class="flex items-center justify-between bg-gray-600 p-2 rounded mb-4">
+                    <span>Link Account to Google</span>
+                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 10h6v2H7v-2z"/>
+                    </svg>
+                </a>
+                <a href="#" class="flex items-center justify-between bg-gray-600 p-2 rounded">
+                    <span>Delete Account</span>
+                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 10h6v2H7v-2z"/>
+                    </svg>
+                </a>
+            </div>
+            <!-- Save Changes Button -->
+            <div class="mt-6 text-center">
+                <button class="bg-gray-700 px-4 py-2 rounded-lg text-white">Save Changes</button>
+            </div>
+
+            <div class="mt-4 text-center text-gray-400">
+                To manage or delete your account, please visit our <a href="#" class="text-blue-400 hover:underline">Account Management FAQ</a>.
+            </div>
+        </div>
+        <!-- Right Column -->
+        <div class="w-1/3 flex flex-col items-center">
+            <h2 class="text-xl font-semibold mb-4">Profile Photo</h2>
+            <div class="w-32 h-32 mx-auto mb-4 bg-gray-600 rounded-full"></div>
+            <button class="block bg-gray-700 px-4 py-2 rounded-lg mb-4">Change photo</button>
+            <button class="block bg-gray-700 px-4 py-2 rounded-lg">Remove photo</button>
+        </div>
+    </div>
+
+</body>
+</html>
