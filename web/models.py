@@ -14,6 +14,30 @@ class Comments(db.Model):
     comment = db.Column(db.String(50000))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
 
+class SummarizedComments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    summary = db.Column(db.String(50000))
+    comments_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
+
+class LabeledComments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sentiment = db.Column(db.String(150))
+    comments_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
+
+class FrequentWords(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    word = db.Column(db.String(150))
+    count = db.Column(db.Integer)
+    sentiment = db.Column(db.String(150))
+    labeledComments_id = db.Column(db.Integer, db.ForeignKey('labeled_comments.id'))
+
+class SentimentCounter(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    positive = db.Column(db.Integer)
+    negative = db.Column(db.Integer)
+    neutral = db.Column(db.Integer)
+    labeledComments_id = db.Column(db.Integer, db.ForeignKey('labeled_comments.id'))
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)

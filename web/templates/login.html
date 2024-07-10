@@ -67,14 +67,12 @@
     </button>
     
       </div>
-
-    <div class="mb-6 mt-5 dark:text-white text-gray-700 text-sm font-semibold text-center">
-        Login with
-        <div class="mt-2 justify-center flex gap-4">
-            <button class="bg-[#24292F] w-1/2 py-1 rounded-md text-white font-bold cursor-pointer hover:bg-[#4d4d5c]">Google</button>
-        </div>
-    </div>
     </form>
+    <div class="mb-6 mt-5 dark:text-white text-gray-700 text-sm font-semibold text-center">
+      <div class="mt-2 justify-center flex gap-4">
+          <a href="{{ url_for('auth.login_google') }}" class="bg-[#24292F] w-1/2 py-1 rounded-md text-white font-bold cursor-pointer hover:bg-[#4d4d5c]">Log in with Google</a>
+      </div>
+  </div>
   </div>
 </div>
 {% endblock %}
