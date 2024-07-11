@@ -7,70 +7,235 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <title>Analysis</title>
+    <style>
+      .hidden {
+          display: none;
+      }
+  </style>
 </head>
-<body>
-  <div class="fixed left-0 top-0 w-64 h-full bg-[#2c2c34] p-4 z-50 sidebar-menu transition-transform">
-    <a href="" class="flex items-center pb-4 border-b border-b-white ">
-      <i class="fa-regular fa-message" style="color: #ffffff;"></i>
-      <span class="text-sm font-bold text-white ml-2">New Session</span>
-  </a>  
-  <!-- Dashboard -->
+
+<div class="fixed left-0 top-0 w-64 h-full bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform" id="sidebar">
+  <a route="/" class="flex items-center pb-4 border-b border-b-white">
+      <span class="text-sm font-bold text-white ml-2">Previous Sessions</span>
+  </a>
+  <!-- Side Nav\ -->
   <ul class="mt-4">
-    <li class="mb-1 group">
-      <a href="/logout" class="flex items-center py-2 px-4 text-gray-50 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">Log Out
-      </a>
-    </li>
-  </div>   
-
-  <!-- Start Main page -->
-  <main class="w-[calc(100%-256px)] ml-64 bg-[#36333f] min-h-screen">
-    <div class="py-2 px-6 bg-[#36333f] flex items-center shadow-md shadow-black/10">
-     <button type="button" class="text-lg text-gray-600">
-      <i class="fa-solid fa-bars" style="color: #f1f1f0;"></i></button>
-     </button>
-     <ul class="flex items-center text-sm ml-4">  
-    <li class="mr-2">
-      <h2 class="text-[#f1f1f0] hover:text-gray-600 font-medium">Behind the Screens</h2>
-    </li>
-    </div>
-    <div class="flex items-center justify-center">
-      <img src="./static/BTS-logo.png" alt="">
-    </div>
-    <div class="flex items-center justify-center mb-20">
-      <form method="POST">
-        <input
-        class="w-96 px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-        id="youtube_url"
-        type="text"
-        placeholder="Input YouTube url here..." 
-        />
-        <button type="button" class="text-[#2c2c34] bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-4 py-2 me-2 ml-2  dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Interpret</button>
-      </form>
-    </div>
-
-    <!-- Interpreted Video Details-->
-    <div class="content flex py-2 ml-28">
-     <img class="w-48 h-48"src="./static/thumbnail2.jpg"> 
-     <div class="item-body px-2 ml-2">
-      <h2 class="text-[#f1f1f0] font-bold"> i swim</h2>
-      <p class="text-gray-300 text-sm">11k views • Streamed 1 day ago</p>
-      <div class="flex mt-2 text-gray-300 text-xs">
-      <img class="rounded"src="./static/hexicon.png" width="30px">
-      <p class="text-sm ml-2">Hex Haywire【NIJISANJI EN】<i class="fa-solid fa-circle-check" style="color: #ffffff;"></i></p>
-    </div>
-    <div class="text-gray-300 text-sm mt-2">
-      <p>【HASHTAGS】・GENERAL: #HexHaywire ・LIVE/CLIPS: #HexLivewire ・ART: #Hexhibition ・FANFICTION: #Ficlings...</p>
-    </div>
-     </div>
-    </div>
-    <!-- Generated Video Analysis-->
-    <h2 class="content flex py-2 ml-28 text-gray-300 text-sm font-bold">Interpretation:</h2>
-   <div class="content flex py-2 ml-28 text-gray-300 text-sm">
-   <p class="text-justify">  <!-- Copy pasta sa net.-->
-  
-  </p>
-   </div>
+      <li class="mb-5 group">
+          <div class="text-gray-400 text-xs mb-2 ml-4">Today</div>
+          <a class="flex items-center py-2 px-4 text-gray-50 hover:bg-[#181818] hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+              <span class="text-sm">How to level up in Wuwa</span>
+          </a>
+      </li>
+      <li class="mb-5 group">
+          <div class="text-gray-400 text-xs mb-2 ml-4">3 Days ago</div>
+          <a class="flex items-center py-2 px-4 text-gray-50 hover:bg-[#181818] hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+              <span class="text-sm">It's been raining in DHVSU di ka ba nilalamig</span>
+          </a>
+      </li>
+      <li class="mb-5 group">
+          <div class="text-gray-400 text-xs mb-2 ml-4">7 Days ago</div>
+          <a class="flex items-center py-2 px-4 text-gray-50 hover:bg-[#181818] hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+              <span class="text-sm">Pano matutuloy Miming sa July 2</span>
+          </a>
+      </li>
+  </ul>
+ <!-- Account -->
+ <div class="flex flex-col pt-2 juice:py-2 dark:border-white/20 mt-[350px]">
+      <span class="flex w-full flex-row flex-wrap-reverse justify-between">
+          <div class="flex items-center gap-2">
+              <span class="flex h-7 w-7 items-center justify-center rounded-full border border-token-border-light">
+                  <img src="josh01.png" width="24" height="24" alt="Profile Picture" class="icon-sm shrink-0"/>
+              </span>
+              <div class="flex flex-col text-white">
+                  <a>Joshua Casupang</a>
+              </div>
+              <div class="relative inline-block text-left ml-4">
+                  <div>
+                      <button id="dropdownButton" class="inline-flex justify-center" >
+                          <i class="ri-more-fill" style="color: white;"></i>
+                      </button>
+                  </div>
+                  
+                  <div id="dropdownMenu" class="bottom-10 absolute left-3 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
+                      <div class="py-0" role="none">
+                          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Account settings</a>
+                          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Support</a>
+                          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">License</a>
+                          <form method="POST" action="#" role="none">
+                              <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Sign out</button>
+                          </form>
+                      </div>
+                  </div>
+              </div> 
+          </div>
+      </span>
 </div>
-  </main>
-  </body>
+
+</div>
+</div>
+          
+<!-- Start Nav Bar -->
+<main class="w-[calc(100%-256px)] ml-64 bg-[#181818] min-h-screen transition-width duration-300 ease-in-out" id="content">
+<div class="py-2 px-6 bg-[#121212] flex items-center">
+  <button type="button" class="text-lg text-white" id="menuToggleButton">
+      <i class="ri-menu-line cursor-pointer"></i>
+  </button>
+  </div>        
+</div>
+
+<div class="ml-[112px] mt-5">
+<div class="ml-[112px] mt-5 mb-5">
+<table class="table-auto border-collapse border border-gray-400 text-white text-center text-sm">
+<thead>
+  <tr class="bg-slate-700">
+    <!-- Header -->
+    <th class="border border-slate-700 px-2 py-1">Word</th>
+    <th class="border border-slate-700 px-2 py-1">Word Count</th>
+    <th class="border border-slate-700 px-2 py-1">Sentiment</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <!-- Row 1 - Cell 3 -->
+    <td class="border border-slate-700 px-2 py-1">Wtf</td>
+    <td class="border border-slate-700 px-2 py-1">500</td>
+    <td class="border border-slate-700 px-2 py-1">Negative</td>
+  </tr>
+  <tr>
+    <!-- Row 2 - Cell 3 -->
+    <td class="border border-slate-700 px-2 py-1">Poggers</td>
+    <td class="border border-slate-700 px-2 py-1">320</td>
+    <td class="border border-slate-700 px-2 py-1">Positive</td>
+  </tr>
+  <tr>
+    <!-- Row 3 - Cell 3 -->
+    <td class="border border-slate-700 px-2 py-1">Acm</td>
+    <td class="border border-slate-700 px-2 py-1">100</td>
+    <td class="border border-slate-700 px-2 py-1">Negative</td>
+  </tr>
+  <tr>
+    <!-- Row 4 - Cell 3 -->
+    <td class="border border-slate-700 px-2 py-1">Oks</td>
+    <td class="border border-slate-700 px-2 py-1">150</td>
+    <td class="border border-slate-700 px-2 py-1">Neutral</td>
+  </tr>
+  <tr>
+    <!-- Row 5 - Cell 3 -->
+        <tr>
+        <!-- Row 5 - Cell 3 -->
+        <td class="border border-slate-700 px-2 py-1">Baduy</td>
+        <td class="border border-slate-700 px-2 py-1">150</td>
+        <td class="border border-slate-700 px-2 py-1">Negative</td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div>
+        <div class="ml-[112px] mt-4 w-[830px] bg-slate-700">
+          <a class="text-white font-bold ml-2">Word Cloud</a>
+          </div>
+          <div class="ml-[112px] mt-4 w-[830px] bg-slate-700">
+            <a class="text-white font-bold ml-2">Word Cloud</a>
+            </div>
+
+          <div class="flex">
+          <div class="ml-[112px] mt-[30px]">
+            <img class="h-[170px] w-[300px] object-fill" src="image.png">
+          <div class="ml-[112px] mt-[20px]">
+            <img class="h-[200px] w-[380px] object-cover" src="image.png">
+            <p class="text-white text-center mt-2">Positive</p>
+          </div>
+          <div class="ml-[px] mt-[30px]">
+            <img class="h-[170px] w-[300px] object-fill" src="image.png">
+          <div class="ml-[66px] mt-[20px]">
+            <img class="h-[200px] w-[380px] object-cover" src="image.png">
+            <p class="text-white text-center mt-2">Negative</p>
+          </div>
+          <div class="mr-[190px] mt-[30px]">
+            <img class="h-[170px] w-[300px] object-fill" src="image.png">
+            <p class="text-white text-center mt-2">Neutral</p>
+          </div>
+          </div>
+      </div>
+
+      <!-- Analysis -->
+       <div>
+        <div class="ml-[112px] mt-4 w-[830px] bg-slate-700">
+          <a class="text-white font-bold ml-2">Analysis on Hex Haywire...</a>
+          </div>
+          
+        <div class="mt-[5px]">
+          <a class="text-white ml-[126px] text-sm">The results shows that most comments are...</a>
+        </div>
+       </div>
+   
+      <!-- Comments -->
+      <div>
+        <div class="ml-[112px] mt-4 w-[830px] bg-slate-700">
+          <a class="text-white font-bold ml-2">Comments</a>
+          <a class="text-white font-bold ml-[562px]">Sentiment</a>
+          </div>
+          
+        <div class="mt-[5px]">
+          <a class="text-white ml-[126px] text-sm">Thanks for the clip!!</a>
+          <a class="text-white ml-[530px] text-sm">Positive</a>
+        </div>
+
+        <div class="mt-[5px]">
+          <a class="text-white ml-[126px] text-sm">The clip is dogshit.</a>
+          <a class="text-white ml-[534px] text-sm">Negative</a>
+        </div>
+        
+        <div class="mt-[5px]">
+          <a class="text-white ml-[126px] text-sm">Bobo mo maglaro quit valorant ka na...</a>
+          <a class="text-white ml-[409px] text-sm">Negative</a>
+        </div>
+      </div>
+      
+
+
+</div>
+</main>
+<script>
+module.exports = {
+theme: {
+extend: {
+placeholderColor: {
+  'gray': '#404040',
+}
+}
+},
+variants: {
+extend: {
+placeholderColor: ['responsive', 'dark', 'focus', 'hover', 'active'],
+}
+},
+plugins: [],
+}
+</script>
+<script>
+const menuToggleButton = document.getElementById('menuToggleButton');
+const sidebar = document.getElementById('sidebar');
+const content = document.getElementById('content');
+menuToggleButton.addEventListener('click', () => {
+  sidebar.classList.toggle('-translate-x-full');
+  content.classList.toggle('w-full');
+  content.classList.toggle('ml-64');
+});
+</script>
+<script>
+document.getElementById('dropdownButton').addEventListener('click', function() {
+  var dropdownMenu = document.getElementById('dropdownMenu');
+  dropdownMenu.classList.toggle('hidden');
+});
+
+window.addEventListener('click', function(e) {
+  var dropdownMenu = document.getElementById('dropdownMenu');
+  if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.classList.add('hidden');
+  }
+});
+</script>
+</body>
 </html>
