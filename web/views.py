@@ -36,7 +36,7 @@ def results():
 @views.route('/settings')
 @login_required
 def settings():
-    return render_template("accountsettings.html", user=current_user)
+    return render_template("user_settings.html", user=current_user)
 
 @views.route('/admin')
 # @login_required
@@ -59,8 +59,3 @@ def analyze_youtube():
             
             return redirect(url_for('views.home'))
     return redirect(url_for('views.home'))
-
-@views.route('/accountsettings')
-
-def accountsettings():
-    return render_template('accountsettings.html', user=current_user)
