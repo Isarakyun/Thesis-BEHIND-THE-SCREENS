@@ -1,88 +1,141 @@
-{% extends "base.html" %} {% block title %}Sign Up{% endblock %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link href="../static/css/styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Sign Up</title>
+    <style>
+          @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #181818;
+            }
+            .bg-gray-100 {
+                background-color: #181818;
+            }
+            .text-black {
+                color: #fff;
+            }
+            .bg-white {
+                background-color: #181818;
+            }
+            .text-gray-700 {
+                color: white;
+            }
+            .text-gray-600 {
+                color: #ccc;
+            }
+            .text-gray-500 {
+                color: white;
+            }
+            .border-gray-200 {
+                border-color: #555;
+            }
+            .focus:border-gray-200 {
+                border-color: #555;
+            }
+            .focus:ring-gray-300 {
+                box-shadow: 0 0 0 2px #555;
+            }
+            .hover\:bg-gray-50 {
+              background-color: #121212;
+            }
+            .bg-black {
+                background-color: #880808;
+            }
+            .hover:bg-gray-800 {
+                background-color: #7c1010;
+            }
+            .focus:bg-black {
+                background-color: #121212;
+            }
+            .focus:ring-gray-900 {
+                box-shadow: 0 0 0 2px #2C2C2C;
+            }
+        }
+    </style>
+</head>
+   <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="alert bg-red-500 text-black p-3 text-sm">
+            {{ message }}
+            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% else %}
+        <div class="alert bg-blue-600 text-white p-3 text-sm">
+            {{ message }}
+            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+   <div class="flex h-screen">
+    <!-- Left Pane -->
+    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-300 text-black">
+      <div class="max-w-md text-center">
+        <a href="/"><img src="./static/BTS-logo-with-name.png" width="524.67004" height="531.39694" class="w-full" viewBox="0 0 524.67004 531.39694"></a>
+        </div>
+    </div>
 
-{% block content %}
-<div
-  class="container max-w-md mx-auto xl:max-w-3xl h-full flex mt-14 mb-14 dark:bg-black bg-gray-300 rounded-lg shadow overflow-hidden"
->
-  <div class="relative hidden xl:block xl:w-1/2 h-full">
-    <img
-      class="absolute h-auto w-full object-cover"
-      src="./static/BTS-Logo.png"
-      alt="Behind-the-Screens-LOGO"
-    />
-  </div>
-  <div class="w-full xl:w-1/2 p-8">
-    <form method="POST">
-      <h1 class=" text-2xl font-bold">Create your account</h1>
-    <div>
-      <span class="dark:text-white text-gray-600 text-sm">
-        Already have an account?
-      </span>
-      <a href="/login" class="dark:text-red-500 text-gray-700 text-sm font-semibold bg-transparent border-none p-0 cursor-pointer">
-        Log in
-      </a>  
-    </div>
-    <div class="mb-4 mt-6">
-      <label
-        class="block dark:text-white text-gray-700 text-sm font-semibold mb-2"
-        for="email"
-      >
-        Email
-      </label>
-      <input
-        class="text-sm appearance-none rounded w-full py-2 px-3 text-gray-700 bg-gray-200 leading-tight focus:outline-none focus:shadow-outline h-10"
-        id="email"
-        type="text"
-        name="email"
-        placeholder="Your email address"
-      />
-    </div>
-    <div class="mb-4 mt-6">
-      <label
-        class="block dark:text-white text-gray-700 text-sm font-semibold mb-2"
-        for="password"
-      >
-        Password
-      </label>
-      <input
-        class="text-sm bg-gray-200 appearance-none rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline h-10"
-        id="password"
-        type="password"
-        name="password"
-        placeholder="Password"
-      />
-    </div>
-    <div class="mb-4 mt-6">
-        <label
-          class="block dark:text-white text-gray-700 text-sm font-semibold mb-2"
-          for="confirmpassword"
-        >
-          Confirm Password
-        </label>
-        <input
-          class="text-sm bg-gray-200 appearance-none rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline h-10"
-          id="confirmpassword"
-          type="password"
-          name="confirmpassword"
-          placeholder="Confirm password"
-        />
+    <!-- Right Pane -->
+    <div class="w-full bg-slate-200 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
+      <div class="max-w-md w-full p-6">
+        <h1 class="text-3xl font-semibold mb-6 text-black text-center">Sign Up</h1>
+        <h1 class="text-sm font-semibold mb-6 text-gray-500 text-center">Join Our Community to Save Your Analysis Results</h1>
+        <div class="mt-4 flex flex-col items-center">
+          <div class="w-full lg:w-1/2 mb-2 lg:mb-0">
+            <button type="button" class="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4" id="google">
+                <path fill="#fbbb00" d="M113.47 309.408 95.648 375.94l-65.139 1.378C11.042 341.211 0 299.9 0 256c0-42.451 10.324-82.483 28.624-117.732h.014L86.63 148.9l25.404 57.644c-5.317 15.501-8.215 32.141-8.215 49.456.002 18.792 3.406 36.797 9.651 53.408z"></path>
+                <path fill="#518ef8" d="M507.527 208.176C510.467 223.662 512 239.655 512 256c0 18.328-1.927 36.206-5.598 53.451-12.462 58.683-45.025 109.925-90.134 146.187l-.014-.014-73.044-3.727-10.338-64.535c29.932-17.554 53.324-45.025 65.646-77.911h-136.89V208.176h245.899z"></path>
+                <path fill="#28b446" d="m416.253 455.624.014.014C372.396 490.901 316.666 512 256 512c-97.491 0-182.252-54.491-225.491-134.681l82.961-67.91c21.619 57.698 77.278 98.771 142.53 98.771 28.047 0 54.323-7.582 76.87-20.818l83.383 68.262z"></path>
+                <path fill="#f14336" d="m419.404 58.936-82.933 67.896C313.136 112.246 285.552 103.82 256 103.82c-66.729 0-123.429 42.957-143.965 102.724l-83.397-68.276h-.014C71.23 56.123 157.06 0 256 0c62.115 0 119.068 22.126 163.404 58.936z"></path>
+              </svg> Sign Up with Google </button>
+          </div>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-600 text-center">
+          <p>or with email</p>
+        </div>
+
+        <form action="" method="POST" class="space-y-4">
+          <!-- Your form elements go here -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Username</label>
+            <input type="text" id="email" name="email" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" id="password" name="password" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+          </div>
+          <div>
+            <label for="confirmpassword" class="block text-sm font-medium text-gray-700">Confirm-Password</label>
+            <input type="password" id="confirmpassword" name="confirmpassword" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+          </div>
+          <div>
+            <button type="submit" class="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Sign Up</button>
+          </div>
+        </form>
+        <div class="mt-4 text-sm text-gray-600 text-center">
+          <p>Already have an account? <button onclick="location.href='/login'" class="text-black hover:cursor-pointer">Login here</button>
+          </p>
+
+        </div>
+
       </div>
-    
-    <div class="flex w-full mt-5">
-        <button
-          class="w-full dark:bg-red-500 bg-gray-800 hover:bg-grey-900 text-white text-sm py-2 px-4 font-semibold rounded focus:outline-none focus:shadow-outline h-10"
-          type="submit"
-          onclick="window.location.href='/login'"
-        >
-        Sign Up
-        </button>
-      </div>
-    </form>
-    <div class="mb-6 mt-5 dark:text-white text-gray-700 text-sm font-semibold text-center">
-      <div class="mt-2 justify-center flex gap-4">
-          <a href="{{ url_for('auth.login_google') }}" class="bg-[#24292F] w-1/2 py-1 rounded-md text-white font-bold cursor-pointer hover:bg-[#4d4d5c]">Sign up with Google</a>
-      </div>
+
+    </div>
+
   </div>
-  </div>
-</div>
-{% endblock %}
+ 
+
+<script src="./app.js"></script>
+</body>
+</html>
+

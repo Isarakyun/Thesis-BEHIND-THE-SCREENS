@@ -28,6 +28,11 @@ def home():
 def main():
     return render_template("main.html", user=current_user)
 
+@views.route('/results')
+@login_required
+def results():
+    return render_template("results.html", user=current_user)
+
 @views.route('/settings')
 @login_required
 def settings():

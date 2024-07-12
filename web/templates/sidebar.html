@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" class="sm:scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../static/css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/custom-scrollbar.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <title>{% block title %}Analysis{% endblock %}</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+     <div class="fixed left-0 top-0 w-64 h-full bg-slate-200 dark:bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform" id="sidebar">
+        <a class="flex items-center pb-4 border-b border-gray-900 dark:border-b-white">
+            <span class="text-gray-900 text-sm font-bold dark:text-white ml-2">Previous Sessions</span>
+        </a>
+
+        <!-- Side Nav -->
+         <div class="overflow-y-auto custom-scrollbar" style="height: calc(105% - 120px);">
+        <ul class="mt-4">
+            <li class="mb-5 group">
+                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
+                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <span class="text-sm">How to level up in Wuwa</span>
+                </a>
+            </li>
+            <li class="mb-5 group">
+                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
+                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <span class="text-sm">How to level up in Wuwa</span>
+                </a>
+            </li>
+            <li class="mb-5 group">
+                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
+                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <span class="text-sm">How to level up in Wuwa</span>
+                </a>
+            </li>
+            <li class="mb-5 group">
+                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
+                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <span class="text-sm">How to level up in Wuwa</span>
+                </a>
+            </li>
+            <li class="mb-5 group">
+                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
+                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <span class="text-sm">How to level up in Wuwa</span>
+                </a>
+            </li>
+            <li class="mb-5 group">
+                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
+                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <span class="text-sm">How to level up in Wuwa</span>
+                </a>
+            </li>
+            <li class="mb-5 group">
+                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
+                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <span class="text-sm">How to level up in Wuwa</span>
+                </a>
+            </li>
+            <li class="mb-5 group">
+                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
+                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <span class="text-sm">How to level up in Wuwa</span>
+                </a>
+            </li>
+            <li class="mb-5 group">
+                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
+                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <span class="text-sm">How to level up in Wuwa</span>
+                </a>
+            </li>
+        </ul>
+        </div>
+
+       <!-- Account -->
+        <div class="absolute bottom-3 w-full">
+            <div class="flex flex-col pt-2 juice:py-2 border-x-gray-800 dark:border-white/20 ml-2">
+            <span class="flex w-full flex-row flex-wrap-reverse justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full border border-token-border-light">
+                        <img src="#" width="24" height="24" alt="Profile Picture" class="icon-sm shrink-0"/>
+                    </span>
+                    <div class="flex flex-col text-gray-900 dark:text-white">
+                        <a>Joshua Casupang</a>
+                    </div>
+
+                    <div class="relative inline-block text-left ml-4">
+                        <div>
+                            <button id="dropdownButton" class="inline-flex justify-center" >
+                                <i class="ri-more-fill" style="color: white;"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="dropdownMenu" class="bottom-10 absolute left-3 mt-2 w-56 rounded-md shadow-lg dark:bg-gray-900 bg-white ring-1 dark:ring-white ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
+                            <div class="py-0" role="none">
+                                <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-black" role="menuitem">Account settings</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-black" role="menuitem">Support</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-black" role="menuitem">License</a>
+                                <a href="/logout" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-black" role="menuitem">Sign out</a>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </span>
+            </div>
+    </div>
+    
+</div>
+</div>
+<main class="w-[calc(100%-256px)] ml-64 bg-slate-100 dark:bg-[#181818] min-h-screen transition-width duration-300 ease-in-out" id="content">
+    {% block content %}{% endblock %}
+</main>
+
+
+<script>
+    module.exports = {
+  theme: {
+    extend: {
+      placeholderColor: {
+        'gray': '#404040',
+      }
+    }
+  },
+  variants: {
+    extend: {
+      placeholderColor: ['responsive', 'dark', 'focus', 'hover', 'active'],
+    }
+  },
+  plugins: [],
+}
+</script>
+<script>
+    const menuToggleButton = document.getElementById('menuToggleButton');
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    menuToggleButton.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+        content.classList.toggle('w-full');
+        content.classList.toggle('ml-64');
+    });
+</script>
+
+<script>
+    document.getElementById('dropdownButton').addEventListener('click', function() {
+        var dropdownMenu = document.getElementById('dropdownMenu');
+        dropdownMenu.classList.toggle('hidden');
+    });
+    
+    window.addEventListener('click', function(e) {
+        var dropdownMenu = document.getElementById('dropdownMenu');
+        if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+    </script>
+
+</body>
+</html>
+

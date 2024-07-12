@@ -1,0 +1,34 @@
+/* custom-scrollbar.css */
+
+/* Define CSS variables for light mode */
+:root {
+    --scrollbar-track-color: #ebe5e5; /* Tailwind's bg-gray-200 */
+    --scrollbar-thumb-color: #e4baba; /* Tailwind's bg-blue-500 */
+    --scrollbar-thumb-hover-color: #e1b1b1; /* Tailwind's bg-blue-700 */
+}
+
+/* Define CSS variables for dark mode */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --scrollbar-track-color: #374151; /* Tailwind's bg-gray-700 */
+        --scrollbar-thumb-color: #625e5e; /* Tailwind's bg-blue-600 */
+        --scrollbar-thumb-hover-color: #383737; /* Tailwind's bg-blue-900 */
+    }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 12px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-color);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 0.375rem; /* Tailwind's rounded-lg */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover-color);
+}

@@ -1,0 +1,79 @@
+{% extends "base.html" %} {% block title %}Log In{% endblock %}
+
+{% block content %}
+<div
+  class="container max-w-md mx-auto xl:max-w-3xl h-full flex mt-24 mb-24 dark:bg-black bg-gray-300 rounded-lg shadow overflow-hidden">
+  <div class="relative hidden xl:block xl:w-1/2 h-full">
+    <img
+      class="absolute h-auto w-full object-cover"
+      src="./static/BTS-Logo.png"
+      alt="my zomato"
+    />
+  </div>
+  <div class="w-full xl:w-1/2 p-8">
+    <form method="POST">
+      <h1 class=" text-2xl font-bold">Sign in to your account</h1>
+    <div>
+      <span class="dark:text-white text-gray-600 text-sm">
+        Don't have an account?
+      </span>
+      <a href='/sign-up' class="dark:text-red-500 text-gray-700 text-sm font-semibold bg-transparent border-none p-0 cursor-pointer">
+        Sign up
+      </a>           
+    </div>
+    <div class="mb-4 mt-6">
+      <label
+        class="block dark:text-white text-gray-700 text-sm font-semibold mb-2"
+        for="email"
+      >
+        Email
+      </label>
+      <input
+        class="text-sm appearance-none rounded w-full py-2 px-3 text-gray-700 bg-gray-200 leading-tight focus:outline-none focus:shadow-outline h-10"
+        id="email"
+        type="email"
+        name="email"
+        placeholder="Enter email"
+      />
+    </div>
+    <div class="mb-4 mt-6">
+      <label
+        class="block dark:text-white text-gray-700 text-sm font-semibold mb-2"
+        for="password"
+      >
+        Password
+      </label>
+      <input
+        class="text-sm bg-gray-200 appearance-none rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline h-10"
+        id="password"
+        type="password"
+        name="password"
+        placeholder="Your password"
+      />
+      <a
+        class="dark:text-red-500 dark:hover:text-red-500 inline-block align-baseline text-sm text-gray-600 hover:text-gray-800"
+        href="#"
+      >
+        Forgot Password?
+      </a>
+    </div>
+    <div class="flex w-full mt-5">
+      <button
+      class="w-full dark:bg-red-500 bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 px-4 font-semibold rounded focus:outline-none focus:shadow-outline h-10"
+      type="submit"
+      onclick="window.location.href='/'"
+    >
+      Log In
+    </button>
+    
+      </div>
+      
+    <div class="mb-6 mt-5 dark:text-white text-gray-700 text-sm font-semibold text-center">
+      <div class="mt-2 justify-center flex gap-4">
+          <a href="#" class="bg-[#24292F] w-1/2 py-1 rounded-md text-white font-bold cursor-pointer hover:bg-[#4d4d5c]">Log in with Google</a>
+      </div>
+  </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

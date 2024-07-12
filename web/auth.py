@@ -1,9 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_required, logout_user, current_user
 from .models import User
+from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .oauth import oauth  # Import oauth here
+from flask_login import login_user, login_required, logout_user, current_user
 
 auth = Blueprint('auth', __name__)
 
@@ -23,13 +22,13 @@ def login():
                 flash('Incorrect password, try again.', category='error')
         else:
             flash('Email does not exist.', category='error')
-
     return render_template('login.html', user=current_user)
 
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()
+    flash('Logged out successfully!', category='success')
     return redirect(url_for('auth.login'))
 
 @auth.route('/')
@@ -47,42 +46,17 @@ def sign_up():
         if user:
             flash('Email already exists.', category='error')
         elif len(email) < 4:
-            flash('Email must be greater than 4 characters.', category='error')
+            flash('Email must be valid.', category='error')
         elif password != confirmpassword:
             flash('Passwords don\'t match.', category='error')
-        elif len(password) < 7:
-            flash('Password must be at least 7 characters.', category='error')
+        elif len(password) < 8:
+            flash('Password must be at least 8 characters.', category='error')
         else:
             new_user = User(email=email, password=generate_password_hash(password, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
-            # flash('Account created!', category='success')
+            flash('Account created!', category='success')
             return redirect(url_for('views.main'))
 
     return render_template("sign_up.html", user=current_user)
-
-@auth.route('/login/google')
-def login_google():
-    google = oauth.create_client('google')
-    redirect_uri = url_for('auth.callback', _external=True)
-    return google.authorize_redirect(redirect_uri)
-
-@auth.route('/auth/callback')
-def callback():
-    google = oauth.create_client('google')
-    token = google.authorize_access_token()
-    resp = google.get('userinfo')
-    user_info = resp.json()
-    user = User.query.filter_by(email=user_info['email']).first()
-
-    if user is None:
-        user = User(email=user_info['email'], name=user_info['name'])
-        db.session.add(user)
-        db.session.commit()
-        flash('Account created!', category='success')
-    else:
-        flash('Logged in successfully!', category='success')
-
-    login_user(user)
-    return redirect(url_for('views.main'))

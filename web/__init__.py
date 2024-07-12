@@ -1,19 +1,18 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from .config import Config  # Import the Config class
 
 db = SQLAlchemy()
 DB_NAME = "behindthescreens"
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)  # Load the configuration from the Config class
+    app.config['SECRET_KEY'] = 'juuchiruru'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{DB_NAME}'
     db.init_app(app)
 
     from .views import views
     from .auth import auth
-    from .oauth import init_oauth  # Import the init_oauth function
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
@@ -22,7 +21,6 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-        init_oauth(app)  # Initialize oauth within the app context
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
