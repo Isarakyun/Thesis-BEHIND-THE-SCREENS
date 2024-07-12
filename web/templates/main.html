@@ -16,15 +16,16 @@
     <img class="w-1/2 mt-32" src="./static/BTS-logo-with-name.png">
     </div>
 
-<!-- Input Bar -->    
+<!-- Input Bar -->
+<form method="POST" action="">    
 <div class="flex items-center justify-center mt-[50px]">
     <input
-class="flex w-[500px] flex-col gap-1.5 rounded-[26px] p-1.5 transition-colors bg-slate-100 text-black dark:text-white dark:bg-token-main-surface-secondary placeholder-gray-500 ml-10"
-id="YoutTube_URL"
-type="text"
-placeholder="   Youtube URL here..." 
-/>
-    <button type="button" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600"><i class="ri-arrow-right-line"></i></button>
-    
+    class="flex w-[500px] flex-col gap-1.5 rounded-[26px] p-1.5 px-4 transition-colors bg-slate-100 text-black dark:text-white dark:bg-token-main-surface-secondary placeholder-gray-500 ml-10"
+    id="YoutTube_URL"
+    type="text"
+    placeholder="Youtube URL here..." 
+    />
+        <button onclick="location.href='/analyze'" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600"><i class="ri-arrow-right-line"></i></button>
   </div>
+</form>
 {% endblock %}

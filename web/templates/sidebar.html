@@ -6,7 +6,8 @@
     <link href="../static/css/styles.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/custom-scrollbar.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
-    <title>{% block title %}Analysis{% endblock %}</title>
+    <title>{% block title %}Analysis{% endblock %}</title> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .hidden {
             display: none;
@@ -98,12 +99,12 @@
                             </button>
                         </div>
                         
-                        <div id="dropdownMenu" class="bottom-10 absolute left-3 mt-2 w-56 rounded-md shadow-lg dark:bg-gray-900 bg-white ring-1 dark:ring-white ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
+                        <div id="dropdownMenu" class="bottom-10 absolute left-3 mt-2 w-56 rounded-md shadow-lg dark:bg-[#1c1b1b] bg-white ring-1 dark:ring-white ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
                             <div class="py-0" role="none">
-                                <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-black" role="menuitem">Account settings</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-black" role="menuitem">Support</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-black" role="menuitem">License</a>
-                                <a href="/logout" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-black" role="menuitem">Sign out</a>
+                                <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Account settings</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Support</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">License</a>
+                                <a href="/logout" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Sign out</a>
                             </div>
                         </div>
                     </div> 

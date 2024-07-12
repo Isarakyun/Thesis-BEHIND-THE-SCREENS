@@ -60,3 +60,7 @@ def sign_up():
             return redirect(url_for('views.main'))
 
     return render_template("sign_up.html", user=current_user)
+
+@auth.route('/analyze', methods=['GET', 'POST'])
+def analyze():
+    return "<h1>SENTIMENT ANALYSIS</h1>"

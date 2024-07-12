@@ -1,62 +1,93 @@
 {% extends "sidebar.html" %} {% block title %}Analysis Results{% endblock %}
 
 {% block content %}
+<div>
 <div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center">
     <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
         <i class="ri-menu-line cursor-pointer"></i>
     </button>
     <div>
         <span class="text-m text-black dark:text-white ml-4">Results</span>
-    </div>
-    </div>        
+    </div>       
 </div>
 
-<div class="ml-[112px] mt-5 mb-5">
-<table class="table-auto border-collapse border text-center text-sm">
-  <thead class="text-white">
-    <tr class="bg-red-600 dark:bg-slate-700">
-      <!-- Header -->
-      <th class="border border-red-600 dark:border-slate-700 px-2 py-1">Word</th>
-      <th class="border border-red-600 dark:border-slate-700 px-2 py-1">Word Count</th>
-      <th class="border border-red-600 dark:border-slate-700 px-2 py-1">Sentiment</th>
-    </tr>
-  </thead>
-  <tbody class="text-gray-900 dark:text-white">
-    <tr>
-      <!-- Row 1 - Cell 3 -->
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Wtf</td>
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">500</td>
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Negative</td>
-    </tr>
-    <tr>
-      <!-- Row 2 - Cell 3 -->
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Poggers</td>
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">320</td>
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Positive</td>
-    </tr>
-    <tr>
-      <!-- Row 3 - Cell 3 -->
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Acm</td>
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">100</td>
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Negative</td>
-    </tr>
-    <tr>
-      <!-- Row 4 - Cell 3 -->
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Oks</td>
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">150</td>
-      <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Neutral</td>
-    </tr>
-    <tr>
-      <!-- Row 5 - Cell 3 -->
-    <tr>
-    <!-- Row 5 - Cell 3 -->
-    <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Baduy</td>
-    <td class="border border-red-600 dark:border-slate-700 px-2 py-1">150</td>
-    <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Negative</td>
-    </tr>
-    </tbody>
+<div class="flex ml-[112px] mb-5 space-x-5 items-center">
+  <!-- Table -->
+  <div>
+    <table id="frequent-words" class="table-auto border-collapse border text-center text-sm w-full">
+      <thead class="text-white">
+        <tr class="bg-red-600 dark:bg-slate-700">
+          <th class="border border-red-600 dark:border-slate-700 px-2 py-1">Word</th>
+          <th class="border border-red-600 dark:border-slate-700 px-2 py-1">Word Count</th>
+          <th class="border border-red-600 dark:border-slate-700 px-2 py-1">Sentiment</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-900 dark:text-white">
+        <tr>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Wtf</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">500</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Negative</td>
+        </tr>
+        <tr>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Poggers</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">320</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Positive</td>
+        </tr>
+        <tr>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Acm</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">100</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Negative</td>
+        </tr>
+        <tr>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Oks</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">150</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Neutral</td>
+        </tr>
+        <tr>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Baduy</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">150</td>
+          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Negative</td>
+        </tr>
+      </tbody>
     </table>
-    </div>
+  </div>
+  
+  <!-- Pie Chart -->
+  <div>
+    <canvas id="pieChart" width="350px" height="350px"></canvas>
+  </div>
+</div>
+
+  <script>
+    const ctx = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Negative', 'Positive', 'Neutral'],
+        datasets: [{
+          label: 'Sentiment Analysis',
+          data: [3, 1, 1], // Example data
+          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'], // Tailwind colors
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'left',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(tooltipItem) {
+                return tooltipItem.label + ': ' + tooltipItem.raw;
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
         
         <div>
             <div class="ml-[112px] mt-4 w-[830px] bg-red-600 dark:bg-slate-700">
