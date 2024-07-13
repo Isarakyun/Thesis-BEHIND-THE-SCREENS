@@ -43,6 +43,10 @@ def settings():
 def admin():
     return render_template("admin.html")
 
+# @views.route('email-verification')
+# def email_verification():
+#     return render_template("email_verification.html")
+
 @views.route('/analyze-youtube', methods=['POST'])
 def analyze_youtube():
     youtube_url = request.form.get('youtube_url')

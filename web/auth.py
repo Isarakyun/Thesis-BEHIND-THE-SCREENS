@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask_mail import Mail, Message
+from random import *
 from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
@@ -60,6 +62,11 @@ def sign_up():
             return redirect(url_for('views.main'))
 
     return render_template("sign_up.html", user=current_user)
+
+@auth.route('/email-verification')
+def email_verification():
+
+    return render_template("email_verification.html")
 
 @auth.route('/analyze', methods=['GET', 'POST'])
 def analyze():
