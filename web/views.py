@@ -63,3 +63,17 @@ def analyze_youtube():
             
             return redirect(url_for('views.home'))
     return redirect(url_for('views.home'))
+
+@views.route('/forgotpassword')
+def forgotpassword():
+    return render_template("forgotpassword.html", user=current_user)
+
+#for some reason, web does not work without this route LOL
+@views.route('/testimonials')
+def testimonials():
+    return render_template('testimonials.html')
+
+# This route is for testing pages
+@views.route('/entercode')
+def entercode():
+    return render_template('createnewpassword.html')

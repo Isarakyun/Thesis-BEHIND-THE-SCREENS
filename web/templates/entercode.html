@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link href="../static/css/styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Log In</title>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #181818;
+            }
+            .bg-gray-100 {
+                background-color: #181818;
+            }
+            .text-black {
+                color: #fff;
+            }
+            .bg-white {
+                background-color: #181818;
+            }
+            .text-gray-700 {
+                color: white;
+            }
+            .text-gray-600 {
+                color: #ccc;
+            }
+            .text-gray-500 {
+                color: white;
+            }
+            .border-gray-200 {
+                border-color: #555;
+            }
+            .focus:border-gray-200 {
+                border-color: #555;
+            }
+            .focus:ring-gray-300 {
+                box-shadow: 0 0 0 2px #555;
+            }
+            .hover\:bg-gray-50 {
+                background-color: #121212;
+            }
+            .bg-black {
+                background-color: #880808;
+            }
+            .hover:bg-gray-800 {
+                background-color: #7c1010;
+            }
+            .focus:bg-black {
+                background-color: #121212;
+            }
+            .focus:ring-gray-900 {
+                box-shadow: 0 0 0 2px #2C2C2C;
+            }
+
+            /* Adjust Reset button to match Login link */
+            .bg-blue-500 {
+                background-color: #7c1010; /* Red color */
+            }
+            .bg-blue-500:hover,
+            .bg-blue-600 {
+                background-color: #121212; /* Darker red on hover or focus */
+            }
+            .text-white {
+                color: #fff; /* White text color */
+            }
+        }
+
+        /* Placeholder style */
+        input::placeholder {
+            color: rgba(0, 0, 0, 0.3); /* Faded black color */
+        }
+    </style>
+</head>
+<body>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+    {% if category == 'error' %}
+    <div class="alert bg-red-500 text-black p-3 text-sm">
+        {{ message }}
+        <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+    </div>
+    {% else %}
+    <div class="alert bg-blue-600 text-white p-3 text-sm">
+        {{ message }}
+        <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+    </div>
+    {% endif %}
+    {% endfor %}
+{% endif %}
+{% endwith %}
+<div class="flex h-screen">
+    <!-- Left Pane -->
+    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-200 text-black">
+        <div class="max-w-md text-center">
+            <a href="/"><img src="./static/BTS-logo-with-name.png" width="524.67004" height="531.39694" class="w-full" viewBox="0 0 524.67004 531.39694"></a>
+        </div>
+    </div>
+
+    <!-- Right Pane -->
+    <div class="w-full bg-slate-300 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
+        <main id="content" role="main" class="w-full max-w-md mx-auto p-6">
+            <div class="mt-7 bg-transparent rounded-xl shadw-lg dark:bg-transparent border-2 border-transparent">
+                <div class="p-4 sm:p-7">
+                    <div class="text-center">
+                        <h1 class="text-3xl font-semibold mb-6 text-black text-center">Enter Security Code</h1>
+                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                            Please check your email for a message with your code.
+                        </p>
+                    </div>
+
+                    <div class="mt-5">
+                        <form>
+                            <div class="grid gap-y-4">
+                                <div>
+                                    <div>
+                                        <input type="text" id="email" name="email" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" placeholder="Enter code">
+                                      </div>
+                                    <p class="hidden text-xs text-red-600 mt-2" id="email-error">Please include a valid email address so we can get back to you</p>
+                                </div>
+                                <button type="submit" class="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Confirm code</button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+</body>
+</html>

@@ -54,6 +54,7 @@
             .focus:ring-gray-900 {
                 box-shadow: 0 0 0 2px #2C2C2C;
             }
+            
         }
     </style>
 </head>
@@ -118,6 +119,11 @@
             <button type="submit" class="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Log in</button>
           </div>
         </form>
+        <div class="mt-4 text-sm text-gray-600 text-center">
+                    <p>
+                        <button onclick="location.href='{{ url_for('views.forgotpassword') }}'" class="text-blue-700 hover:cursor-pointer">Forgot password?</button>
+                    </p>
+        </div>
         <div class="mt-4 text-sm text-gray-600 text-center">
           <p>Don't have an account? <button onclick="location.href='/sign-up'" class="text-black hover:cursor-pointer">Sign up here</button>
           </p>
