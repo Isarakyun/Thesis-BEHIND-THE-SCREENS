@@ -1,14 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="../static/css/styles.css" rel="stylesheet">
     <title>Verify Email</title>
+    <style>
+    </style>
 </head>
-<body>
-    <form method="POST">
-        <input type="hidden" name="email" value="{{ email }}">
-        <input type="hidden" name="token" value="{{ token }}">
-        <button type="submit">Verify Email</button>
+   <body>
+   <div class="flex h-screen">
+    <!-- Left Pane -->
+    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-200 text-black">
+      <div class="max-w-md text-center">
+        <img src="./static/BTS-logo-with-name.png" width="524.67004" height="531.39694" class="w-full" viewBox="0 0 524.67004 531.39694">
+        </div>
+    </div>
+
+    <!-- Right Pane -->
+    <div class="w-full bg-slate-300 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
+      <div class="max-w-md w-full p-6">
+        <h1 class="text-2xl font-semibold mb-6 mt-10 text-black text-center">OTP Verification</h1>
+        <h1 class="text-sm font-semibold mb-6 text-gray-500 text-center"> Enter the OTP code sent to your email. </h1>
+        <div class="mt-4 flex flex-col items-center">
+        
+        </div>
+        <form action="#" method="POST" class="space-y-4">
+          <!-- Your form elements go here -->
+          <div class="flex flex-nowrap items-center gap-6">
+            <input type="text" id="quantity" name="number" class="mt-1 p-2 w-10 border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            <input type="text" id="quantity" name="number" class="mt-1 p-2 w-10 border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            <input type="text" id="quantity" name="number" class="mt-1 p-2 w-10 border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            <input type="text" id="quantity" name="number" class="mt-1 p-2 w-10 border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            <input type="text" id="quantity" name="number" class="mt-1 p-2 w-10 border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            <input type="text" id="quantity" name="number" class="mt-1 p-2 w-10 border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            
+          </div>
+        <div class="text-center">
+        <p class="text-gray-600 text-sm">Resend OTP in</p>
+        <p id="timer" class="text-gray-600 text-sm font-semibold">25s.</p>
+        </div>
+          <div>
+            <button type="submit" class="w-full mt-2 bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Verify</button>
+          </div>
+          
+        </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </body>
 </html>
+
+<script>
+    function timer(time,update,complete) {
+        var start = new Date().getTime();
+        var interval = setInterval(function() {
+            var now = time-(new Date().getTime()-start);
+            if( now <= 0) {
+                clearInterval(interval);
+                complete();
+            }
+            else update(Math.floor(now/1000));
+        },100); // the smaller this number, the more accurate the timer will be
+    }
+    timer(
+    25000, // milliseconds
+    function(timeleft) { // called every step to update the visible countdown
+        document.getElementById('timer').innerHTML = timeleft+"s";
+    },
+    function() { // what to do after
+        alert("Timer complete!");
+    }
+);
+</script>
