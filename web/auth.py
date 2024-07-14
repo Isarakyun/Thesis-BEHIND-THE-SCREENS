@@ -111,9 +111,9 @@ def sign_up():
                             <div class="text-center">
                             <img src="https://pbs.twimg.com/media/GSYY7T8XsAALUY1?format=png&name=small" height="25%" viewBox="0 0 524.67004 531.39694">
                             </div>
-                            <div class="email-header">Welcome to Behind the Scenes!</div>
+                            <div class="email-header">Welcome to Behind the Screens!</div>
                             <div class="email-body">
-                                Behind the Scenes is a platform that allows you to analyze the sentiment of YouTube comments. <br>
+                                Behind the Screens is a platform that allows you to analyze the sentiment of YouTube comments. <br>
                             To verify your email, please click this <a href="{}">link</a>. We hope you enjoy using our platform!
                             </div>
                             <div class="email-footer">
