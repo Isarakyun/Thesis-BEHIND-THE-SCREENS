@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_mail import Mail, Message
-from random import *
+from datetime import datetime, timedelta
 from itsdangerous import URLSafeTimedSerializer
 
 db = SQLAlchemy()
@@ -17,19 +17,6 @@ def create_app():
 
     app.config.from_pyfile('config.cfg')
     mail.init_app(app)
-
-    s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-    
-    # @auth.route('/email-verification', methods=['GET', 'POST'])
-    # def email_verification():
-    #     if request.method == 'GET':
-    #         return 'form action="/email-verification" method="POST"><input name="email"><input type="submit"></form>'
-        
-    #     # email = request.form.get('email')
-    #     # token = s.dumps(email, salt='email-confirm')
-
-    #     return 'The email you entered is {}'.format(request.form['email'])
-    #     # return render_template("email_verification.html")
 
     from .views import views
     from .auth import auth
@@ -49,5 +36,22 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(int(id))
+    
+    def format_date(value):
+        today = datetime.today().date()
+        if isinstance(value, datetime):
+            value = value.date()
+        delta = today - value
+
+        if delta.days == 0:
+            return "Today"
+        elif delta.days == 1:
+            return "Yesterday"
+        elif delta.days < 7:
+            return f"{delta.days} Days Ago"
+        else:
+            return value.strftime("%B %d, %Y")
+
+    app.jinja_env.filters['format_date'] = format_date
 
     return app

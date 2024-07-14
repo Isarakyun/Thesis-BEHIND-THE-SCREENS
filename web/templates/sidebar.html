@@ -12,6 +12,13 @@
         .hidden {
             display: none;
         }
+        .video-title {
+            display: inline-block;
+            max-width: 100%; /* Adjust as needed */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 <body>
@@ -21,63 +28,17 @@
         </a>
 
         <!-- Side Nav -->
-         <div class="overflow-y-auto custom-scrollbar" style="height: calc(105% - 120px);">
-        <ul class="mt-4">
-            <li class="mb-5 group">
-                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
-                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm">How to level up in Wuwa</span>
-                </a>
-            </li>
-            <li class="mb-5 group">
-                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
-                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm">How to level up in Wuwa</span>
-                </a>
-            </li>
-            <li class="mb-5 group">
-                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
-                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm">How to level up in Wuwa</span>
-                </a>
-            </li>
-            <li class="mb-5 group">
-                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
-                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm">How to level up in Wuwa</span>
-                </a>
-            </li>
-            <li class="mb-5 group">
-                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
-                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm">How to level up in Wuwa</span>
-                </a>
-            </li>
-            <li class="mb-5 group">
-                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
-                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm">How to level up in Wuwa</span>
-                </a>
-            </li>
-            <li class="mb-5 group">
-                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
-                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm">How to level up in Wuwa</span>
-                </a>
-            </li>
-            <li class="mb-5 group">
-                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
-                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm">How to level up in Wuwa</span>
-                </a>
-            </li>
-            <li class="mb-5 group">
-                <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">Today</div>
-                <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm">How to level up in Wuwa</span>
-                </a>
-            </li>
-        </ul>
+        <div class="overflow-y-auto custom-scrollbar" style="height: calc(105% - 120px);">
+            {% for youtubeurl in youtube_urls %}
+            <ul class="mt-4">
+                <li class="mb-5 group">
+                    <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">{{ youtubeurl.created_at|format_date }}</div>
+                    <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                        <span class="text-sm video-title">{{ youtubeurl.video_name }}</span>
+                    </a>
+                </li>
+            </ul>
+            {% endfor %}
         </div>
 
        <!-- Account -->
@@ -89,13 +50,13 @@
                         <img src="#" width="24" height="24" alt="Profile Picture" class="icon-sm shrink-0"/>
                     </span>
                     <div class="flex flex-col text-gray-900 dark:text-white">
-                        <a>Joshua Casupang</a>
+                        <a>{{ user.username }}</a>
                     </div>
 
-                    <div class="relative inline-block text-left ml-4">
+                    <div class="absolute right-0 top-0 mt-2 mr-8 text-left">
                         <div>
                             <button id="dropdownButton" class="inline-flex justify-center" >
-                                <i class="ri-more-fill" style="color: white;"></i>
+                                <i class="ri-more-fill text-black dark:text-white"></i>
                             </button>
                         </div>
                         

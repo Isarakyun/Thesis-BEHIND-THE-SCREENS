@@ -2,16 +2,20 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import User
+from .models import User, YoutubeUrl, Comments, LabeledComments
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
+from pytube import YouTube
+from transformers import pipeline
+from youtube_comment_downloader import YoutubeCommentDownloader
 
 auth = Blueprint('auth', __name__)
 # app = Flask(__name__)
 # app.config.from_pyfile('config.cfg')
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
+sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -299,6 +303,70 @@ def reset_password(token):
     
     return render_template("reset_password.html")
 
-@auth.route('/analyze', methods=['GET', 'POST'])
+@auth.route('/analyze', methods=['POST'])
+@login_required
 def analyze():
-    return "<h1>SENTIMENT ANALYSIS</h1>"
+    youtube_url = request.form.get('url')
+    # Saving YouTube URL to youtube_url table in the database
+    if not youtube_url:
+        flash('Please enter a valid YouTube URL.', category='error')
+        return redirect(url_for('views.main'))
+    try:
+        yt = YouTube(youtube_url)
+        video_name = yt.title
+    except Exception as e:
+        flash(f'Failed to extract video name: {str(e)}', category='error')
+        return redirect(url_for('views.main'))
+    new_youtube_url = YoutubeUrl(url=youtube_url, user_id=current_user.id, video_name=video_name)
+    db.session.add(new_youtube_url)
+    db.session.commit()
+
+    # Extracting comments from YouTube video
+    try:
+        video_id = youtube_url.split('v=')[1]
+        downloader = YoutubeCommentDownloader()
+        comments = [comment['text'] for comment in downloader.get_comments(video_id)]
+    except Exception as e:
+        flash(f'Failed to extract comments: {str(e)}', category='error')
+        return redirect(url_for('views.main'))
+
+    # Sentiment Analysis
+    label_mapping = {
+        "LABEL_0": "negative",
+        "LABEL_1": "neutral",
+        "LABEL_2": "positive"
+    }
+
+    sentiments = []
+    for comment in comments:
+        try:
+            sentiment = sentiment_pipeline([comment])[0]
+            sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
+            sentiments.append(sentiment)
+        except RuntimeError as e:
+            flash(f'Sentiment analysis failed for a comment: {str(e)}', category='warning')
+            continue  # Skip this comment and continue with the next one
+        except Exception as e:
+            flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
+            return redirect(url_for('views.main'))
+
+    # Saving comments to Comments table in the database
+    comment_objects = []
+    for comment in comments:
+        new_comment = Comments(comment=comment, url_id=new_youtube_url.id, user_id=current_user.id)
+        db.session.add(new_comment)
+        comment_objects.append(new_comment)
+    db.session.commit()
+
+    # Saving sentiment analysis results to Labeled_Comments table in the database
+    for comment_obj, sentiment in zip(comment_objects, sentiments):
+        new_labeled_comment = LabeledComments(
+            sentiment=sentiment['label'],
+            comments_id=comment_obj.id,
+            url_id=new_youtube_url.id,
+            user_id=current_user.id
+        )
+        db.session.add(new_labeled_comment)
+    db.session.commit()
+
+    return redirect(url_for('views.results'))

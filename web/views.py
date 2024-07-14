@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from flask_login import login_required, current_user
+from . import db
+from .models import User, YoutubeUrl, Comments
 import re
 import sys
 import os
@@ -26,12 +28,16 @@ def home():
 @views.route('/main')
 @login_required
 def main():
-    return render_template("main.html", user=current_user)
+    user_id = current_user.id
+    youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
+    return render_template("main.html", user=current_user, youtube_urls=youtube_urls)
 
 @views.route('/results')
 @login_required
 def results():
-    return render_template("results.html", user=current_user)
+    user_id = current_user.id
+    youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
+    return render_template("results.html", user=current_user, youtube_urls=youtube_urls)
 
 @views.route('/settings')
 @login_required
