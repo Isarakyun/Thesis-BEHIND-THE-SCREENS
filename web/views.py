@@ -43,10 +43,6 @@ def settings():
 def admin():
     return render_template("admin.html")
 
-# @views.route('email-verification')
-# def email_verification():
-#     return render_template("email_verification.html")
-
 @views.route('/analyze-youtube', methods=['POST'])
 def analyze_youtube():
     youtube_url = request.form.get('youtube_url')
@@ -64,19 +60,16 @@ def analyze_youtube():
             return redirect(url_for('views.home'))
     return redirect(url_for('views.home'))
 
-# @views.route('/forgot')
-# def forgotpassword():
-#     return render_template("forgot_password.html")
+@views.route('/mail-sent')
+def mail_sent():
+    return render_template("mail_sent.html")
 
-# @views.route('/reset')
-# def resetpassword():
-#     return render_template("reset_password.html")
-
-# @views.route('/otp')
-# def onetimepassword():
-#     return render_template("one_time_password.html")
+@views.route('password-reset-success')
+def password_reset_success():
+    return render_template("reset_password_success.html")
 
 # This route is for testing pages
 @views.route('/test')
 def test():
+    # use test.html to test frontend
     return render_template('test.html')

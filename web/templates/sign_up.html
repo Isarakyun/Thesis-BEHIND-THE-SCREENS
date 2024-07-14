@@ -6,6 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
     <link href="../static/css/styles.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Sign Up</title>
     <style>
           @media (prefers-color-scheme: dark) {
@@ -105,19 +106,28 @@
         </div>
 
         <form action="" method="POST" class="space-y-4">
-          <!-- Your form elements go here -->
+          <div>
+            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+            <input type="text" id="username" name="username" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+          </div>
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="text" id="email" name="email" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            <input type="email" id="email" name="email" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
           </div>
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" id="password" name="password" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
-          </div>
-          <div>
+            <div class="relative">
+                <input type="password" id="password" name="password" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+                <i class="far fa-eye absolute right-3 top-4 cursor-pointer" id="toggle-password" onclick="togglePasswordVisibility()"></i>
+            </div>
+        </div>
+        <div>
             <label for="confirmpassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-            <input type="password" id="confirmpassword" name="confirmpassword" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
-          </div>
+            <div class="relative">
+                <input type="password" id="confirmpassword" name="confirmpassword" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+                <i class="far fa-eye absolute right-3 top-4 cursor-pointer" id="toggle-confirmpassword" onclick="togglePasswordVisibility()"></i>
+            </div>
+        </div>
           <div>
             <button type="submit" class="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Sign Up</button>
           </div>
@@ -134,7 +144,30 @@
 
   </div>
  
-
+  <script>
+    function togglePasswordVisibility() {
+        var passwordField = document.getElementById("password");
+        var confirmPasswordField = document.getElementById("confirmpassword");
+        var togglePasswordIcon = document.getElementById("toggle-password");
+        var toggleConfirmPasswordIcon = document.getElementById("toggle-confirmpassword");
+    
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            confirmPasswordField.type = "text";
+            togglePasswordIcon.classList.remove("fa-eye");
+            togglePasswordIcon.classList.add("fa-eye-slash");
+            toggleConfirmPasswordIcon.classList.remove("fa-eye");
+            toggleConfirmPasswordIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            confirmPasswordField.type = "password";
+            togglePasswordIcon.classList.remove("fa-eye-slash");
+            togglePasswordIcon.classList.add("fa-eye");
+            toggleConfirmPasswordIcon.classList.remove("fa-eye-slash");
+            toggleConfirmPasswordIcon.classList.add("fa-eye");
+        }
+    }
+    </script>
 <script src="./app.js"></script>
 </body>
 </html>
