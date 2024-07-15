@@ -1,4 +1,4 @@
-{% extends "sidebar.html" %} {% block title %}Analysis Results{% endblock %}
+{% extends "base.html" %} {% block title %}Results of {{ youtube_url.video_name }}{% endblock %}
 
 {% block content %}
 <div>
@@ -16,18 +16,20 @@
   <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
     <thead class="text-white">
       <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-        <th class="px-2 py-1">Comments Summary of " [VIDEO TITLE] "</th>
+        <th class="px-2 py-1">Comments Summary of " {{ youtube_url.video_name }} "</th>
       </tr>
     </thead>
     <!-- Values are from Summarized_comments table in the database, summary column, url_id = id (youtube_url id) -->
     <tbody class="text-gray-900 dark:text-white text-sm">
       <tr>
-        <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
+        <td class="px-2 py-2">{{ summary }}</td>
+        <!-- <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td> -->
       </tr>
     </tbody>
   </table>
 </div>    
-   
+  
+<!-- TO DO -->
 <!-- TABLE FOR COMMENTS -->
 <div class="mt-5 pt-5 flex justify-center">
   <table id="labeled-comments" class="table-auto ml-[50px] mr-[50px] mt-4">
@@ -39,11 +41,10 @@
     </thead>
     <tbody class="text-center text-gray-900 dark:text-white text-sm">
       <tr>
-        <!-- Values are from Comments table, Column: Comments-->
         <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
-        <!-- Values are from labeled_comments table, Column: sentiment, comments_id = (comments)id -->
         <td class="px-2 py-2">Positive</td>
       </tr>
+      
     </tbody>
   </table>
 </div>
@@ -90,6 +91,7 @@
   });
 </script>
 
+<!-- TO DO -->
 <div class="flex justify-center mb-5 space-x-5 items-center">
   <!-- Table for Word Count -->
   <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
@@ -135,6 +137,13 @@
 </div>
 <!-- Values are from sentiment_counter table. Columns: positive, negative, neutral, url_id = id (youtube_url table) -->
   <script>
+    async function fetchSentimentData(urlId) {
+      const response = await fetch(`/api/sentiment/${urlId}`);
+      const data = await response.json();
+      return data;
+    }
+    async function updatePieChart(urlId) {
+      const data = await fetchSentimentData(urlId);
     const ctx = document.getElementById('pieChart').getContext('2d');
     const pieChart = new Chart(ctx, {
       type: 'pie',
@@ -142,7 +151,7 @@
         labels: ['Negative', 'Positive', 'Neutral'],
         datasets: [{
           label: 'Sentiment Analysis',
-          data: [3, 1, 1], // Example data
+          data: [data.negative, data.positive, data.neutral],
           backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'], // Tailwind colors
         }]
       },
@@ -163,19 +172,42 @@
         }
       }
     });
+  }
+
+  function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      const results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  }
+
+  function getUrlPathParameter(position) {
+      const pathSegments = window.location.pathname.split('/');
+      return pathSegments[position] || null;
+  }
+
+  window.onload = function() {
+      const urlId = getUrlPathParameter(2);
+      if (urlId) {
+          updatePieChart(urlId);
+      } else {
+          console.error('url_id parameter is missing in the URL');
+      }
+  };
   </script>
 
+  <!-- TO DO -->
   <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
     <a class="text-white font-bold ml-2">Word Cloud</a>
   </div>     
   <div class="pb-8">
     <div class="flex justify-center">
       <div class="mt-[20px] ml-[50px] mr-4">
-        <img class="w-full rounded" src="./static/Lowro_ (twitter).png">
+        <img class="w-full rounded" src="./../static/Lowro_ (twitter).png">
         <p class="text-black dark:text-white text-center mt-2">Positive</p>
       </div>
       <div class="mt-[20px] ml-4 mr-[50px]">
-        <img class="w-full rounded" src="./static/Lowro_ (twitter).png">
+        <img class="w-full rounded" src="./../static/Lowro_ (twitter).png">
         <p class="text-black dark:text-white text-center mt-2">Negative</p>
       </div>
     </div>

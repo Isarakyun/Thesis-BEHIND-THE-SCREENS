@@ -1,4 +1,4 @@
-{% extends "sidebar.html" %} {% block title %}Paste YT Video URL{% endblock %}
+{% extends "base.html" %} {% block title %}Analysis{% endblock %}
 
 {% block content %} 
 <div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
@@ -32,7 +32,7 @@
 <!-- Logo -->
 <div class="flex justify-center">
     <img class="w-1/2 mt-32" src="./static/BTS-logo-with-name.png">
-    </div>
+</div>
 
 <!-- Input Bar -->
 <form method="POST" action="/analyze">    

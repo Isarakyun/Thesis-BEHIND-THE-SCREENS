@@ -43,7 +43,7 @@ CREATE TABLE labeled_comments (
 
 CREATE TABLE summarized_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    summary VARCHAR(150) NOT NULL,
+    summary VARCHAR(30000) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (url_id) REFERENCES youtube_url(id),

@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
 from flask_login import login_required, current_user
 from . import db
+from sqlalchemy.orm import joinedload
 from .models import User, YoutubeUrl, Comments, SummarizedComments, LabeledComments, FrequentWords, SentimentCounter
 import re
 import sys
@@ -15,11 +16,31 @@ from VADER_model import fetch_youtube_comments, analyze_youtube_comments
 
 views = Blueprint('views', __name__)
 
-def extract_playlist_id(youtube_url):
-    match = re.search(r'list=([a-zA-Z0-9_-]+)', youtube_url)
-    if match:
-        return match.group(1)
-    return None
+# def extract_playlist_id(youtube_url):
+#     match = re.search(r'list=([a-zA-Z0-9_-]+)', youtube_url)
+#     if match:
+#         return match.group(1)
+#     return None
+
+def get_youtube_url_by_id(url_id):
+    return db.session.query(YoutubeUrl).filter_by(id=url_id).first()
+
+@views.route('/api/sentiment/<int:url_id>')
+def get_sentiment_data(url_id):
+    sentiment = db.session.query(SentimentCounter).filter_by(url_id=url_id).first()
+    if sentiment:
+        data = {
+            'positive': sentiment.positive,
+            'negative': sentiment.negative,
+            'neutral': sentiment.neutral
+        }
+    else:
+        data = {
+            'positive': 0,
+            'negative': 0,
+            'neutral': 0
+        }
+    return jsonify(data)
 
 @views.route('/')
 def home():
@@ -32,12 +53,45 @@ def main():
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
     return render_template("main.html", user=current_user, youtube_urls=youtube_urls)
 
-@views.route('/results')
+# @views.route('/results')
+# @login_required
+# def results():
+#     user_id = current_user.id
+#     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
+#     comments = Comments.query.filter_by(user_id=user_id)
+#     summarized_comments = SummarizedComments.query.filter_by(user_id=user_id)
+#     labeled_comments = LabeledComments.query.filter_by(user_id=user_id)
+#     frequent_words = FrequentWords.query.filter_by(user_id=user_id)
+#     sentiment_counter = SentimentCounter.query.filter_by(user_id=user_id)
+#     return render_template("results.html", user=current_user, youtube_urls=youtube_urls, comments=comments, summarized_comments=summarized_comments, labeled_comments=labeled_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter)
+
+# @views.route('/results/<int:user_id>/<int:url_id>')
+# def results(user_id, url_id):
+#     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
+#     comments = db.session.query(Comments, LabeledComments.sentiment).join(LabeledComments, Comments.id == LabeledComments.comments_id).filter(Comments.user_id == user_id, Comments.url_id == url_id).all()
+#     summarized_comments = SummarizedComments.query.filter_by(user_id=user_id)
+#     frequent_words = FrequentWords.query.filter_by(user_id=user_id)
+#     sentiment_counter = SentimentCounter.query.filter_by(user_id=user_id)
+
+#     return render_template("results.html", user=current_user, youtube_urls=youtube_urls, comments=comments, summarized_comments=summarized_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter)
+
+@views.route('/results/<int:youtube_url_id>')
 @login_required
-def results():
+def results(youtube_url_id):
     user_id = current_user.id
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
-    return render_template("results.html", user=current_user, youtube_urls=youtube_urls)
+    summary = db.session.query(SummarizedComments).filter_by(url_id=youtube_url_id).first()
+    count = db.session.query(SentimentCounter).filter_by(url_id=youtube_url_id).first()
+    if summary:
+        summary_text = summary.summary
+    else:
+        summary_text = 'No summary found'
+
+    youtubeurl = get_youtube_url_by_id(youtube_url_id)
+    comments = session.get('comments')
+    sentiments= session.get('sentiments')
+
+    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, comments=comments, sentiments=sentiments, count=count)
 
 @views.route('/settings')
 @login_required
@@ -49,22 +103,22 @@ def settings():
 def admin():
     return render_template("admin.html")
 
-@views.route('/analyze-youtube', methods=['POST'])
-def analyze_youtube():
-    youtube_url = request.form.get('youtube_url')
-    if youtube_url:
-        playlist_id = extract_playlist_id(youtube_url)
-        if playlist_id:
-            # Hardcoded YouTube API key - replace this with a secure method to store keys
-            api_key = "AIzaSyDUyMia8oNCLvvKR3KEOBesQ6m_40U9b58"
-            csv_file = 'comments_data.csv'
-            output_csv_file = 'VADERs_sentiment_analysis_results.csv'
+# @views.route('/analyze-youtube', methods=['POST'])
+# def analyze_youtube():
+#     youtube_url = request.form.get('youtube_url')
+#     if youtube_url:
+#         playlist_id = extract_playlist_id(youtube_url)
+#         if playlist_id:
+#             # Hardcoded YouTube API key - replace this with a secure method to store keys
+#             api_key = "AIzaSyDUyMia8oNCLvvKR3KEOBesQ6m_40U9b58"
+#             csv_file = 'comments_data.csv'
+#             output_csv_file = 'VADERs_sentiment_analysis_results.csv'
 
-            fetch_youtube_comments(api_key, [playlist_id], csv_file)
-            analyze_youtube_comments(csv_file, output_csv_file)
+#             fetch_youtube_comments(api_key, [playlist_id], csv_file)
+#             analyze_youtube_comments(csv_file, output_csv_file)
             
-            return redirect(url_for('views.home'))
-    return redirect(url_for('views.home'))
+#             return redirect(url_for('views.home'))
+#     return redirect(url_for('views.home'))
 
 @views.route('/mail-sent')
 def mail_sent():

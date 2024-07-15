@@ -2,13 +2,19 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import User, YoutubeUrl, Comments, LabeledComments
+from .models import User, YoutubeUrl, Comments, LabeledComments, SummarizedComments, FrequentWords, SentimentCounter
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
+import re
 from youtube_comment_downloader import YoutubeCommentDownloader
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.probability import FreqDist
+from nltk.corpus import stopwords
+from textblob import TextBlob
 
 auth = Blueprint('auth', __name__)
 # app = Flask(__name__)
@@ -326,19 +332,26 @@ def analyze():
         video_id = youtube_url.split('v=')[1]
         downloader = YoutubeCommentDownloader()
         comments = [comment['text'] for comment in downloader.get_comments(video_id)]
+        
+        # Regular expression to match timestamps (e.g., "00:00", "1:23", "12:34:56") anywhere in the text
+        timestamp_pattern = re.compile(r'\b\d{1,2}:\d{2}(?::\d{2})?\b')
+        
+        # Filter out comments that contain timestamps
+        filtered_comments = [comment for comment in comments if not timestamp_pattern.search(comment)]
+            
     except Exception as e:
         # flash(f'Failed to extract comments: {str(e)}', category='error')
         return redirect(url_for('views.main'))
 
     # Sentiment Analysis
     label_mapping = {
-        "LABEL_0": "negative",
-        "LABEL_1": "neutral",
-        "LABEL_2": "positive"
+        "LABEL_0": "Negative",
+        "LABEL_1": "Neutral",
+        "LABEL_2": "Positive"
     }
 
     sentiments = []
-    for comment in comments:
+    for comment in filtered_comments:
         try:
             sentiment = sentiment_pipeline([comment])[0]
             sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
@@ -352,13 +365,57 @@ def analyze():
 
     # Saving comments to Comments table in the database
     comment_objects = []
-    for comment in comments:
+    all_comments_text = " ".join(filtered_comments)
+    sentences = sent_tokenize(all_comments_text)
+
+    for comment in filtered_comments:
         new_comment = Comments(comment=comment, url_id=new_youtube_url.id, user_id=current_user.id)
         db.session.add(new_comment)
         comment_objects.append(new_comment)
     db.session.commit()
 
+    # Saving summary to summarized_comments table in the database
+    # Pre-processing the comments
+    stop_words = set(stopwords.words('english'))
+    preprocessed_sentences = []
+    for sentence in sentences:
+        words = word_tokenize(sentence)
+        fitlered_words = [word for word in words if word.lower() not in stop_words]
+        preprocessed_sentences.append(" ".join(fitlered_words))
+    
+    # Calculating the frequency of words
+    flat_preprocessed_words = [word for sentence in preprocessed_sentences for word in sentence]
+    word_freq = FreqDist(flat_preprocessed_words)
+    
+    # Score the sentences based on word frequency
+    sentence_scores = {}
+    for i, sentence in enumerate(preprocessed_sentences):
+        for word in sentence:
+            if word in word_freq:
+                if i in sentence_scores:
+                    sentence_scores[i] += word_freq[word]
+                else:
+                    sentence_scores[i] = word_freq[word]
+    
+    # Generate summary
+    summary_sentences = []
+    if sentence_scores:
+        sorted_scores = sorted(sentence_scores.items(), key=lambda x: x[1], reverse=True)
+        top_sentences = sorted_scores[:3]
+        for index, _ in top_sentences:
+            summary_sentences.append(sentences[index])
+
+    summary = " ".join(summary_sentences)
+
+    summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
+    db.session.add(summarized_comment)
+    db.session.commit()
+
     # Saving sentiment analysis results to Labeled_Comments table in the database
+    positive_count = 0
+    negative_count = 0
+    neutral_count = 0
+    
     for comment_obj, sentiment in zip(comment_objects, sentiments):
         new_labeled_comment = LabeledComments(
             sentiment=sentiment['label'],
@@ -367,6 +424,29 @@ def analyze():
             user_id=current_user.id
         )
         db.session.add(new_labeled_comment)
+
+        # Counting the sentiments
+        if sentiment['label'] == 'Positive':
+            positive_count += 1
+        elif sentiment['label'] == 'Negative':
+            negative_count += 1
+        else:
+            neutral_count += 1
+
     db.session.commit()
 
+    # Saving the counts to the sentiment_counter table
+    sentiment_counter = SentimentCounter(
+        user_id=current_user.id,
+        url_id=new_youtube_url.id,
+        positive=positive_count,
+        negative=negative_count,
+        neutral=neutral_count
+    )
+    db.session.add(sentiment_counter)
+    db.session.commit()
+
+    youtube_url_id = new_youtube_url.id
+
+# GETTING BUILD ERROR HERE, "youtube_url_id" is not defined
     return redirect(url_for('views.results'))

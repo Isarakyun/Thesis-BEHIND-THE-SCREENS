@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" class="sm:scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../../static/css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/custom-scrollbar.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <title>{% block title %}Behind the Screens{% endblock %}</title> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .hidden {
+            display: none;
+        }
+        .video-title {
+            display: inline-block;
+            max-width: 100%; /* Adjust as needed */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    {% include 'sidebar.html' %}
+</div>
+<main class="w-[calc(100%-256px)] ml-64 bg-slate-100 dark:bg-[#181818] min-h-screen transition-width duration-300 ease-in-out" id="content">
+    {% block content %}{% endblock %}
+</main>
+
+
+<script>
+    module.exports = {
+  theme: {
+    extend: {
+      placeholderColor: {
+        'gray': '#404040',
+      }
+    }
+  },
+  variants: {
+    extend: {
+      placeholderColor: ['responsive', 'dark', 'focus', 'hover', 'active'],
+    }
+  },
+  plugins: [],
+}
+</script>
+<script>
+    const menuToggleButton = document.getElementById('menuToggleButton');
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    menuToggleButton.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+        content.classList.toggle('w-full');
+        content.classList.toggle('ml-64');
+    });
+</script>
+
+<script>
+    document.getElementById('dropdownButton').addEventListener('click', function() {
+        var dropdownMenu = document.getElementById('dropdownMenu');
+        dropdownMenu.classList.toggle('hidden');
+    });
+    
+    window.addEventListener('click', function(e) {
+        var dropdownMenu = document.getElementById('dropdownMenu');
+        if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+    </script>
+
+</body>
+</html>
+
