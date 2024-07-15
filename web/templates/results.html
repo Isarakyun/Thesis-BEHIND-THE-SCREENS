@@ -19,6 +19,7 @@
         <th class="px-2 py-1">Comments Summary of " [VIDEO TITLE] "</th>
       </tr>
     </thead>
+    <!-- Values are from Summarized_comments table in the database, summary column, url_id = id (youtube_url id) -->
     <tbody class="text-gray-900 dark:text-white text-sm">
       <tr>
         <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
@@ -29,29 +30,65 @@
    
 <!-- TABLE FOR COMMENTS -->
 <div class="mt-5 pt-5 flex justify-center">
-  <table id="labeled-comments" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
+  <table id="labeled-comments" class="table-auto ml-[50px] mr-[50px] mt-4">
     <thead class="text-white">
       <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-        <th class="px-2 py-1">Comments</th>
+        <th class="px-4 py-1">Comments</th>
         <th class="px-2 py-1">Sentiments</th>
       </tr>
     </thead>
-    <tbody class="text-gray-900 dark:text-white text-sm">
+    <tbody class="text-center text-gray-900 dark:text-white text-sm">
       <tr>
-        <td class="px-2 py-2">[SUMMARY HERE: Example:]</td>
-        <td class="px-2 py-2">Positive</td>
-      </tr>
-      <tr>
+        <!-- Values are from Comments table, Column: Comments-->
         <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
-        <td class="px-2 py-2">Positive</td>
-      </tr>
-      <tr>
-        <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
+        <!-- Values are from labeled_comments table, Column: sentiment, comments_id = (comments)id -->
         <td class="px-2 py-2">Positive</td>
       </tr>
     </tbody>
   </table>
 </div>
+<div id="pagination-controls" class="flex justify-center mt-4"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const rowsPerPage = 5;
+    const table = document.getElementById('labeled-comments');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const paginationControls = document.getElementById('pagination-controls');
+    let currentPage = 1;
+
+    function renderTable() {
+      tbody.innerHTML = '';
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedRows = rows.slice(start, end);
+      paginatedRows.forEach(row => tbody.appendChild(row));
+    }
+
+    function renderPaginationControls() {
+      paginationControls.innerHTML = '';
+      const totalPages = Math.ceil(rows.length / rowsPerPage);
+      for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement('button');
+        button.textContent = i;
+        button.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (i === currentPage) {
+          button.classList.add('font-bold');
+        }
+        button.addEventListener('click', () => {
+          currentPage = i;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(button);
+      }
+    }
+
+    renderTable();
+    renderPaginationControls();
+  });
+</script>
 
 <div class="flex justify-center mb-5 space-x-5 items-center">
   <!-- Table for Word Count -->
@@ -64,6 +101,7 @@
           <th class="px-2 py-1">Sentiment</th>
         </tr>
       </thead>
+      <!-- Values are from frequent_words table. Columns: word, count, sentiment, url_id = id (youtube_url id) -->
       <tbody class="text-gray-900 dark:text-white">
         <tr>
           <td class="px-2 py-1">Omaera no koto</td>
@@ -95,7 +133,7 @@
 </div>
 
 </div>
-
+<!-- Values are from sentiment_counter table. Columns: positive, negative, neutral, url_id = id (youtube_url table) -->
   <script>
     const ctx = document.getElementById('pieChart').getContext('2d');
     const pieChart = new Chart(ctx, {
@@ -133,11 +171,11 @@
   <div class="pb-8">
     <div class="flex justify-center">
       <div class="mt-[20px] ml-[50px] mr-4">
-        <img class="w-full" src="./static/Lowro_ (twitter).png">
+        <img class="w-full rounded" src="./static/Lowro_ (twitter).png">
         <p class="text-black dark:text-white text-center mt-2">Positive</p>
       </div>
       <div class="mt-[20px] ml-4 mr-[50px]">
-        <img class="w-full" src="./static/Lowro_ (twitter).png">
+        <img class="w-full rounded" src="./static/Lowro_ (twitter).png">
         <p class="text-black dark:text-white text-center mt-2">Negative</p>
       </div>
     </div>
