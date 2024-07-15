@@ -1,2 +1,2 @@
-# Python Flask WEBSITE
- practice
+# BEHIND THE SCREENS
+ BSCS-3A CS-79 Thesis Project

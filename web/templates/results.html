@@ -2,7 +2,7 @@
 
 {% block content %}
 <div>
-<div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center">
+<div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
     <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
         <i class="ri-menu-line cursor-pointer"></i>
     </button>
@@ -11,51 +11,89 @@
     </div>       
 </div>
 
-<div class="flex ml-[112px] mb-5 space-x-5 items-center">
-  <!-- Table -->
-  <div>
-    <table id="frequent-words" class="table-auto border-collapse border text-center text-sm w-full">
+<!-- SUMMARY -->
+<div class="mt-5 pt-5 flex justify-center">
+  <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
+    <thead class="text-white">
+      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <th class="px-2 py-1">Comments Summary of " [VIDEO TITLE] "</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-900 dark:text-white text-sm">
+      <tr>
+        <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>    
+   
+<!-- TABLE FOR COMMENTS -->
+<div class="mt-5 pt-5 flex justify-center">
+  <table id="labeled-comments" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
+    <thead class="text-white">
+      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <th class="px-2 py-1">Comments</th>
+        <th class="px-2 py-1">Sentiments</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-900 dark:text-white text-sm">
+      <tr>
+        <td class="px-2 py-2">[SUMMARY HERE: Example:]</td>
+        <td class="px-2 py-2">Positive</td>
+      </tr>
+      <tr>
+        <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
+        <td class="px-2 py-2">Positive</td>
+      </tr>
+      <tr>
+        <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
+        <td class="px-2 py-2">Positive</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="flex justify-center mb-5 space-x-5 items-center">
+  <!-- Table for Word Count -->
+  <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
+    <table id="frequent-words" class="table-auto text-center text-sm w-full">
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700">
-          <th class="border border-red-600 dark:border-slate-700 px-2 py-1">Word</th>
-          <th class="border border-red-600 dark:border-slate-700 px-2 py-1">Word Count</th>
-          <th class="border border-red-600 dark:border-slate-700 px-2 py-1">Sentiment</th>
+          <th class="px-2 py-1">Word</th>
+          <th class="px-2 py-1">Count</th>
+          <th class="px-2 py-1">Sentiment</th>
         </tr>
       </thead>
       <tbody class="text-gray-900 dark:text-white">
         <tr>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Wtf</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">500</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Negative</td>
+          <td class="px-2 py-1">Omaera no koto</td>
+          <td class="px-2 py-1">2434</td>
+          <td class="py-1">Positive</td>
         </tr>
         <tr>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Poggers</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">320</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Positive</td>
+          <td class="px-2 py-1">suki dakedo</td>
+          <td class="px-2 py-1">1119</td>
+          <td class="py-1">Positive</td>
         </tr>
         <tr>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Acm</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">100</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Negative</td>
+          <td class="px-2 py-1">Ore</td>
+          <td class="px-2 py-1">500</td>
+          <td class="py-1">Positive</td>
         </tr>
         <tr>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Oks</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">150</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Neutral</td>
-        </tr>
-        <tr>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Baduy</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">150</td>
-          <td class="border border-red-600 dark:border-slate-700 px-2 py-1">Negative</td>
+          <td class="px-2 py-1">hosuto dakara</td>
+          <td class="px-2 py-1">418</td>
+          <td class="py-1">Positive</td>
         </tr>
       </tbody>
     </table>
   </div>
-  
-  <!-- Pie Chart -->
-  <div>
-    <canvas id="pieChart" width="350px" height="350px"></canvas>
-  </div>
+
+<!-- Pie Chart -->
+<div class="mt-[20px] ml-4 mr-[50px]">
+  <canvas id="pieChart" width="350px" height="350px"></canvas>
+</div>
+
 </div>
 
   <script>
@@ -88,56 +126,21 @@
       }
     });
   </script>
-        
-        <div>
-            <div class="ml-[112px] mt-4 w-[830px] bg-red-600 dark:bg-slate-700">
-              <a class="text-white font-bold ml-2">Word Cloud</a>
-              </div>
 
-            <div class="flex">
-            <div class="ml-[112px] mt-[20px]">
-              <img class="h-[200px] w-[380px] object-cover" src="image.png">
-              <p class="text-white text-center mt-2">Positive</p>
-            </div>
-            <div class="ml-[66px] mt-[20px]">
-              <img class="h-[200px] w-[380px] object-cover" src="image.png">
-              <p class="text-white text-center mt-2">Negative</p>
-            </div>
-            </div>
-        </div>
-
-        <!-- Analysis -->
-          <div>
-          <div class="ml-[112px] mt-4 w-[830px] bg-red-600 dark:bg-slate-700">
-            <a class="text-white font-bold ml-2">Analysis on Hex Haywire...</a>
-            </div>
-            
-          <div class="mt-[5px]">
-            <a class="text-gray-900 dark:text-white ml-[126px] text-sm">The results shows that most comments are...</a>
-          </div>
-          </div>
-      
-        <!-- Comments -->
-        <div>
-          <div class="ml-[112px] mt-4 w-[830px] bg-red-600 dark:bg-slate-700">
-            <a class="text-white font-bold ml-2">Comments</a>
-            <a class="text-white font-bold ml-[562px]">Sentiment</a>
-            </div>
-            
-          <div class="mt-[5px]">
-            <a class="text-gray-900 dark:text-white ml-[126px] text-sm">Thanks for the clip!!</a>
-            <a class="text-gray-900 dark:text-white ml-[530px] text-sm">Positive</a>
-          </div>
-
-          <div class="mt-[5px]">
-            <a class="text-gray-900 dark:text-white ml-[126px] text-sm">The clip is dogshit.</a>
-            <a class="text-gray-900 dark:text-white ml-[534px] text-sm">Negative</a>
-          </div>
-          
-          <div class="mt-[5px]">
-            <a class="text-gray-900 dark:text-white ml-[126px] text-sm">Bobo mo maglaro quit valorant ka na...</a>
-            <a class="text-gray-900 dark:text-white ml-[409px] text-sm">Negative</a>
-          </div>
-        </div>
+  <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
+    <a class="text-white font-bold ml-2">Word Cloud</a>
+  </div>     
+  <div class="pb-8">
+    <div class="flex justify-center">
+      <div class="mt-[20px] ml-[50px] mr-4">
+        <img class="w-full" src="./static/Lowro_ (twitter).png">
+        <p class="text-black dark:text-white text-center mt-2">Positive</p>
+      </div>
+      <div class="mt-[20px] ml-4 mr-[50px]">
+        <img class="w-full" src="./static/Lowro_ (twitter).png">
+        <p class="text-black dark:text-white text-center mt-2">Negative</p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

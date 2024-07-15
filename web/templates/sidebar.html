@@ -24,7 +24,7 @@
 <body>
      <div class="fixed left-0 top-0 w-64 h-full bg-slate-200 dark:bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform" id="sidebar">
         <a class="flex items-center pb-4 border-b border-gray-900 dark:border-b-white">
-            <span class="text-gray-900 text-sm font-bold dark:text-white ml-2">Previous Sessions</span>
+            <span class="text-red-600 text-sm font-bold dark:text-white ml-2">Previous Sessions</span>
         </a>
 
         <!-- Side Nav -->
@@ -32,8 +32,8 @@
             {% for youtubeurl in youtube_urls %}
             <ul class="mt-4">
                 <li class="mb-5 group">
-                    <div class="text-black dark:text-gray-400 text-xs mb-2 ml-4">{{ youtubeurl.created_at|format_date }}</div>
-                    <a class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                    <div class="text-red-600 dark:text-gray-400 text-xs mb-2 ml-4">{{ youtubeurl.created_at|format_date }}</div>
+                    <a href="" class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
                         <span class="text-sm video-title">{{ youtubeurl.video_name }}</span>
                     </a>
                 </li>

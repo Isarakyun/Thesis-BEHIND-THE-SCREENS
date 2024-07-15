@@ -1,7 +1,7 @@
 {% extends "sidebar.html" %} {% block title %}Paste YT Video URL{% endblock %}
 
 {% block content %} 
-<div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center">
+<div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
     <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
         <i class="ri-menu-line cursor-pointer"></i>
     </button>
@@ -10,6 +10,24 @@
     </div>
     </div>        
 </div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+    {% if category == 'error' %}
+    <div class="alert bg-red-500 text-black p-3 text-sm">
+        {{ message }}
+        <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+    </div>
+    {% else %}
+    <div class="alert bg-blue-600 text-white p-3 text-sm">
+        {{ message }}
+        <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+    </div>
+    {% endif %}
+    {% endfor %}
+{% endif %}
+{% endwith %}
 
 <!-- Logo -->
 <div class="flex justify-center">

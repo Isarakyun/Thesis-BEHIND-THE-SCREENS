@@ -327,7 +327,7 @@ def analyze():
         downloader = YoutubeCommentDownloader()
         comments = [comment['text'] for comment in downloader.get_comments(video_id)]
     except Exception as e:
-        flash(f'Failed to extract comments: {str(e)}', category='error')
+        # flash(f'Failed to extract comments: {str(e)}', category='error')
         return redirect(url_for('views.main'))
 
     # Sentiment Analysis
@@ -344,7 +344,7 @@ def analyze():
             sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
             sentiments.append(sentiment)
         except RuntimeError as e:
-            flash(f'Sentiment analysis failed for a comment: {str(e)}', category='warning')
+            # flash(f'Sentiment analysis failed for a comment: {str(e)}', category='warning')
             continue  # Skip this comment and continue with the next one
         except Exception as e:
             flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
