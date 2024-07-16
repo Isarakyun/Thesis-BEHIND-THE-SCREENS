@@ -128,6 +128,10 @@ def mail_sent():
 def password_reset_success():
     return render_template("reset_password_success.html")
 
+@views.route('/useragreement')
+def user_agreement():
+    return render_template('user_agreement.html')
+
 # This route is for testing pages
 @views.route('/test')
 def test():
