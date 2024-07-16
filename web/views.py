@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
 from flask_login import login_required, current_user
+from flask import session
 from . import db
 from sqlalchemy.orm import joinedload
 from .models import User, YoutubeUrl, Comments, SummarizedComments, LabeledComments, FrequentWords, SentimentCounter
@@ -132,8 +133,13 @@ def password_reset_success():
 def user_agreement():
     return render_template('user_agreement.html')
 
+@views.route('/about-us')
+def about_us():
+    return render_template('about_us.html', user=current_user)
+
 # This route is for testing pages
 @views.route('/test')
 def test():
-    # use test.html to test frontend
-    return render_template('test.html')
+    # Assuming you have a way to get the user from the session or some other method
+    user = session.get('user')  # Retrieve the user object from the session
+    return render_template('test.html', user=user)
