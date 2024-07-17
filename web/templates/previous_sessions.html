@@ -23,13 +23,11 @@
     <tbody class="text-gray-900 dark:text-white text-sm">
       <tr>
         <td class="px-2 py-2">{{ summary }}</td>
-        <!-- <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td> -->
       </tr>
     </tbody>
   </table>
 </div>    
   
-<!-- TO DO -->
 <!-- TABLE FOR COMMENTS -->
 <div class="mt-5 pt-5 flex justify-center">
   <table id="labeled-comments" class="table-auto ml-[50px] mr-[50px] mt-4">
@@ -40,11 +38,12 @@
       </tr>
     </thead>
     <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      {% for labeled in sentiment_analysis %}
       <tr>
-        <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
-        <td class="px-2 py-2">Positive</td>
+        <td class="px-2 py-2">{{ labeled.comment }}</td>
+        <td class="px-2 py-2">{{ labeled.sentiment }}</td>
       </tr>
-      
+      {% endfor %}
     </tbody>
   </table>
 </div>
@@ -91,7 +90,6 @@
   });
 </script>
 
-<!-- TO DO -->
 <div class="flex justify-center mb-5 space-x-5 items-center">
   <!-- Table for Word Count -->
   <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
@@ -103,28 +101,14 @@
           <th class="px-2 py-1">Sentiment</th>
         </tr>
       </thead>
-      <!-- Values are from frequent_words table. Columns: word, count, sentiment, url_id = id (youtube_url id) -->
       <tbody class="text-gray-900 dark:text-white">
+        {% for word in frequent_words %}
         <tr>
-          <td class="px-2 py-1">Omaera no koto</td>
-          <td class="px-2 py-1">2434</td>
-          <td class="py-1">Positive</td>
+          <td class="px-2 py-1">{{ word.word }}</td>
+          <td class="px-2 py-1">{{ word.count }}</td>
+          <td class="py-1">{{ word.sentiment }}</td>
         </tr>
-        <tr>
-          <td class="px-2 py-1">suki dakedo</td>
-          <td class="px-2 py-1">1119</td>
-          <td class="py-1">Positive</td>
-        </tr>
-        <tr>
-          <td class="px-2 py-1">Ore</td>
-          <td class="px-2 py-1">500</td>
-          <td class="py-1">Positive</td>
-        </tr>
-        <tr>
-          <td class="px-2 py-1">hosuto dakara</td>
-          <td class="px-2 py-1">418</td>
-          <td class="py-1">Positive</td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>

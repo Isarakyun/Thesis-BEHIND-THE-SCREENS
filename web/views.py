@@ -82,10 +82,31 @@ def sessions(youtube_url_id):
         summary_text = 'No summary found'
 
     youtubeurl = get_youtube_url_by_id(youtube_url_id)
-    comments = session.get('comments')
-    sentiments= session.get('sentiments')
 
-    return render_template("previous_sessions.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, comments=comments, sentiments=sentiments, count=count)
+    comments_sentiment = db.session.query(Comments, LabeledComments).join(
+        LabeledComments, Comments.id == LabeledComments.comments_id
+    ).filter(
+        Comments.url_id == youtube_url_id,
+        Comments.user_id == user_id,
+        LabeledComments.url_id == youtube_url_id,
+        LabeledComments.user_id == user_id
+    ).all()
+    
+    # Process the combined data if needed
+    sentiment_analysis = [
+        {
+            'comment': comment.comment,
+            'comment_id': comment.id,
+            'sentiment': labeled_comment.sentiment,
+            'url_id': comment.url_id,
+            'user_id': comment.user_id
+        }
+        for comment, labeled_comment in comments_sentiment
+    ]
+    
+    frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtube_url_id).order_by(FrequentWords.url_id.desc()).all()
+
+    return render_template("previous_sessions.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, count=count, frequent_words=frequent_words, sentiment_analysis=sentiment_analysis)
 
 @views.route('/settings')
 @login_required

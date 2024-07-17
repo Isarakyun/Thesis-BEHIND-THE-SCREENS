@@ -15,7 +15,7 @@ CREATE TABLE user (
 CREATE TABLE youtube_url (
     id INT AUTO_INCREMENT PRIMARY KEY,
     url VARCHAR(150) NOT NULL,
-    video_name VARCHAR(150) NOT NULL,
+    video_name VARCHAR(500) NOT NULL,
     user_id INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user(id)
@@ -23,7 +23,7 @@ CREATE TABLE youtube_url (
 
 CREATE TABLE comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    comment VARCHAR(150) NOT NULL,
+    comment VARCHAR(30000) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id),
@@ -33,7 +33,7 @@ CREATE TABLE comments (
 CREATE TABLE labeled_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     comments_id INT NOT NULL,
-    sentiment VARCHAR(150) NOT NULL,
+    sentiment VARCHAR(20) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (comments_id) REFERENCES comments(id),
@@ -54,7 +54,7 @@ CREATE TABLE frequent_words (
     id INT AUTO_INCREMENT PRIMARY KEY,
     word VARCHAR(150) NOT NULL,
     count INT NOT NULL,
-    sentiment VARCHAR(150) NOT NULL,
+    sentiment VARCHAR(20) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id),

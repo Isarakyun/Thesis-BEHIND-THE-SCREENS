@@ -12,16 +12,51 @@ import re
 from youtube_comment_downloader import YoutubeCommentDownloader
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.stem import WordNetLemmatizer
 from nltk.probability import FreqDist
+from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 from textblob import TextBlob
+from transformers import AutoTokenizer
+from transformers import AutoModelForSequenceClassification
+from collections import Counter 
 
 auth = Blueprint('auth', __name__)
-# app = Flask(__name__)
-# app.config.from_pyfile('config.cfg')
+
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
-sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
+MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
+sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
+tokenizer = AutoTokenizer.from_pretrained(MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+stop_words = set(stopwords.words('english'))
+lemmatizer = WordNetLemmatizer()
+sia = SentimentIntensityAnalyzer()
+
+def clean_text(text):
+    # Remove special characters
+    text = re.sub(r'\W', ' ', text)
+    # Remove single characters
+    text = re.sub(r'\s+[a-zA-Z]\s+', ' ', text)
+    # Remove single characters from the start
+    text = re.sub(r'\^[a-zA-Z]\s+', ' ', text) 
+    # Substitute multiple spaces with single space
+    text = re.sub(r'\s+', ' ', text, flags=re.I)
+    # Remove prefixed 'b'
+    text = re.sub(r'^b\s+', '', text)
+    # Remove numbers
+    text = re.sub(r'\d', '', text)
+    # Convert to lowercase
+    text = text.lower()
+    # Split into words
+    words = text.split()
+    # Filter out short words and stopwords
+    words = [word for word in words if len(word) > 3 and word not in stop_words]
+    # Lemmatize the words
+    words = [lemmatizer.lemmatize(word) for word in words]
+    # Join the words back together
+    text = ' '.join(words)
+    return text
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -331,14 +366,17 @@ def analyze():
     try:
         video_id = youtube_url.split('v=')[1]
         downloader = YoutubeCommentDownloader()
-        comments = [comment['text'] for comment in downloader.get_comments(video_id)]
+        comments = downloader.get_comments(video_id)
+        
+        # Manually filter out replies
+        top_level_comments = [comment['text'] for comment in comments if not comment.get('parent')]
         
         # Regular expression to match timestamps (e.g., "00:00", "1:23", "12:34:56") anywhere in the text
         timestamp_pattern = re.compile(r'\b\d{1,2}:\d{2}(?::\d{2})?\b')
         
         # Filter out comments that contain timestamps
-        filtered_comments = [comment for comment in comments if not timestamp_pattern.search(comment)]
-            
+        filtered_comments = [comment for comment in top_level_comments if not timestamp_pattern.search(comment)]
+
     except Exception as e:
         # flash(f'Failed to extract comments: {str(e)}', category='error')
         return redirect(url_for('views.main'))
@@ -356,8 +394,7 @@ def analyze():
             sentiment = sentiment_pipeline([comment])[0]
             sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
             sentiments.append(sentiment)
-        except RuntimeError as e:
-            # flash(f'Sentiment analysis failed for a comment: {str(e)}', category='warning')
+        except RuntimeError as e: # This occurs because of the length of the comment. RoBERTa can only handle a maximum of 512 tokens.
             continue  # Skip this comment and continue with the next one
         except Exception as e:
             flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
@@ -366,7 +403,6 @@ def analyze():
     # Saving comments to Comments table in the database
     comment_objects = []
     all_comments_text = " ".join(filtered_comments)
-    sentences = sent_tokenize(all_comments_text)
 
     for comment in filtered_comments:
         new_comment = Comments(comment=comment, url_id=new_youtube_url.id, user_id=current_user.id)
@@ -374,9 +410,28 @@ def analyze():
         comment_objects.append(new_comment)
     db.session.commit()
 
+    # Saving frequent words to FrequentWords table in the database
+    cleaned_comments = clean_text(all_comments_text)
+    word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
+    most_common_words = word_count.most_common(5)
+    frequent_words_objects = []
+    for word, count in most_common_words:
+        word_sentiment_scores = sia.polarity_scores(word)
+        compound_score = word_sentiment_scores['compound']
+        if compound_score >= 0.05:
+            word_sentiment_label = "Positive"
+        elif compound_score <= -0.05:
+            word_sentiment_label = "Negative"
+        else:
+            word_sentiment_label = "Neutral"
+        new_frequent_word = FrequentWords(word=word, count=count, sentiment=word_sentiment_label, url_id=new_youtube_url.id, user_id=current_user.id)
+        db.session.add(new_frequent_word)
+        frequent_words_objects.append(new_frequent_word)
+    db.session.commit()
+
     # Saving summary to summarized_comments table in the database
     # Pre-processing the comments
-    stop_words = set(stopwords.words('english'))
+    sentences = sent_tokenize(all_comments_text)
     preprocessed_sentences = []
     for sentence in sentences:
         words = word_tokenize(sentence)
@@ -446,7 +501,6 @@ def analyze():
     db.session.add(sentiment_counter)
     db.session.commit()
 
-    youtube_url_id = new_youtube_url.id
+    # TO-DO: WORD CLOUD
 
-# GETTING BUILD ERROR HERE, "youtube_url_id" is not defined
     return redirect(url_for('views.results'))

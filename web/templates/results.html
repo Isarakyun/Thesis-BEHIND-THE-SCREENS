@@ -129,13 +129,14 @@
     </table>
   </div>
 
+<!-- TO DO: IT DOESNT APPEAR AFTER /analyze BUT IT APPEARS FOR SESSIONS.
+ probably because of extracting urlId from the url, it doesnt have one! -->
 <!-- Pie Chart -->
 <div class="mt-[20px] ml-4 mr-[50px]">
   <canvas id="pieChart" width="350px" height="350px"></canvas>
 </div>
 
 </div>
-<!-- Values are from sentiment_counter table. Columns: positive, negative, neutral, url_id = id (youtube_url table) -->
   <script>
     async function fetchSentimentData(urlId) {
       const response = await fetch(`/api/sentiment/${urlId}`);
@@ -152,7 +153,7 @@
         datasets: [{
           label: 'Sentiment Analysis',
           data: [data.negative, data.positive, data.neutral],
-          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'], // Tailwind colors
+          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
         }]
       },
       options: {
