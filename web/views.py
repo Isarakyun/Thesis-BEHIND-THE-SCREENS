@@ -54,31 +54,24 @@ def main():
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
     return render_template("main.html", user=current_user, youtube_urls=youtube_urls)
 
-# @views.route('/results')
-# @login_required
-# def results():
-#     user_id = current_user.id
-#     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
-#     comments = Comments.query.filter_by(user_id=user_id)
-#     summarized_comments = SummarizedComments.query.filter_by(user_id=user_id)
-#     labeled_comments = LabeledComments.query.filter_by(user_id=user_id)
-#     frequent_words = FrequentWords.query.filter_by(user_id=user_id)
-#     sentiment_counter = SentimentCounter.query.filter_by(user_id=user_id)
-#     return render_template("results.html", user=current_user, youtube_urls=youtube_urls, comments=comments, summarized_comments=summarized_comments, labeled_comments=labeled_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter)
-
-# @views.route('/results/<int:user_id>/<int:url_id>')
-# def results(user_id, url_id):
-#     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
-#     comments = db.session.query(Comments, LabeledComments.sentiment).join(LabeledComments, Comments.id == LabeledComments.comments_id).filter(Comments.user_id == user_id, Comments.url_id == url_id).all()
-#     summarized_comments = SummarizedComments.query.filter_by(user_id=user_id)
-#     frequent_words = FrequentWords.query.filter_by(user_id=user_id)
-#     sentiment_counter = SentimentCounter.query.filter_by(user_id=user_id)
-
-#     return render_template("results.html", user=current_user, youtube_urls=youtube_urls, comments=comments, summarized_comments=summarized_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter)
-
-@views.route('/results/<int:youtube_url_id>')
+@views.route('/results')
 @login_required
-def results(youtube_url_id):
+def results():
+    user_id = current_user.id
+    youtubeurl = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).first()
+    youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
+    # youtubeurl = YoutubeUrl.query.filter_by(user_id=user_id)
+    comments = Comments.query.filter_by(user_id=user_id)
+    summarized_comments = SummarizedComments.query.filter_by(url_id=youtubeurl.id).order_by(SummarizedComments.url_id.desc()).first()
+    labeled_comments = LabeledComments.query.filter_by(user_id=user_id).order_by(LabeledComments.url_id.desc()).first()
+    frequent_words = FrequentWords.query.filter_by(user_id=user_id).order_by(FrequentWords.url_id.desc()).first()
+    sentiment_counter = SentimentCounter.query.filter_by(url_id=youtubeurl.id).order_by(SentimentCounter.url_id.desc()).first()
+
+    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, comments=comments, summarized_comments=summarized_comments, labeled_comments=labeled_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter)
+
+@views.route('/sessions/<int:youtube_url_id>')
+@login_required
+def sessions(youtube_url_id):
     user_id = current_user.id
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
     summary = db.session.query(SummarizedComments).filter_by(url_id=youtube_url_id).first()
@@ -92,7 +85,7 @@ def results(youtube_url_id):
     comments = session.get('comments')
     sentiments= session.get('sentiments')
 
-    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, comments=comments, sentiments=sentiments, count=count)
+    return render_template("previous_sessions.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, comments=comments, sentiments=sentiments, count=count)
 
 @views.route('/settings')
 @login_required
