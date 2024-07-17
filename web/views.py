@@ -131,7 +131,7 @@ def password_reset_success():
 
 @views.route('/useragreement')
 def user_agreement():
-    return render_template('user_agreement.html')
+    return render_template('user_agreement.html', user=current_user)
 
 @views.route('/about-us')
 def about_us():
