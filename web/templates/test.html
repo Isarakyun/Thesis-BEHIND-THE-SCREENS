@@ -1,138 +1,184 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <title>Account Settings</title>
     <link href="../static/css/styles.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <title>Forgot Password</title>
-<style>
-    @media (prefers-color-scheme: dark) {
+    <style>
         body {
-            background-color: #181818;
+            background-color: white;
+            color: black;
+            transition: background-color 0.3s ease, color 0.3s ease; /* Adding transition for smooth color change */
         }
-        .bg-gray-100 {
-            background-color: #181818;
+        .bg-primary {
+            background-color: #f0f0f0; /* light gray for containers */
         }
-        .text-black {
-            color: #fff;
+        .bg-secondary {
+            background-color: #e0e0e0; /* slightly darker gray */
         }
-        .bg-white {
-            background-color: #181818;
+        .text-primary {
+            color: black;
         }
-        .text-gray-700 {
+        .text-secondary {
+            color: gray;
+        }
+        .button-primary {
+            background-color: #d0d0d0; /* button color */
+            color: black;
+        }
+        .profile-photo {
+            background-color: #d0d0d0; /* light mode background for profile photo */
+        }
+        .pass-container {
+            background-color: white; /* light mode background for password container */
+            color: black; /* text color in light mode */
+        }
+        .delete-account,
+        .link-account2 {
+            background-color: white; /* light mode background for delete and link account */
+            color: black; /* text color in light mode */
+        }
+        /* Dark mode specific styles */
+        body#body.dark-mode {
+    background-color: #1a202c;
+    color: white;
+}
+        .dark-mode .bg-primary {
+            background-color: #2d3748;
+        }
+        .dark-mode .bg-secondary {
+            background-color: #4a5568;
+        }
+        .dark-mode .text-primary {
             color: white;
         }
-        .text-gray-600 {
-            color: #ccc;
+        .dark-mode .text-secondary {
+            color: #a0aec0;
         }
-        .text-gray-500 {
+        .dark-mode .button-primary {
+            background-color: #4a5568;
             color: white;
         }
-        .border-gray-200 {
-            border-color: #555;
+        .dark-mode .profile-photo {
+            background-color: #4a5568; /* dark mode background for profile photo */
         }
-        .focus:border-gray-200 {
-            border-color: #555;
+        .dark-mode .email-container,
+        .dark-mode .link-google,
+        .dark-mode .delete-account {
+            background-color: #1a202c;
+            color: white;
         }
-        .focus:ring-gray-300 {
-            box-shadow: 0 0 0 2px #555;
+        .dark-mode .pass-container {
+            background-color: #1a202c;
+            color: white;
         }
-        .hover\:bg-gray-50 {
-            background-color: #121212;
+        .dark-mode .text-gray-800 {
+            color: #d8d8d8; /* Adjust to your desired gray shade */
         }
-        .bg-black {
-            background-color: #880808;
+        .dark-mode .delete-account2 {
+            background-color: #1a202c; /* dark mode background for delete account */
+            color: white; /* text color in dark mode */
         }
-        .hover:bg-gray-800 {
-            background-color: #7c1010;
+        .dark-mode .link-account2 {
+            background-color: #1a202c; /* dark mode background for link account */
+            color: white; /* text color in dark mode */
         }
-        .focus:bg-black {
-            background-color: #121212;
-        }
-        .focus:ring-gray-900 {
-            box-shadow: 0 0 0 2px #2C2C2C;
-        }
-
-        /* Adjust Reset button to match Login link */
-        .bg-blue-500 {
-            background-color: #7c1010; /* Red color */
-        }
-        .bg-blue-500:hover,
-        .bg-blue-600 {
-            background-color: #121212; /* Darker red on hover or focus */
-        }
-        .text-white {
-            color: #fff; /* White text color */
-        }
-    }
-</style>
-
-    
+    </style>
 </head>
-   <body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-        {% if category == 'error' %}
-        <div class="alert bg-red-500 text-black p-3 text-sm">
-            {{ message }}
-            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-        {% else %}
-        <div class="alert bg-blue-600 text-white p-3 text-sm">
-            {{ message }}
-            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-        {% endif %}
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
-   <div class="flex h-screen">
-    <!-- Left Pane -->
-    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-200 text-black">
-      <div class="max-w-md text-center">
-        <a href="/"><img src="./static/BTS-logo-with-name.png" width="524.67004" height="531.39694" class="w-full" viewBox="0 0 524.67004 531.39694"></a>
-        </div>
-    </div>
+<body id="body" class="flex justify-center items-center min-h-screen">
 
-    <!-- Right Pane -->
-    <div class="w-full bg-slate-300 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
-      <main id="content" role="main" class="w-full max-w-md mx-auto p-6">
-        <div class="mt-7 bg-transparent rounded-xl shadw-lg dark:bg-transparent border-2 border-transparent">
-          <div class="p-4 sm:p-7">
-            <div class="text-center">
-                <h1 class="text-3xl font-semibold mb-6 text-black text-center">Forgot password?</h1>
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    Remember your password?
-                    <a class="text-blue-600 decoration-2 hover:underline font-medium" href="/login"style="color: #7c1010; font-weight: bold;">
-                        Login here
-                    </a>
-                    
-                    
-                </p>
-            </div>
-
-            <div class="mt-5">
-                <form action="/forgot" method="POST">
-                <div class="grid gap-y-4">
-                  <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <div class="relative">
-                      <input type="email" id="email" name="email" class="mt-1 py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm" required aria-describedby="email-error">
+    <div class="w-full max-w-4xl mx-auto p-6 bg-primary rounded-lg shadow-md flex gap-8" style="width: 70%; height: 70%;">
+        <!-- Left Column -->
+        <div class="w-2/3">
+            <h1 class="text-2xl font-bold mb-6 text-primary">Account Settings</h1>
+            <!-- Account Details -->
+            <div class="bg-secondary p-4 rounded-lg mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-primary">Account Details</h2>
+                <div class="mb-4">
+                    <label for="email" class="block mb-1 text-secondary">Email</label>
+                    <div id="email-container" class="email-container light-mode flex items-center justify-between p-2 rounded bg-gray-100">
+                        <span id="email" class="text-gray-800">example@gmail.com</span>
+                        <button class="p-1">
+                            <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V14h3.828l7.586-7.586a2 2 0 000-2.828zM6 13v-2.172l9-9L17.172 4 8.172 13H6zM4 16h8v2H4v-2z"/>
+                            </svg>
+                        </button>
                     </div>
-                    <p class="hidden text-xs text-red-600 mt-2" id="email-error">Please include a valid email address so we can get back to you</p>
-                  </div>
-                  <button type="submit" class="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Reset Password</button>
                 </div>
-                </form> 
+                <div class="mb-4">
+                    <label for="password" class="block mb-1 text-secondary">Password</label>
+                    <div id="password-container" class="pass-container light-mode flex items-center justify-between p-2 rounded bg-gray-100">
+                        <span id="password" class="text-gray-800">********</span>
+                        <button class="p-1">
+                            <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V14h3.828l7.586-7.586a2 2 0 000-2.828zM6 13v-2.172l9-9L17.172 4 8.172 13H6zM4 16h8v2H4v-2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <a href="#" class="text-blue-400 hover:underline">Log out of all devices</a>
+                </div>
             </div>
-          </div>
-        </div>
+            <!-- Settings -->
+            <div class="bg-secondary p-4 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4 text-primary">Settings</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-primary">Enable dark mode</span>
+                    <input type="checkbox" class="toggle-checkbox" id="dark-mode">
+                </div>
+                <p class="mb-4 text-secondary">To manage parental controls for profiles on your account, visit Edit Profiles and select a Profile.</p>
+                <a href="#" class="flex items-center justify-between p-2 rounded mb-4 link-account2">
+                    <span class="">Link Account to Google</span>
+                    <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 10h6v2H7v-2z"/>
+                    </svg>
+                </a>
+                <a href="#" class="flex items-center justify-between p-2 rounded delete-account">
+                    <span class="">Delete Account</span>
+                    <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 10h6v2H7v-2z"/>
+                    </svg>
+                </a>
+                
+            </div>
+            <!-- Save Changes Button -->
+            <div class="mt-6 text-center">
+                <button class="button-primary px-4 py-2 rounded-lg">Save Changes</button>
+            </div>
 
-      </main>
+            <div class="mt-4 text-center text-secondary">
+                To manage or delete your account, please visit our <a href="#" class="text-blue-400 hover:underline">Account Management FAQ</a>.
+            </div>
+        </div>
+        <!-- Right Column -->
+        <div class="w-1/3 flex flex-col items-center">
+            <h2 class="text-xl font-semibold mb-4 text-primary">Profile Photo</h2>
+            <div class="profile-photo w-32 h-32 mx-auto mb-4 rounded-full"></div>
+            <button class="button-primary px-4 py-2 rounded-lg mb-4">Change photo</button>
+            <button class="button-primary px-4 py-2 rounded-lg">Remove photo</button>
+        </div>
     </div>
-  </div>
+
+    <script>
+        const body = document.body;
+        const darkModeToggle = document.getElementById('dark-mode');
+    
+        // Initial check for the prefers-color-scheme setting
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            darkModeToggle.checked = true;
+            body.classList.add('dark-mode');
+        }
+    
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+        });
+    </script>
+
 </body>
 </html>
