@@ -9,6 +9,7 @@
         body {
             background-color: white;
             color: black;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .bg-primary {
             background-color: #f0f0f0; /* light gray for containers */
@@ -26,75 +27,68 @@
             background-color: #d0d0d0; /* button color */
             color: black;
         }
-        .profile-photo.light-mode {
+        .profile-photo {
             background-color: #d0d0d0; /* light mode background for profile photo */
         }
-        .pass-container.light-mode {
+        .pass-container {
             background-color: white; /* light mode background for password container */
             color: black; /* text color in light mode */
         }
-        .delete-account {
-            background-color: white; /* light mode background for delete account */
-            color: black; /* text color in light mode */
-        }
-        .link-account {
-            background-color: white; /* light mode background for link account */
+        .delete-account,
+        .link-account2 {
+            background-color: white; /* light mode background for delete and link account */
             color: black; /* text color in light mode */
         }
         /* Dark mode specific styles */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #1a202c;
-                color: white;
-            }
-            .bg-primary {
-                background-color: #2d3748;
-            }
-            .bg-secondary {
-                background-color: #4a5568;
-            }
-            .text-primary {
-                color: white;
-            }
-            .text-secondary {
-                color: #a0aec0;
-            }
-            .button-primary {
-                background-color: #4a5568;
-                color: white;
-            }
-            .profile-photo.dark-mode {
-                background-color: #4a5568; /* dark mode background for profile photo */
-            }
-            .email-container.dark-mode,
-            .link-google.dark-mode,
-            .delete-account.dark-mode {
-                background-color: #1a202c;
-                color: white;
-            }
-            .pass-container.dark-mode {
-                background-color: #1a202c;
-                color: white;
-            }
-            .email-container.dark-mode .text-gray-800,
-            .pass-container.dark-mode .text-gray-800,
-            .link-google.dark-mode .text-gray-800 {
-                color: #d8d8d8; /* Adjust to your desired gray shade */
-            }
-            .delete-account2 {
-                background-color: #1a202c; /* dark mode background for delete account */
-                color: white; /* text color in dark mode */
-            }
-            .link-account2 {
-                background-color: #1a202c; /* dark mode background for link account */
-                color: white; /* text color in dark mode */
-            }
+        body.dark-mode {
+            background-color: black;
+            color: white;
+        }
+        body.dark-mode .bg-primary {
+            background-color: #2d3748;
+        }
+        body.dark-mode .bg-secondary {
+            background-color: #4a5568;
+        }
+        body.dark-mode .text-primary {
+            color: white;
+        }
+        body.dark-mode .text-secondary {
+            color: #a0aec0;
+        }
+        body.dark-mode .button-primary {
+            background-color: #4a5568;
+            color: white;
+        }
+        body.dark-mode .profile-photo {
+            background-color: #4a5568; /* dark mode background for profile photo */
+        }
+        body.dark-mode .email-container,
+        body.dark-mode .link-google,
+        body.dark-mode .delete-account {
+            background-color: #1a202c;
+            color: white;
+        }
+        body.dark-mode .pass-container {
+            background-color: #1a202c;
+            color: white;
+        }
+        body.dark-mode .text-gray-800 {
+            color: #d8d8d8; /* Adjust to your desired gray shade */
+        }
+        body.dark-mode .delete-account2 {
+            background-color: #1a202c; /* dark mode background for delete account */
+            color: white; /* text color in dark mode */
+        }
+        body.dark-mode .link-account2 {
+            background-color: #1a202c; /* dark mode background for link account */
+            color: white; /* text color in dark mode */
         }
     </style>
 </head>
 <body class="flex justify-center items-center min-h-screen">
 
-    <div class="w-full max-w-4xl mx-auto p-6 bg-primary rounded-lg shadow-md flex gap-8" style="width: 80%; height: 80%;">
+    <div class="w-full max-w-4xl mx-auto p-6 bg-primary rounded-lg shadow-md flex gap-8" style="width: 70%; height: 70%;">
         <!-- Left Column -->
         <div class="w-2/3">
             <h1 class="text-2xl font-bold mb-6 text-primary">Account Settings</h1>
@@ -103,7 +97,7 @@
                 <h2 class="text-xl font-semibold mb-4 text-primary">Account Details</h2>
                 <div class="mb-4">
                     <label for="email" class="block mb-1 text-secondary">Email</label>
-                    <div id="email-container" class="email-container light-mode dark-mode flex items-center justify-between p-2 rounded bg-gray-100">
+                    <div id="email-container" class="email-container light-mode flex items-center justify-between p-2 rounded bg-gray-100">
                         <span id="email" class="text-gray-800">example@gmail.com</span>
                         <button class="p-1">
                             <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
@@ -114,7 +108,7 @@
                 </div>
                 <div class="mb-4">
                     <label for="password" class="block mb-1 text-secondary">Password</label>
-                    <div id="password-container" class="pass-container light-mode dark-mode flex items-center justify-between p-2 rounded bg-gray-100">
+                    <div id="password-container" class="pass-container light-mode flex items-center justify-between p-2 rounded bg-gray-100">
                         <span id="password" class="text-gray-800">********</span>
                         <button class="p-1">
                             <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
@@ -132,16 +126,16 @@
                 <h2 class="text-xl font-semibold mb-4 text-primary">Settings</h2>
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-primary">Enable dark mode</span>
-                    <input type="checkbox" class="toggle-checkbox" id="dark-mode" checked>
+                    <input type="checkbox" class="toggle-checkbox" id="dark-mode">
                 </div>
                 <p class="mb-4 text-secondary">To manage parental controls for profiles on your account, visit Edit Profiles and select a Profile.</p>
-                <a href="#" class="flex items-center justify-between p-2 rounded bg-gray-100 mb-4 link-account link-account2">
+                <a href="#" class="flex items-center justify-between p-2 rounded mb-4 link-account2">
                     <span class="">Link Account to Google</span>
                     <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M7 10h6v2H7v-2z"/>
                     </svg>
                 </a>
-                <a href="#" class="flex items-center justify-between p-2 rounded delete-account delete-account2">
+                <a href="#" class="flex items-center justify-between p-2 rounded delete-account">
                     <span class="">Delete Account</span>
                     <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M7 10h6v2H7v-2z"/>
@@ -161,7 +155,7 @@
         <!-- Right Column -->
         <div class="w-1/3 flex flex-col items-center">
             <h2 class="text-xl font-semibold mb-4 text-primary">Profile Photo</h2>
-            <div class="profile-photo light-mode dark-mode w-32 h-32 mx-auto mb-4 rounded-full"></div>
+            <div class="profile-photo w-32 h-32 mx-auto mb-4 rounded-full"></div>
             <button class="button-primary px-4 py-2 rounded-lg mb-4">Change photo</button>
             <button class="button-primary px-4 py-2 rounded-lg">Remove photo</button>
         </div>
@@ -169,33 +163,19 @@
 
     <script>
         const darkModeToggle = document.getElementById('dark-mode');
-        const emailContainer = document.getElementById('email-container');
-        const passwordContainer = document.getElementById('password-container');
-        const profilePhoto = document.querySelector('.profile-photo');
-        const linkGoogleContainer = document.querySelector('.link-google');
-        const deleteAccountContainer = document.querySelector('.delete-account');
-        
+        const body = document.body;
+
+        // Initial check for the prefers-color-scheme setting
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            darkModeToggle.checked = true;
+            body.classList.add('dark-mode');
+        }
+
         darkModeToggle.addEventListener('change', function() {
             if (this.checked) {
-                document.body.classList.add('dark-mode');
-                emailContainer.classList.remove('light-mode');
-                emailContainer.classList.add('dark-mode');
-                passwordContainer.classList.remove('light-mode');
-                passwordContainer.classList.add('dark-mode');
-                profilePhoto.classList.remove('light-mode');
-                profilePhoto.classList.add('dark-mode');
-                linkGoogleContainer.classList.add('dark-mode');
-                deleteAccountContainer.classList.add('dark-mode');
+                body.classList.add('dark-mode');
             } else {
-                document.body.classList.remove('dark-mode');
-                emailContainer.classList.remove('dark-mode');
-                emailContainer.classList.add('light-mode');
-                passwordContainer.classList.remove('dark-mode');
-                passwordContainer.classList.add('light-mode');
-                profilePhoto.classList.remove('dark-mode');
-                profilePhoto.classList.add('light-mode');
-                linkGoogleContainer.classList.remove('dark-mode');
-                deleteAccountContainer.classList.remove('dark-mode');
+                body.classList.remove('dark-mode');
             }
         });
     </script>
