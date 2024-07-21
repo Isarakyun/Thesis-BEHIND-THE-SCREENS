@@ -2,9 +2,10 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import User, YoutubeUrl, Comments, LabeledComments, SummarizedComments, FrequentWords, SentimentCounter
+from .models import User, YoutubeUrl, Comments, LabeledComments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
+from .analysis import word_cloud, get_summary, extract_comments
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
@@ -19,7 +20,13 @@ from nltk.corpus import stopwords
 from textblob import TextBlob
 from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification
-from collections import Counter 
+from collections import Counter
+from wordcloud import WordCloud, STOPWORDS
+import matplotlib.pyplot as plt
+import os
+from io import BytesIO
+from PIL import Image
+import base64
 
 auth = Blueprint('auth', __name__)
 
@@ -362,24 +369,26 @@ def analyze():
     db.session.add(new_youtube_url)
     db.session.commit()
 
-    # Extracting comments from YouTube video
-    try:
-        video_id = youtube_url.split('v=')[1]
-        downloader = YoutubeCommentDownloader()
-        comments = downloader.get_comments(video_id)
+    # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
+    # try:
+    #     video_id = youtube_url.split('v=')[1]
+    #     downloader = YoutubeCommentDownloader()
+    #     comments = downloader.get_comments(video_id)
         
-        # Manually filter out replies
-        top_level_comments = [comment['text'] for comment in comments if not comment.get('parent')]
+    #     # Manually filter out replies
+    #     top_level_comments = [comment['text'] for comment in comments if 'parent' not in comment]
         
-        # Regular expression to match timestamps (e.g., "00:00", "1:23", "12:34:56") anywhere in the text
-        timestamp_pattern = re.compile(r'\b\d{1,2}:\d{2}(?::\d{2})?\b')
+    #     # Regular expression to match timestamps (e.g., "00:00", "1:23", "12:34:56") anywhere in the text
+    #     timestamp_pattern = re.compile(r'\b\d{1,2}:\d{2}(?::\d{2})?\b')
         
-        # Filter out comments that contain timestamps
-        filtered_comments = [comment for comment in top_level_comments if not timestamp_pattern.search(comment)]
+    #     # Filter out comments that contain timestamps or "@" symbol
+    #     filtered_comments = [comment for comment in top_level_comments if not timestamp_pattern.search(comment) and '@' not in comment]
 
-    except Exception as e:
-        # flash(f'Failed to extract comments: {str(e)}', category='error')
-        return redirect(url_for('views.main'))
+    # except Exception as e:
+    #     # flash(f'Failed to extract comments: {str(e)}', category='error')
+    #     return redirect(url_for('views.main'))
+    
+    filtered_comments = extract_comments(youtube_url)
 
     # Sentiment Analysis
     label_mapping = {
@@ -429,38 +438,8 @@ def analyze():
         frequent_words_objects.append(new_frequent_word)
     db.session.commit()
 
-    # Saving summary to summarized_comments table in the database
-    # Pre-processing the comments
-    sentences = sent_tokenize(all_comments_text)
-    preprocessed_sentences = []
-    for sentence in sentences:
-        words = word_tokenize(sentence)
-        fitlered_words = [word for word in words if word.lower() not in stop_words]
-        preprocessed_sentences.append(" ".join(fitlered_words))
-    
-    # Calculating the frequency of words
-    flat_preprocessed_words = [word for sentence in preprocessed_sentences for word in sentence]
-    word_freq = FreqDist(flat_preprocessed_words)
-    
-    # Score the sentences based on word frequency
-    sentence_scores = {}
-    for i, sentence in enumerate(preprocessed_sentences):
-        for word in sentence:
-            if word in word_freq:
-                if i in sentence_scores:
-                    sentence_scores[i] += word_freq[word]
-                else:
-                    sentence_scores[i] = word_freq[word]
-    
-    # Generate summary
-    summary_sentences = []
-    if sentence_scores:
-        sorted_scores = sorted(sentence_scores.items(), key=lambda x: x[1], reverse=True)
-        top_sentences = sorted_scores[:3]
-        for index, _ in top_sentences:
-            summary_sentences.append(sentences[index])
-
-    summary = " ".join(summary_sentences)
+    # GENERATE SUMMARY
+    summary = get_summary(all_comments_text)
 
     summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
     db.session.add(summarized_comment)
@@ -501,6 +480,31 @@ def analyze():
     db.session.add(sentiment_counter)
     db.session.commit()
 
-    # TO-DO: WORD CLOUD
+    # WORD CLOUD
+    unlabeled_words = word_tokenize(all_comments_text)
+
+    # Generate the positive word cloud
+    positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
+    positive_text = ' '.join(positive_words)
+    positive_img_str = word_cloud(positive_text, 'winter')
+    
+    # Generate the negative word cloud
+    negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
+    negative_text = ' '.join(negative_words)
+    negative_img_str = word_cloud(negative_text, 'hot')
+
+    if positive_img_str and negative_img_str:
+        # Decode the base64 strings back to binary data
+        positive_img_data = base64.b64decode(positive_img_str)
+        negative_img_data = base64.b64decode(negative_img_str)
+        
+        wordcloud_image = WordCloudImage(
+            user_id=current_user.id,
+            url_id=new_youtube_url.id,
+            image_positive_data=positive_img_data,
+            image_negative_data=negative_img_data
+        )
+        db.session.add(wordcloud_image)
+        db.session.commit()
 
     return redirect(url_for('views.results'))

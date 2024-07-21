@@ -3,10 +3,11 @@ from flask_login import login_required, current_user
 from flask import session
 from . import db
 from sqlalchemy.orm import joinedload
-from .models import User, YoutubeUrl, Comments, SummarizedComments, LabeledComments, FrequentWords, SentimentCounter
+from .models import User, YoutubeUrl, Comments, SummarizedComments, LabeledComments, FrequentWords, SentimentCounter, WordCloudImage
 import re
 import sys
 import os
+import base64
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -16,12 +17,6 @@ print(sys.path)  # Debug print to check the system path
 from VADER_model import fetch_youtube_comments, analyze_youtube_comments
 
 views = Blueprint('views', __name__)
-
-# def extract_playlist_id(youtube_url):
-#     match = re.search(r'list=([a-zA-Z0-9_-]+)', youtube_url)
-#     if match:
-#         return match.group(1)
-#     return None
 
 def get_youtube_url_by_id(url_id):
     return db.session.query(YoutubeUrl).filter_by(id=url_id).first()
@@ -60,37 +55,69 @@ def results():
     user_id = current_user.id
     youtubeurl = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).first()
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
-    # youtubeurl = YoutubeUrl.query.filter_by(user_id=user_id)
-    comments = Comments.query.filter_by(user_id=user_id)
+    wordcloud = WordCloudImage.query.filter_by(url_id=youtubeurl.id).first()
     summarized_comments = SummarizedComments.query.filter_by(url_id=youtubeurl.id).order_by(SummarizedComments.url_id.desc()).first()
-    labeled_comments = LabeledComments.query.filter_by(user_id=user_id).order_by(LabeledComments.url_id.desc()).first()
-    frequent_words = FrequentWords.query.filter_by(user_id=user_id).order_by(FrequentWords.url_id.desc()).first()
+    frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtubeurl.id).order_by(FrequentWords.url_id.desc()).all()
     sentiment_counter = SentimentCounter.query.filter_by(url_id=youtubeurl.id).order_by(SentimentCounter.url_id.desc()).first()
+    
+    comments_sentiment = db.session.query(Comments, LabeledComments).join(
+        LabeledComments, Comments.id == LabeledComments.comments_id
+        ).filter(
+            Comments.url_id == youtubeurl.id,
+            Comments.user_id == user_id,
+            LabeledComments.url_id == youtubeurl.id,
+            LabeledComments.user_id == user_id
+        ).all()
+    
+    # Process the combined data if needed
+    sentiment_analysis = [
+        {
+            'comment': comment.comment,
+            'comment_id': comment.id,
+            'sentiment': labeled_comment.sentiment,
+            'url_id': comment.url_id,
+            'user_id': comment.user_id
+        }
+        for comment, labeled_comment in comments_sentiment
+    ]
 
-    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, comments=comments, summarized_comments=summarized_comments, labeled_comments=labeled_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter)
+    # Encode positive word cloud image data in Base64
+    if wordcloud and wordcloud.image_positive_data:
+        image_positive_data_base64 = base64.b64encode(wordcloud.image_positive_data).decode('utf-8')
+    else:
+        image_positive_data_base64 = None
+
+    # Encode negative word cloud image data in Base64
+    if wordcloud and wordcloud.image_negative_data:
+        image_negative_data_base64 = base64.b64encode(wordcloud.image_negative_data).decode('utf-8')
+    else:
+        image_negative_data_base64 = None
+
+    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, sentiment_analysis=sentiment_analysis, summarized_comments=summarized_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter, image_positive_data=image_positive_data_base64, image_negative_data=image_negative_data_base64)
 
 @views.route('/sessions/<int:youtube_url_id>')
 @login_required
 def sessions(youtube_url_id):
     user_id = current_user.id
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
+    youtubeurl = get_youtube_url_by_id(youtube_url_id)
     summary = db.session.query(SummarizedComments).filter_by(url_id=youtube_url_id).first()
     count = db.session.query(SentimentCounter).filter_by(url_id=youtube_url_id).first()
+    wordcloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
+
     if summary:
         summary_text = summary.summary
     else:
         summary_text = 'No summary found'
 
-    youtubeurl = get_youtube_url_by_id(youtube_url_id)
-
     comments_sentiment = db.session.query(Comments, LabeledComments).join(
         LabeledComments, Comments.id == LabeledComments.comments_id
-    ).filter(
-        Comments.url_id == youtube_url_id,
-        Comments.user_id == user_id,
-        LabeledComments.url_id == youtube_url_id,
-        LabeledComments.user_id == user_id
-    ).all()
+        ).filter(
+            Comments.url_id == youtube_url_id,
+            Comments.user_id == user_id,
+            LabeledComments.url_id == youtube_url_id,
+            LabeledComments.user_id == user_id
+        ).all()
     
     # Process the combined data if needed
     sentiment_analysis = [
@@ -105,8 +132,20 @@ def sessions(youtube_url_id):
     ]
     
     frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtube_url_id).order_by(FrequentWords.url_id.desc()).all()
+    
+    # Encode positive word cloud image data in Base64
+    if wordcloud and wordcloud.image_positive_data:
+        image_positive_data_base64 = base64.b64encode(wordcloud.image_positive_data).decode('utf-8')
+    else:
+        image_positive_data_base64 = None
 
-    return render_template("previous_sessions.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, count=count, frequent_words=frequent_words, sentiment_analysis=sentiment_analysis)
+    # Encode negative word cloud image data in Base64
+    if wordcloud and wordcloud.image_negative_data:
+        image_negative_data_base64 = base64.b64encode(wordcloud.image_negative_data).decode('utf-8')
+    else:
+        image_negative_data_base64 = None
+
+    return render_template("previous_sessions.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, count=count, frequent_words=frequent_words, sentiment_analysis=sentiment_analysis, image_positive_data=image_positive_data_base64, image_negative_data=image_negative_data_base64)
 
 @views.route('/settings')
 @login_required

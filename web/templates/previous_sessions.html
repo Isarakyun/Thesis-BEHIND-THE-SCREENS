@@ -69,19 +69,54 @@
     function renderPaginationControls() {
       paginationControls.innerHTML = '';
       const totalPages = Math.ceil(rows.length / rowsPerPage);
-      for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement('button');
-        button.textContent = i;
-        button.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+
+      // Create '<<' button
+      if (currentPage > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '<<';
+        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        prevButton.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(prevButton);
+      }
+
+      // Create page number buttons
+      const startPage = Math.max(1, currentPage - 1);
+      const endPage = Math.min(totalPages, startPage + 3);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
         if (i === currentPage) {
-          button.classList.add('font-bold');
+          pageButton.classList.add('font-bold');
         }
-        button.addEventListener('click', () => {
+        pageButton.addEventListener('click', () => {
           currentPage = i;
           renderTable();
           renderPaginationControls();
         });
-        paginationControls.appendChild(button);
+        paginationControls.appendChild(pageButton);
+      }
+
+      // Create '>>' button
+      if (currentPage < totalPages) {
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '>>';
+        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        nextButton.addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(nextButton);
       }
     }
 
@@ -180,18 +215,30 @@
   };
   </script>
 
-  <!-- TO DO -->
+  <!-- TO DO: WordCloud -->
   <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
     <a class="text-white font-bold ml-2">Word Cloud</a>
   </div>     
   <div class="pb-8">
     <div class="flex justify-center">
+      <!-- POSITIVE WORD CLOUD -->
       <div class="mt-[20px] ml-[50px] mr-4">
-        <img class="w-full rounded" src="./../static/Lowro_ (twitter).png">
+        {% if image_positive_data %}
+        <!-- <p class="text-black dark:text-white text-center mt-2">Image data length: {{ image_positive_data|length }}</p> -->
+          <img class="w-full rounded" src="data:image/png;base64,{{ image_positive_data }}">
+        {% else %}
+          <p class="text-black dark:text-white text-center mt-2">No positive words found.</p>
+        {% endif %}
         <p class="text-black dark:text-white text-center mt-2">Positive</p>
       </div>
+      <!-- NEGATIVE WORD CLOUD -->
       <div class="mt-[20px] ml-4 mr-[50px]">
-        <img class="w-full rounded" src="./../static/Lowro_ (twitter).png">
+        {% if image_negative_data %}
+        <!-- <p class="text-black dark:text-white text-center mt-2">Image data length: {{ image_negative_data|length }}</p> -->
+          <img class="w-full rounded" src="data:image/png;base64,{{ image_negative_data }}">
+        {% else %}
+          <p class="text-black dark:text-white text-center mt-2">No negative words found.</p>
+        {% endif %}
         <p class="text-black dark:text-white text-center mt-2">Negative</p>
       </div>
     </div>

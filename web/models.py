@@ -15,6 +15,7 @@ class YoutubeUrl(db.Model):
     labeledComments = db.relationship('LabeledComments')
     frequentWords = db.relationship('FrequentWords')
     sentimentCounter = db.relationship('SentimentCounter')
+    wordCloudImage = db.relationship('WordCloudImage')
 
 class Comments(db.Model):
     __tablename__ = 'comments'
@@ -57,6 +58,14 @@ class SentimentCounter(db.Model):
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+class WordCloudImage(db.Model):
+    __tablename__ = 'word_cloud'
+    id = db.Column(db.Integer, primary_key=True)
+    image_positive_data = db.Column(db.LargeBinary)
+    image_negative_data = db.Column(db.LargeBinary)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
+
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -72,3 +81,4 @@ class User(db.Model, UserMixin):
     labeledComments = db.relationship('LabeledComments')
     frequentWords = db.relationship('FrequentWords')
     sentimentCounter = db.relationship('SentimentCounter')
+    wordCloudImage = db.relationship('WordCloudImage')

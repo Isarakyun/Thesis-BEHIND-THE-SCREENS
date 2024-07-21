@@ -19,11 +19,9 @@
         <th class="px-2 py-1">Comments Summary of " {{ youtube_url.video_name }} "</th>
       </tr>
     </thead>
-    <!-- Values are from Summarized_comments table in the database, summary column, url_id = id (youtube_url id) -->
     <tbody class="text-gray-900 dark:text-white text-sm">
       <tr>
         <td class="px-2 py-2">{{ summarized_comments.summary }}</td>
-        <!-- <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td> -->
       </tr>
     </tbody>
   </table>
@@ -40,11 +38,16 @@
       </tr>
     </thead>
     <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      {% for labeled in sentiment_analysis %}
       <tr>
+        <td class="px-2 py-2">{{ labeled.comment }}</td>
+        <td class="px-2 py-2">{{ labeled.sentiment }}</td>
+      </tr>
+      {% endfor %}
+      <!-- <tr>
         <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
         <td class="px-2 py-2">Positive</td>
-      </tr>
-      
+      </tr> -->
     </tbody>
   </table>
 </div>
@@ -70,19 +73,54 @@
     function renderPaginationControls() {
       paginationControls.innerHTML = '';
       const totalPages = Math.ceil(rows.length / rowsPerPage);
-      for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement('button');
-        button.textContent = i;
-        button.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+
+      // Create '<<' button
+      if (currentPage > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '<<';
+        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        prevButton.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(prevButton);
+      }
+
+      // Create page number buttons
+      const startPage = Math.max(1, currentPage - 1);
+      const endPage = Math.min(totalPages, startPage + 3);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
         if (i === currentPage) {
-          button.classList.add('font-bold');
+          pageButton.classList.add('font-bold');
         }
-        button.addEventListener('click', () => {
+        pageButton.addEventListener('click', () => {
           currentPage = i;
           renderTable();
           renderPaginationControls();
         });
-        paginationControls.appendChild(button);
+        paginationControls.appendChild(pageButton);
+      }
+
+      // Create '>>' button
+      if (currentPage < totalPages) {
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '>>';
+        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        nextButton.addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(nextButton);
       }
     }
 
@@ -103,38 +141,24 @@
           <th class="px-2 py-1">Sentiment</th>
         </tr>
       </thead>
-      <!-- Values are from frequent_words table. Columns: word, count, sentiment, url_id = id (youtube_url id) -->
       <tbody class="text-gray-900 dark:text-white">
+        {% for word in frequent_words %}
         <tr>
-          <td class="px-2 py-1">Omaera no koto</td>
-          <td class="px-2 py-1">2434</td>
-          <td class="py-1">Positive</td>
+          <td class="px-2 py-1">{{ word.word }}</td>
+          <td class="px-2 py-1">{{ word.count }}</td>
+          <td class="py-1">{{ word.sentiment }}</td>
         </tr>
-        <tr>
-          <td class="px-2 py-1">suki dakedo</td>
-          <td class="px-2 py-1">1119</td>
-          <td class="py-1">Positive</td>
-        </tr>
-        <tr>
-          <td class="px-2 py-1">Ore</td>
-          <td class="px-2 py-1">500</td>
-          <td class="py-1">Positive</td>
-        </tr>
-        <tr>
-          <td class="px-2 py-1">hosuto dakara</td>
-          <td class="px-2 py-1">418</td>
-          <td class="py-1">Positive</td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
 
-<!-- TO DO: IT DOESNT APPEAR AFTER /analyze BUT IT APPEARS FOR SESSIONS.
- probably because of extracting urlId from the url, it doesnt have one! -->
-<!-- Pie Chart -->
-<div class="mt-[20px] ml-4 mr-[50px]">
-  <canvas id="pieChart" width="350px" height="350px"></canvas>
-</div>
+  <!-- TO DO: IT DOESNT APPEAR AFTER /analyze BUT IT APPEARS FOR SESSIONS.
+  probably because of extracting urlId from the url, it doesnt have one! -->
+  <!-- Pie Chart -->
+  <div class="mt-[20px] ml-4 mr-[50px]">
+    <canvas id="pieChart" width="350px" height="350px"></canvas>
+  </div>
 
 </div>
   <script>
@@ -203,12 +227,24 @@
   </div>     
   <div class="pb-8">
     <div class="flex justify-center">
+      <!-- POSITIVE WORD CLOUD -->
       <div class="mt-[20px] ml-[50px] mr-4">
-        <img class="w-full rounded" src="./../static/Lowro_ (twitter).png">
+        {% if image_positive_data %}
+        <!-- <p class="text-black dark:text-white text-center mt-2">Image data length: {{ image_positive_data|length }}</p> -->
+          <img class="w-full rounded" src="data:image/png;base64,{{ image_positive_data }}">
+        {% else %}
+          <p class="text-black dark:text-white text-center mt-2">No positive words found.</p>
+        {% endif %}
         <p class="text-black dark:text-white text-center mt-2">Positive</p>
       </div>
+      <!-- NEGATIVE WORD CLOUD -->
       <div class="mt-[20px] ml-4 mr-[50px]">
-        <img class="w-full rounded" src="./../static/Lowro_ (twitter).png">
+        {% if image_negative_data %}
+        <!-- <p class="text-black dark:text-white text-center mt-2">Image data length: {{ image_negative_data|length }}</p> -->
+          <img class="w-full rounded" src="data:image/png;base64,{{ image_negative_data }}">
+        {% else %}
+          <p class="text-black dark:text-white text-center mt-2">No negative words found.</p>
+        {% endif %}
         <p class="text-black dark:text-white text-center mt-2">Negative</p>
       </div>
     </div>

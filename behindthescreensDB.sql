@@ -23,7 +23,7 @@ CREATE TABLE youtube_url (
 
 CREATE TABLE comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    comment VARCHAR(30000) NOT NULL,
+    comment VARCHAR(50000) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id),
@@ -43,7 +43,7 @@ CREATE TABLE labeled_comments (
 
 CREATE TABLE summarized_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    summary VARCHAR(30000) NOT NULL,
+    summary VARCHAR(50000) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (url_id) REFERENCES youtube_url(id),
@@ -66,6 +66,16 @@ CREATE TABLE sentiment_counter (
     positive INT NOT NULL,
     negative INT NOT NULL,
     neutral INT NOT NULL,
+    url_id INT NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (url_id) REFERENCES youtube_url(id)
+);
+
+CREATE TABLE word_cloud (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    image_positive_data LONGBLOB,
+    image_negative_data LONGBLOB,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id),
