@@ -5,27 +5,16 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 from .models import User, YoutubeUrl, Comments, LabeledComments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import word_cloud, get_summary, extract_comments
+from .analysis import clean_text, word_cloud, get_summary, extract_comments
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
-import re
-from youtube_comment_downloader import YoutubeCommentDownloader
-import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.stem import WordNetLemmatizer
-from nltk.probability import FreqDist
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
-from textblob import TextBlob
 from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification
 from collections import Counter
-from wordcloud import WordCloud, STOPWORDS
-import matplotlib.pyplot as plt
-import os
-from io import BytesIO
-from PIL import Image
 import base64
 
 auth = Blueprint('auth', __name__)
@@ -37,33 +26,7 @@ sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 stop_words = set(stopwords.words('english'))
-lemmatizer = WordNetLemmatizer()
 sia = SentimentIntensityAnalyzer()
-
-def clean_text(text):
-    # Remove special characters
-    text = re.sub(r'\W', ' ', text)
-    # Remove single characters
-    text = re.sub(r'\s+[a-zA-Z]\s+', ' ', text)
-    # Remove single characters from the start
-    text = re.sub(r'\^[a-zA-Z]\s+', ' ', text) 
-    # Substitute multiple spaces with single space
-    text = re.sub(r'\s+', ' ', text, flags=re.I)
-    # Remove prefixed 'b'
-    text = re.sub(r'^b\s+', '', text)
-    # Remove numbers
-    text = re.sub(r'\d', '', text)
-    # Convert to lowercase
-    text = text.lower()
-    # Split into words
-    words = text.split()
-    # Filter out short words and stopwords
-    words = [word for word in words if len(word) > 3 and word not in stop_words]
-    # Lemmatize the words
-    words = [lemmatizer.lemmatize(word) for word in words]
-    # Join the words back together
-    text = ' '.join(words)
-    return text
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -367,27 +330,8 @@ def analyze():
         return redirect(url_for('views.main'))
     new_youtube_url = YoutubeUrl(url=youtube_url, user_id=current_user.id, video_name=video_name)
     db.session.add(new_youtube_url)
-    db.session.commit()
 
     # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
-    # try:
-    #     video_id = youtube_url.split('v=')[1]
-    #     downloader = YoutubeCommentDownloader()
-    #     comments = downloader.get_comments(video_id)
-        
-    #     # Manually filter out replies
-    #     top_level_comments = [comment['text'] for comment in comments if 'parent' not in comment]
-        
-    #     # Regular expression to match timestamps (e.g., "00:00", "1:23", "12:34:56") anywhere in the text
-    #     timestamp_pattern = re.compile(r'\b\d{1,2}:\d{2}(?::\d{2})?\b')
-        
-    #     # Filter out comments that contain timestamps or "@" symbol
-    #     filtered_comments = [comment for comment in top_level_comments if not timestamp_pattern.search(comment) and '@' not in comment]
-
-    # except Exception as e:
-    #     # flash(f'Failed to extract comments: {str(e)}', category='error')
-    #     return redirect(url_for('views.main'))
-    
     filtered_comments = extract_comments(youtube_url)
 
     # Sentiment Analysis
@@ -417,7 +361,6 @@ def analyze():
         new_comment = Comments(comment=comment, url_id=new_youtube_url.id, user_id=current_user.id)
         db.session.add(new_comment)
         comment_objects.append(new_comment)
-    db.session.commit()
 
     # Saving frequent words to FrequentWords table in the database
     cleaned_comments = clean_text(all_comments_text)
@@ -436,14 +379,12 @@ def analyze():
         new_frequent_word = FrequentWords(word=word, count=count, sentiment=word_sentiment_label, url_id=new_youtube_url.id, user_id=current_user.id)
         db.session.add(new_frequent_word)
         frequent_words_objects.append(new_frequent_word)
-    db.session.commit()
 
     # GENERATE SUMMARY
     summary = get_summary(all_comments_text)
 
     summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
     db.session.add(summarized_comment)
-    db.session.commit()
 
     # Saving sentiment analysis results to Labeled_Comments table in the database
     positive_count = 0
@@ -467,8 +408,6 @@ def analyze():
         else:
             neutral_count += 1
 
-    db.session.commit()
-
     # Saving the counts to the sentiment_counter table
     sentiment_counter = SentimentCounter(
         user_id=current_user.id,
@@ -478,7 +417,6 @@ def analyze():
         neutral=neutral_count
     )
     db.session.add(sentiment_counter)
-    db.session.commit()
 
     # WORD CLOUD
     unlabeled_words = word_tokenize(all_comments_text)
@@ -505,6 +443,6 @@ def analyze():
             image_negative_data=negative_img_data
         )
         db.session.add(wordcloud_image)
-        db.session.commit()
+    db.session.commit()
 
     return redirect(url_for('views.results'))

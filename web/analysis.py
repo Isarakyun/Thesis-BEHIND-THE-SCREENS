@@ -1,5 +1,5 @@
 # TO-DO at the end since auth.py /analyze is too long
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import redirect, url_for
 from wordcloud import WordCloud, STOPWORDS
 from io import BytesIO
 import base64
@@ -9,9 +9,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from textblob import TextBlob
 from youtube_comment_downloader import YoutubeCommentDownloader
 import re
-
-def process_youtube_url(youtube_url):
-    ...
+from nltk.stem import WordNetLemmatizer
 
 def extract_comments(youtube_url):
     try:
@@ -34,11 +32,32 @@ def extract_comments(youtube_url):
         # flash(f'Failed to extract comments: {str(e)}', category='error')
         return redirect(url_for('views.main'))
 
-def sentiment_analysis(comments):
-    ...
-
-def frequent_words(comments):
-    ...
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+def clean_text(text):
+    # Remove special characters
+    text = re.sub(r'\W', ' ', text)
+    # Remove single characters
+    text = re.sub(r'\s+[a-zA-Z]\s+', ' ', text)
+    # Remove single characters from the start
+    text = re.sub(r'\^[a-zA-Z]\s+', ' ', text) 
+    # Substitute multiple spaces with single space
+    text = re.sub(r'\s+', ' ', text, flags=re.I)
+    # Remove prefixed 'b'
+    text = re.sub(r'^b\s+', '', text)
+    # Remove numbers
+    text = re.sub(r'\d', '', text)
+    # Convert to lowercase
+    text = text.lower()
+    # Split into words
+    words = text.split()
+    # Filter out short words and stopwords
+    words = [word for word in words if len(word) > 3 and word not in stop_words]
+    # Lemmatize the words
+    words = [lemmatizer.lemmatize(word) for word in words]
+    # Join the words back together
+    text = ' '.join(words)
+    return text
 
 def get_summary(joined_comments):
     sentences = sent_tokenize(joined_comments)
@@ -87,9 +106,6 @@ def analyze_summary(text):
     else:
         sentiment = "Neutral"
     return sentiment, sentiment_score
-
-def count_sentiments(comments):
-    ...
 
 def word_cloud(words, colormap):
     stopwords = set(STOPWORDS)

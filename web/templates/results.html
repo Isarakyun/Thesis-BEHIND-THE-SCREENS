@@ -11,23 +11,39 @@
     </div>       
 </div>
 
+<!-- i love nijisanji talents. they make me happy -->
+
 <!-- SUMMARY -->
 <div class="mt-5 pt-5 flex justify-center">
   <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
     <thead class="text-white">
       <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-        <th class="px-2 py-1">Comments Summary of " {{ youtube_url.video_name }} "</th>
+        <th class="px-2 py-1">Intepretation of " {{ youtube_url.video_name }} "</th>
       </tr>
     </thead>
     <tbody class="text-gray-900 dark:text-white text-sm">
       <tr>
-        <td class="px-2 py-2">{{ summarized_comments.summary }}</td>
+        <!-- <td class="px-2 py-2">{{ summarized_comments.summary }}</td> -->
+        <td class="px-2 py-2">As of {{ youtube_url.created_at|format_date }}, this video has received {{ sentiment_counter.positive }} positive comments, {{ sentiment_counter.negative }} negative comments, and {{ sentiment_counter.neutral }} neutral comments. The most frequently used words are: 
+          {% for word in frequent_words %}
+            {% if loop.last %}
+              and '{{ word.word }},'
+            {% else %}
+              '{{ word.word }},'
+            {% endif %}
+          {% endfor %} which were used 
+          {% for word in frequent_words %} 
+            {% if loop.last %}
+              and {{ word.count }} times,
+            {% else %}
+              {{ word.count }},
+            {% endif %}
+          {% endfor %} respectively.</td>
       </tr>
     </tbody>
   </table>
 </div>    
   
-<!-- TO DO -->
 <!-- TABLE FOR COMMENTS -->
 <div class="mt-5 pt-5 flex justify-center">
   <table id="labeled-comments" class="table-auto ml-[50px] mr-[50px] mt-4">
@@ -44,10 +60,6 @@
         <td class="px-2 py-2">{{ labeled.sentiment }}</td>
       </tr>
       {% endfor %}
-      <!-- <tr>
-        <td class="px-2 py-2">[SUMMARY HERE: Example:] Fuwa Minato is a male VTuber from NIJISANJI Main Branch. He is a virtual host. Minato is a member of ROF-MAO with Kenmochi Touya, Kagami Hayato, and Kaida Haru. He debuted together with Gwelu Os Gar and Shirayuki Tomoe, forming a trio called "夜王国" which means Night Kingdom in English. Minato is also in a sub-unit called VACHSS with Kuzuha, Kanae, Kagami Hayato, Yumeoi Kakeru, and Kenmochi Touya.</td>
-        <td class="px-2 py-2">Positive</td>
-      </tr> -->
     </tbody>
   </table>
 </div>
@@ -129,7 +141,6 @@
   });
 </script>
 
-<!-- TO DO -->
 <div class="flex justify-center mb-5 space-x-5 items-center">
   <!-- Table for Word Count -->
   <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
@@ -221,7 +232,6 @@
   };
   </script>
 
-  <!-- TO DO -->
   <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
     <a class="text-white font-bold ml-2">Word Cloud</a>
   </div>     
@@ -230,7 +240,6 @@
       <!-- POSITIVE WORD CLOUD -->
       <div class="mt-[20px] ml-[50px] mr-4">
         {% if image_positive_data %}
-        <!-- <p class="text-black dark:text-white text-center mt-2">Image data length: {{ image_positive_data|length }}</p> -->
           <img class="w-full rounded" src="data:image/png;base64,{{ image_positive_data }}">
         {% else %}
           <p class="text-black dark:text-white text-center mt-2">No positive words found.</p>
@@ -240,7 +249,6 @@
       <!-- NEGATIVE WORD CLOUD -->
       <div class="mt-[20px] ml-4 mr-[50px]">
         {% if image_negative_data %}
-        <!-- <p class="text-black dark:text-white text-center mt-2">Image data length: {{ image_negative_data|length }}</p> -->
           <img class="w-full rounded" src="data:image/png;base64,{{ image_negative_data }}">
         {% else %}
           <p class="text-black dark:text-white text-center mt-2">No negative words found.</p>

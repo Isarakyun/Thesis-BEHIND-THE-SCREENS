@@ -59,6 +59,7 @@ def results():
     summarized_comments = SummarizedComments.query.filter_by(url_id=youtubeurl.id).order_by(SummarizedComments.url_id.desc()).first()
     frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtubeurl.id).order_by(FrequentWords.url_id.desc()).all()
     sentiment_counter = SentimentCounter.query.filter_by(url_id=youtubeurl.id).order_by(SentimentCounter.url_id.desc()).first()
+    count = db.session.query(SentimentCounter).filter_by(url_id=youtubeurl.id).first()
     
     comments_sentiment = db.session.query(Comments, LabeledComments).join(
         LabeledComments, Comments.id == LabeledComments.comments_id
@@ -93,7 +94,7 @@ def results():
     else:
         image_negative_data_base64 = None
 
-    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, sentiment_analysis=sentiment_analysis, summarized_comments=summarized_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter, image_positive_data=image_positive_data_base64, image_negative_data=image_negative_data_base64)
+    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, sentiment_analysis=sentiment_analysis, summarized_comments=summarized_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter, image_positive_data=image_positive_data_base64, image_negative_data=image_negative_data_base64, count=count)
 
 @views.route('/sessions/<int:youtube_url_id>')
 @login_required
