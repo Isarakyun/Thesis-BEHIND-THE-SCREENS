@@ -1,4 +1,3 @@
-# TO-DO at the end since auth.py /analyze is too long
 from flask import redirect, url_for
 from wordcloud import WordCloud, STOPWORDS
 from io import BytesIO

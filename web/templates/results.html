@@ -11,34 +11,38 @@
     </div>       
 </div>
 
-<!-- i love nijisanji talents. they make me happy -->
-
 <!-- SUMMARY -->
 <div class="mt-5 pt-5 flex justify-center">
   <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
     <thead class="text-white">
       <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-        <th class="px-2 py-1">Intepretation of " {{ youtube_url.video_name }} "</th>
+        <th class="px-2 py-1">Interpretation of " {{ youtube_url.video_name }} "</th>
       </tr>
     </thead>
     <tbody class="text-gray-900 dark:text-white text-sm">
       <tr>
-        <!-- <td class="px-2 py-2">{{ summarized_comments.summary }}</td> -->
-        <td class="px-2 py-2">As of {{ youtube_url.created_at|format_date }}, this video has received {{ sentiment_counter.positive }} positive comments, {{ sentiment_counter.negative }} negative comments, and {{ sentiment_counter.neutral }} neutral comments. The most frequently used words are: 
-          {% for word in frequent_words %}
-            {% if loop.last %}
-              and '{{ word.word }},'
-            {% else %}
-              '{{ word.word }},'
-            {% endif %}
-          {% endfor %} which were used 
-          {% for word in frequent_words %} 
-            {% if loop.last %}
-              and {{ word.count }} times,
-            {% else %}
-              {{ word.count }},
-            {% endif %}
-          {% endfor %} respectively.</td>
+        <!-- <td class="px-2 py-2">{{ summary }}</td> -->
+        <td class="px-2 py-2">
+          {% if youtube_url.created_at and count.positive is not none and count.negative is not none and count.neutral is not none and frequent_words %}
+            As of {{ youtube_url.created_at|format_date }}, this video has received {{ count.positive }} positive comments, {{ count.negative }} negative comments, and {{ count.neutral }} neutral comments. The most frequently used words are: 
+            {% for word in frequent_words %}
+              {% if loop.last %}
+                and '{{ word.word }}'
+              {% else %}
+                '{{ word.word }}',
+              {% endif %}
+            {% endfor %} which were used 
+            {% for word in frequent_words %} 
+              {% if loop.last %}
+                and {{ word.count }} times,
+              {% else %}
+                {{ word.count }},
+              {% endif %}
+            {% endfor %} respectively.
+          {% else %}
+            No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis.
+          {% endif %}
+        </td>
       </tr>
     </tbody>
   </table>
@@ -54,10 +58,10 @@
       </tr>
     </thead>
     <tbody class="text-center text-gray-900 dark:text-white text-sm">
-      {% for labeled in sentiment_analysis %}
-      <tr>
-        <td class="px-2 py-2">{{ labeled.comment }}</td>
-        <td class="px-2 py-2">{{ labeled.sentiment }}</td>
+      {% for comment in comments %}
+      <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
+        <td class="px-2 py-2">{{ comment.comment }}</td>
+        <td class="px-2 py-2">{{ comment.sentiment }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -103,7 +107,7 @@
 
       // Create page number buttons
       const startPage = Math.max(1, currentPage - 1);
-      const endPage = Math.min(totalPages, startPage + 3);
+      const endPage = Math.min(totalPages, startPage + 2);
 
       for (let i = startPage; i <= endPage; i++) {
         const pageButton = document.createElement('button');
@@ -118,6 +122,30 @@
           renderPaginationControls();
         });
         paginationControls.appendChild(pageButton);
+      }
+
+      // Add ellipsis if there are more pages
+      if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.textContent = '...';
+        ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
+        paginationControls.appendChild(ellipsis);
+      }
+
+      // Create last page button
+      if (endPage < totalPages) {
+        const lastPageButton = document.createElement('button');
+        lastPageButton.textContent = totalPages;
+        lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (totalPages === currentPage) {
+          lastPageButton.classList.add('font-bold');
+        }
+        lastPageButton.addEventListener('click', () => {
+          currentPage = totalPages;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(lastPageButton);
       }
 
       // Create '>>' button
@@ -164,12 +192,11 @@
     </table>
   </div>
 
-  <!-- TO DO: IT DOESNT APPEAR AFTER /analyze BUT IT APPEARS FOR SESSIONS.
-  probably because of extracting urlId from the url, it doesnt have one! -->
-  <!-- Pie Chart -->
-  <div class="mt-[20px] ml-4 mr-[50px]">
-    <canvas id="pieChart" width="350px" height="350px"></canvas>
-  </div>
+  <!-- did i mention i love fictional characters -->
+<!-- Pie Chart -->
+<div class="mt-[20px] ml-4 mr-[50px]">
+  <canvas id="pieChart" width="350px" height="350px"></canvas>
+</div>
 
 </div>
   <script>
@@ -188,7 +215,7 @@
         datasets: [{
           label: 'Sentiment Analysis',
           data: [data.negative, data.positive, data.neutral],
-          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
+          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'], 
         }]
       },
       options: {
@@ -232,6 +259,7 @@
   };
   </script>
 
+  <!-- WordCloud -->
   <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
     <a class="text-white font-bold ml-2">Word Cloud</a>
   </div>     

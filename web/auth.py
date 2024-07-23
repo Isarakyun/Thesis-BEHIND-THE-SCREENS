@@ -2,14 +2,14 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import User, YoutubeUrl, Comments, LabeledComments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
+from .models import User, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .analysis import clean_text, word_cloud, get_summary, extract_comments
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
-from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.tokenize import word_tokenize
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 from transformers import AutoTokenizer
@@ -330,6 +330,7 @@ def analyze():
         return redirect(url_for('views.main'))
     new_youtube_url = YoutubeUrl(url=youtube_url, user_id=current_user.id, video_name=video_name)
     db.session.add(new_youtube_url)
+    db.session.commit()
 
     # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
     filtered_comments = extract_comments(youtube_url)
@@ -341,6 +342,7 @@ def analyze():
         "LABEL_2": "Positive"
     }
 
+    # Sentiment Analysis for each comment
     sentiments = []
     for comment in filtered_comments:
         try:
@@ -352,17 +354,35 @@ def analyze():
         except Exception as e:
             flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
             return redirect(url_for('views.main'))
+    
+    # for sentiment counter
+    positive_count = 0
+    negative_count = 0
+    neutral_count = 0
 
-    # Saving comments to Comments table in the database
+    # INSERT comments to Comments and Sentiments to Comments table in the database
     comment_objects = []
     all_comments_text = " ".join(filtered_comments)
 
-    for comment in filtered_comments:
-        new_comment = Comments(comment=comment, url_id=new_youtube_url.id, user_id=current_user.id)
+    for comment, sentiment in zip(filtered_comments, sentiments):
+        new_comment = Comments(
+            comment=comment,
+            sentiment=sentiment['label'],
+            url_id=new_youtube_url.id,
+            user_id=current_user.id
+        )
         db.session.add(new_comment)
         comment_objects.append(new_comment)
+        
+        # Counting the sentiments
+        if sentiment['label'] == 'Positive':
+            positive_count += 1
+        elif sentiment['label'] == 'Negative':
+            negative_count += 1
+        else:
+            neutral_count += 1
 
-    # Saving frequent words to FrequentWords table in the database
+    # INSERT frequent words to FrequentWords table in the database
     cleaned_comments = clean_text(all_comments_text)
     word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
     most_common_words = word_count.most_common(5)
@@ -380,35 +400,13 @@ def analyze():
         db.session.add(new_frequent_word)
         frequent_words_objects.append(new_frequent_word)
 
-    # GENERATE SUMMARY
+    # GENERATE and INSERT SUMMARY
     summary = get_summary(all_comments_text)
 
     summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
     db.session.add(summarized_comment)
 
-    # Saving sentiment analysis results to Labeled_Comments table in the database
-    positive_count = 0
-    negative_count = 0
-    neutral_count = 0
-    
-    for comment_obj, sentiment in zip(comment_objects, sentiments):
-        new_labeled_comment = LabeledComments(
-            sentiment=sentiment['label'],
-            comments_id=comment_obj.id,
-            url_id=new_youtube_url.id,
-            user_id=current_user.id
-        )
-        db.session.add(new_labeled_comment)
-
-        # Counting the sentiments
-        if sentiment['label'] == 'Positive':
-            positive_count += 1
-        elif sentiment['label'] == 'Negative':
-            negative_count += 1
-        else:
-            neutral_count += 1
-
-    # Saving the counts to the sentiment_counter table
+    # INSERT the counts to the sentiment_counter table
     sentiment_counter = SentimentCounter(
         user_id=current_user.id,
         url_id=new_youtube_url.id,
@@ -445,4 +443,4 @@ def analyze():
         db.session.add(wordcloud_image)
     db.session.commit()
 
-    return redirect(url_for('views.results'))
+    return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id))

@@ -11,18 +11,20 @@
     </div>       
 </div>
 
+<!-- i love nijisanji talents. they make me happy -->
+
 <!-- SUMMARY -->
 <div class="mt-5 pt-5 flex justify-center">
   <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
     <thead class="text-white">
       <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-        <th class="px-2 py-1">Interpretation of " {{ youtube_url.video_name }} "</th>
+        <th class="px-2 py-1">Intepretation of " {{ youtube_url.video_name }} "</th>
       </tr>
     </thead>
     <tbody class="text-gray-900 dark:text-white text-sm">
       <tr>
-        <!-- <td class="px-2 py-2">{{ summary }}</td> -->
-        <td class="px-2 py-2">As of {{ youtube_url.created_at|format_date }}, this video has received {{ count.positive }} positive comments, {{ count.negative }} negative comments, and {{ count.neutral }} neutral comments. The most frequently used words are: 
+        <!-- <td class="px-2 py-2">{{ summarized_comments.summary }}</td> -->
+        <td class="px-2 py-2">As of {{ youtube_url.created_at|format_date }}, this video has received {{ sentiment_counter.positive }} positive comments, {{ sentiment_counter.negative }} negative comments, and {{ sentiment_counter.neutral }} neutral comments. The most frequently used words are: 
           {% for word in frequent_words %}
             {% if loop.last %}
               and '{{ word.word }},'
@@ -52,10 +54,10 @@
       </tr>
     </thead>
     <tbody class="text-center text-gray-900 dark:text-white text-sm">
-      {% for labeled in sentiment_analysis %}
+      {% for comment in comments %}
       <tr>
-        <td class="px-2 py-2">{{ labeled.comment }}</td>
-        <td class="px-2 py-2">{{ labeled.sentiment }}</td>
+        <td class="px-2 py-2">{{ comment.comment }}</td>
+        <td class="px-2 py-2">{{ comment.sentiment }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -162,11 +164,12 @@
     </table>
   </div>
 
-  <!-- did i mention i love fictional characters -->
-<!-- Pie Chart -->
-<div class="mt-[20px] ml-4 mr-[50px]">
-  <canvas id="pieChart" width="350px" height="350px"></canvas>
-</div>
+  <!-- TO DO: IT DOESNT APPEAR AFTER /analyze BUT IT APPEARS FOR SESSIONS.
+  probably because of extracting urlId from the url, it doesnt have one! -->
+  <!-- Pie Chart -->
+  <div class="mt-[20px] ml-4 mr-[50px]">
+    <canvas id="pieChart" width="350px" height="350px"></canvas>
+  </div>
 
 </div>
   <script>
@@ -185,7 +188,7 @@
         datasets: [{
           label: 'Sentiment Analysis',
           data: [data.negative, data.positive, data.neutral],
-          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'], 
+          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
         }]
       },
       options: {
@@ -229,7 +232,6 @@
   };
   </script>
 
-  <!-- WordCloud -->
   <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
     <a class="text-white font-bold ml-2">Word Cloud</a>
   </div>     

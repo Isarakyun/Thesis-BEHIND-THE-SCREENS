@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from flask_login import login_required, current_user
 from flask import session
 from . import db
-from sqlalchemy.orm import joinedload
-from .models import User, YoutubeUrl, Comments, SummarizedComments, LabeledComments, FrequentWords, SentimentCounter, WordCloudImage
+from sqlalchemy.orm import joinedload, aliased
+from .models import User, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
 import re
 import sys
 import os
@@ -49,88 +49,21 @@ def main():
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
     return render_template("main.html", user=current_user, youtube_urls=youtube_urls)
 
-@views.route('/results')
+@views.route('/result/<int:youtube_url_id>')
 @login_required
-def results():
-    user_id = current_user.id
-    youtubeurl = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).first()
-    youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
-    wordcloud = WordCloudImage.query.filter_by(url_id=youtubeurl.id).first()
-    summarized_comments = SummarizedComments.query.filter_by(url_id=youtubeurl.id).order_by(SummarizedComments.url_id.desc()).first()
-    frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtubeurl.id).order_by(FrequentWords.url_id.desc()).all()
-    sentiment_counter = SentimentCounter.query.filter_by(url_id=youtubeurl.id).order_by(SentimentCounter.url_id.desc()).first()
-    count = db.session.query(SentimentCounter).filter_by(url_id=youtubeurl.id).first()
-    
-    comments_sentiment = db.session.query(Comments, LabeledComments).join(
-        LabeledComments, Comments.id == LabeledComments.comments_id
-        ).filter(
-            Comments.url_id == youtubeurl.id,
-            Comments.user_id == user_id,
-            LabeledComments.url_id == youtubeurl.id,
-            LabeledComments.user_id == user_id
-        ).all()
-    
-    # Process the combined data if needed
-    sentiment_analysis = [
-        {
-            'comment': comment.comment,
-            'comment_id': comment.id,
-            'sentiment': labeled_comment.sentiment,
-            'url_id': comment.url_id,
-            'user_id': comment.user_id
-        }
-        for comment, labeled_comment in comments_sentiment
-    ]
-
-    # Encode positive word cloud image data in Base64
-    if wordcloud and wordcloud.image_positive_data:
-        image_positive_data_base64 = base64.b64encode(wordcloud.image_positive_data).decode('utf-8')
-    else:
-        image_positive_data_base64 = None
-
-    # Encode negative word cloud image data in Base64
-    if wordcloud and wordcloud.image_negative_data:
-        image_negative_data_base64 = base64.b64encode(wordcloud.image_negative_data).decode('utf-8')
-    else:
-        image_negative_data_base64 = None
-
-    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, sentiment_analysis=sentiment_analysis, summarized_comments=summarized_comments, frequent_words=frequent_words, sentiment_counter=sentiment_counter, image_positive_data=image_positive_data_base64, image_negative_data=image_negative_data_base64, count=count)
-
-@views.route('/sessions/<int:youtube_url_id>')
-@login_required
-def sessions(youtube_url_id):
+def results(youtube_url_id):
     user_id = current_user.id
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
     youtubeurl = get_youtube_url_by_id(youtube_url_id)
     summary = db.session.query(SummarizedComments).filter_by(url_id=youtube_url_id).first()
     count = db.session.query(SentimentCounter).filter_by(url_id=youtube_url_id).first()
     wordcloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
+    comments = Comments.query.filter_by(user_id=user_id, url_id=youtube_url_id).all()
 
     if summary:
         summary_text = summary.summary
     else:
         summary_text = 'No summary found'
-
-    comments_sentiment = db.session.query(Comments, LabeledComments).join(
-        LabeledComments, Comments.id == LabeledComments.comments_id
-        ).filter(
-            Comments.url_id == youtube_url_id,
-            Comments.user_id == user_id,
-            LabeledComments.url_id == youtube_url_id,
-            LabeledComments.user_id == user_id
-        ).all()
-    
-    # Process the combined data if needed
-    sentiment_analysis = [
-        {
-            'comment': comment.comment,
-            'comment_id': comment.id,
-            'sentiment': labeled_comment.sentiment,
-            'url_id': comment.url_id,
-            'user_id': comment.user_id
-        }
-        for comment, labeled_comment in comments_sentiment
-    ]
     
     frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtube_url_id).order_by(FrequentWords.url_id.desc()).all()
     
@@ -146,7 +79,7 @@ def sessions(youtube_url_id):
     else:
         image_negative_data_base64 = None
 
-    return render_template("previous_sessions.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, count=count, frequent_words=frequent_words, sentiment_analysis=sentiment_analysis, image_positive_data=image_positive_data_base64, image_negative_data=image_negative_data_base64)
+    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, count=count, frequent_words=frequent_words, comments=comments, image_positive_data=image_positive_data_base64, image_negative_data=image_negative_data_base64)
 
 @views.route('/settings')
 @login_required

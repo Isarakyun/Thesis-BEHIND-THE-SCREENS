@@ -5,7 +5,7 @@ USE behindthescreens;
 CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(150) NOT NULL,
-    password VARCHAR(150) NOT NULL,
+    password VARCHAR(1000) NOT NULL,
     email VARCHAR(150) NOT NULL,
     profile_pic VARCHAR(150),
     confirmed_email BOOLEAN DEFAULT 0,
@@ -24,21 +24,11 @@ CREATE TABLE youtube_url (
 CREATE TABLE comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     comment VARCHAR(50000) NOT NULL,
+    sentiment VARCHAR(20) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (url_id) REFERENCES youtube_url(id)
-);
-
-CREATE TABLE labeled_comments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    comments_id INT NOT NULL,
-    sentiment VARCHAR(20) NOT NULL,
-    url_id INT NOT NULL,
-    user_id INT NOT NULL,
-    FOREIGN KEY (comments_id) REFERENCES comments(id),
-    FOREIGN KEY (url_id) REFERENCES youtube_url(id),
-    FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
 CREATE TABLE summarized_comments (
