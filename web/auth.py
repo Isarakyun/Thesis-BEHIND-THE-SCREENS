@@ -444,3 +444,21 @@ def analyze():
     db.session.commit()
 
     return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id))
+
+@auth.route('/analyze-home', methods=['POST'])
+def analyze_home():
+    youtube_url = request.form.get('youtube_url')
+    if youtube_url:
+        playlist_id = extract_playlist_id(youtube_url)
+        if playlist_id:
+            # Assuming you have a function to process the URL and analyze comments
+            api_key = "AIzaSyDUyMia8oNCLvvKR3KEOBesQ6m_40U9b58"
+            csv_file = 'comments_data.csv'
+            output_csv_file = 'VADERs_sentiment_analysis_results.csv'
+
+            fetch_youtube_comments(api_key, [playlist_id], csv_file)
+            analyze_youtube_comments(csv_file, output_csv_file)
+
+            # Redirect to results2.html with the necessary data
+            return redirect(url_for('views.results2', youtube_url=youtube_url))
+    return redirect(url_for('views.home'))
