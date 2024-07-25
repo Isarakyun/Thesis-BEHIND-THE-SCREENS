@@ -444,3 +444,100 @@ def analyze():
     db.session.commit()
 
     return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id))
+
+@auth.route('/analyze_home', methods=['POST'])
+def analyze_home():
+    youtube_url = request.form.get('url')
+    # Ensure youtube_url is provided
+    if not youtube_url:
+        flash('Please enter a valid YouTube URL.', category='error')
+        return redirect(url_for('views.home'))
+    try:
+        yt = YouTube(youtube_url)
+        video_name = yt.title
+    except Exception as e:
+        flash(f'Failed to extract video name: {str(e)}', category='error')
+        return redirect(url_for('views.home'))
+
+    # Extract comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
+    filtered_comments = extract_comments(youtube_url)
+
+    # Sentiment Analysis
+    label_mapping = {
+        "LABEL_0": "Negative",
+        "LABEL_1": "Neutral",
+        "LABEL_2": "Positive"
+    }
+
+    # Sentiment Analysis for each comment
+    sentiments = []
+    for comment in filtered_comments:
+        try:
+            sentiment = sentiment_pipeline([comment])[0]
+            sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
+            sentiments.append(sentiment)
+        except RuntimeError as e: # This occurs because of the length of the comment. RoBERTa can only handle a maximum of 512 tokens.
+            continue  # Skip this comment and continue with the next one
+        except Exception as e:
+            flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
+            return redirect(url_for('views.home'))
+    
+    # for sentiment counter
+    positive_count = 0
+    negative_count = 0
+    neutral_count = 0
+
+    for sentiment in sentiments:
+        if sentiment['label'] == 'Positive':
+            positive_count += 1
+        elif sentiment['label'] == 'Negative':
+            negative_count += 1
+        else:
+            neutral_count += 1
+
+    all_comments_text = " ".join(filtered_comments)
+
+    # Generate summary
+    summary = get_summary(all_comments_text)
+
+    # Generate frequent words
+    cleaned_comments = clean_text(all_comments_text)
+    word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
+    most_common_words = word_count.most_common(5)
+    frequent_words = []
+    for word, count in most_common_words:
+        word_sentiment_scores = sia.polarity_scores(word)
+        compound_score = word_sentiment_scores['compound']
+        if compound_score >= 0.05:
+            word_sentiment_label = "Positive"
+        elif compound_score <= -0.05:
+            word_sentiment_label = "Negative"
+        else:
+            word_sentiment_label = "Neutral"
+        frequent_words.append((word, count, word_sentiment_label))
+
+    # WORD CLOUD
+    unlabeled_words = word_tokenize(all_comments_text)
+
+    # Generate the positive word cloud
+    positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
+    positive_text = ' '.join(positive_words)
+    positive_img_str = word_cloud(positive_text, 'winter')
+    
+    # Generate the negative word cloud
+    negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
+    negative_text = ' '.join(negative_words)
+    negative_img_str = word_cloud(negative_text, 'hot')
+
+    # Redirect to results2.html with the results
+    return render_template('results2.html', 
+                           youtube_url=youtube_url, 
+                           video_name=video_name,
+                           positive_count=positive_count, 
+                           negative_count=negative_count, 
+                           neutral_count=neutral_count,
+                           summary=summary,
+                           frequent_words=frequent_words,
+                           comments=filtered_comments,
+                           positive_img_str=positive_img_str,
+                           negative_img_str=negative_img_str)

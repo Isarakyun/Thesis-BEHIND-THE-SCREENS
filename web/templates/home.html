@@ -51,7 +51,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 dark:bg-gray-900 dark:text-white">
+<body class="min-h-screen bg-slate-50 dark:bg-[#121212] dark:text-white">
   <header class="text-white bg-red-800 sticky top-0 z-20">
     <section class="max-w-6xl mx-auto p-4 flex justify-between items-center">
         <h1 class="text-2xl font-bold">
@@ -147,10 +147,43 @@
     <section id="analyze" class="p-6 my-12 scroll-mt-20 widescreen:section-min-height tallscreen:section-min-height text-center">
       <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Analyze Your YouTube Video</h2>
       <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube video you want to analyze below:</p>
-      <form action="/analyze-youtube" method="post" class="mx-auto max-w-md">
-        <input type="url" name="youtube_url" id="youtube_url" placeholder="Enter YouTube Video URL here" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 mb-4" required>
-        <button type="submit" class="w-full px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700">Analyze</button>
-      </form>
+
+<!-- Input Bar -->
+<form id="analysis-form" method="POST" action="/analyze_home">    
+  
+  <div class="flex items-center justify-center mt-[50px]">
+      <input
+      class="flex w-[500px] flex-col gap-1.5 rounded-[26px] p-1.5 px-4 transition-colors bg-slate-100 text-black dark:bg-token-main-surface-secondary placeholder-gray-500 ml-10"
+      id="url"
+      name="url"
+      type="text"
+      placeholder="Youtube URL here..." 
+      />
+          <button type="submit" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600"><i class="ri-arrow-right-line"></i></button>
+    </div>
+  </form>
+  
+  <div id="loading-message" class="flex flex-col items-center justify-center mt-[50px] hidden">
+      <div class="flex items-center">
+          <!-- Spinner Icon -->
+          <svg class="animate-spin h-5 w-5 text-gray-700 dark:text-gray-300 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <p class="text-lg text-gray-700 dark:text-gray-300 ml-2">Please Wait...</p>
+      </div>
+      <div class="flex items-center mt-2">
+          <p class="text-sm text-gray-700 dark:text-gray-300 ml-2">This may take a while depending on the number of comments.</p>
+      </div>
+  </div>
+  
+  <script>
+  document.getElementById('analysis-form').addEventListener('submit', function(event) {
+      document.getElementById('analysis-form').classList.add('hidden');
+      document.getElementById('loading-message').classList.remove('hidden');
+      this.submit();
+  });
+  </script>
     </section>
     
     
@@ -324,81 +357,35 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.4/lottie.min.js"></script>
     <script>
-        var select = function(s) {
-            return document.querySelector(s);
-        },
-        selectAll = function(s) {
-            return document.querySelectorAll(s);
-        },
-        animationWindow = select('#animationWindow'),
-        animData = {
-            wrapper: animationWindow,
-            animType: 'svg',
-            loop: false,
-            prerender: true,
-            autoplay: false,
-            path: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/35984/play_fill_loader.json',
-            rendererSettings: {}
-        },
-        anim;
+document.addEventListener('DOMContentLoaded', () => {
+    const analyzeButton = document.getElementById('analyze-button');
+    const inputSection = document.getElementById('input-section');
+    const resultsSection = document.getElementById('results-section');
     
-        anim = bodymovin.loadAnimation(animData);
-        anim.addEventListener('DOMLoaded', onDOMLoaded);
-    
-        function onDOMLoaded(e) {
-            anim.addEventListener('complete', function() {
-                hideLoadingAnimation();
-                document.getElementById('analyze').scrollIntoView({ behavior: 'smooth' });
-            });
+    analyzeButton.addEventListener('click', () => {
+        const url = document.getElementById('url-input').value;
+        
+        if (url) {
+            fetchAndDisplayResults('results2.html'); // Or the URL where results are generated
+            inputSection.style.display = 'none'; // Hide input section
+            resultsSection.style.display = 'block'; // Show results section
+        } else {
+            alert('Please enter a URL.');
         }
+    });
+});
+
+function fetchAndDisplayResults(url) {
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('results-section').innerHTML = html;
+        })
+        .catch(error => console.error('Error fetching results:', error));
+}
+
+  </script>
+  
     
-        function showLoadingAnimation() {
-            animationWindow.style.display = 'flex';
-            document.querySelector('#analyze').classList.add('hide-section');
-            document.querySelector('#analyze').classList.add('analyze-overlay');
-            anim.goToAndPlay(0, true);
-    
-            // Stop the animation after seconds
-            setTimeout(function() {
-                anim.stop();
-                hideLoadingAnimation();
-            }, 6000);
-        }
-    
-        function hideLoadingAnimation() {
-            animationWindow.style.display = 'none';
-            document.querySelector('#analyze').classList.remove('hide-section');
-            document.querySelector('#analyze').classList.remove('analyze-overlay');
-        }
-    
-        $(document).ready(function() {
-            $('form').on('submit', function(event) {
-                event.preventDefault(); // prevent form submission
-    
-                showLoadingAnimation(); // Show loading animation
-    
-                // AJAX form submission
-                $.ajax({
-                    type: $(this).attr('method'),
-                    url: $(this).attr('action'),
-                    data: $(this).serialize(),
-                    success: function(data) {
-    
-                        // Scroll to analyze section
-                        $('html, body').animate({
-                            scrollBottom: $("#analyze").offset().top - 80
-                        }, 0);
-                    }
-                });
-            });
-        });
-    
-        // Check for #analyze in the URL on page load and scroll to it if present
-        window.addEventListener('load', function() {
-            if (window.location.hash === '#analyze') {
-                document.getElementById('analyze').scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    </script>
 </body>
 </html>

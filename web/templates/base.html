@@ -22,55 +22,53 @@
     </style>
 </head>
 <body>
-    {% include 'sidebar.html' %}
-</div>
-<main class="w-[calc(100%-256px)] ml-64 bg-slate-100 dark:bg-[#181818] min-h-screen transition-width duration-300 ease-in-out" id="content">
-    {% block content %}{% endblock %}
-</main>
+    {% if user is defined %}
+        {% include 'sidebar.html' %}
+    {% endif %}
+    <main class="w-[calc(100%-256px)] ml-64 bg-slate-100 dark:bg-[#181818] min-h-screen transition-width duration-300 ease-in-out" id="content">
+        {% block content %}{% endblock %}
+    </main>
 
-
-<script>
-    module.exports = {
-  theme: {
-    extend: {
-      placeholderColor: {
-        'gray': '#404040',
-      }
-    }
-  },
-  variants: {
-    extend: {
-      placeholderColor: ['responsive', 'dark', 'focus', 'hover', 'active'],
-    }
-  },
-  plugins: [],
-}
-</script>
-<script>
-    const menuToggleButton = document.getElementById('menuToggleButton');
-    const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('content');
-    menuToggleButton.addEventListener('click', () => {
-        sidebar.classList.toggle('-translate-x-full');
-        content.classList.toggle('w-full');
-        content.classList.toggle('ml-64');
-    });
-</script>
-
-<script>
-    document.getElementById('dropdownButton').addEventListener('click', function() {
-        var dropdownMenu = document.getElementById('dropdownMenu');
-        dropdownMenu.classList.toggle('hidden');
-    });
-    
-    window.addEventListener('click', function(e) {
-        var dropdownMenu = document.getElementById('dropdownMenu');
-        if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
-            dropdownMenu.classList.add('hidden');
+    <script>
+        module.exports = {
+            theme: {
+                extend: {
+                    placeholderColor: {
+                        'gray': '#404040',
+                    }
+                }
+            },
+            variants: {
+                extend: {
+                    placeholderColor: ['responsive', 'dark', 'focus', 'hover', 'active'],
+                }
+            },
+            plugins: [],
         }
-    });
+    </script>
+    <script>
+        const menuToggleButton = document.getElementById('menuToggleButton');
+        const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content');
+        menuToggleButton.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            content.classList.toggle('w-full');
+            content.classList.toggle('ml-64');
+        });
     </script>
 
+    <script>
+        document.getElementById('dropdownButton').addEventListener('click', function() {
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.classList.toggle('hidden');
+        });
+        
+        window.addEventListener('click', function(e) {
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>
-
