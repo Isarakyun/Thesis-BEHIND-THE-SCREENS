@@ -149,7 +149,8 @@
       <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube video you want to analyze below:</p>
 
 <!-- Input Bar -->
-<form id="analysis-form" method="POST" action="/analyze-home">    
+<form id="analysis-form" method="POST" action="/analyze_home">    
+  
   <div class="flex items-center justify-center mt-[50px]">
       <input
       class="flex w-[500px] flex-col gap-1.5 rounded-[26px] p-1.5 px-4 transition-colors bg-slate-100 text-black dark:bg-token-main-surface-secondary placeholder-gray-500 ml-10"
@@ -355,6 +356,36 @@
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.4/lottie.min.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const analyzeButton = document.getElementById('analyze-button');
+    const inputSection = document.getElementById('input-section');
+    const resultsSection = document.getElementById('results-section');
+    
+    analyzeButton.addEventListener('click', () => {
+        const url = document.getElementById('url-input').value;
+        
+        if (url) {
+            fetchAndDisplayResults('results2.html'); // Or the URL where results are generated
+            inputSection.style.display = 'none'; // Hide input section
+            resultsSection.style.display = 'block'; // Show results section
+        } else {
+            alert('Please enter a URL.');
+        }
+    });
+});
+
+function fetchAndDisplayResults(url) {
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('results-section').innerHTML = html;
+        })
+        .catch(error => console.error('Error fetching results:', error));
+}
+
+  </script>
+  
     
 </body>
 </html>

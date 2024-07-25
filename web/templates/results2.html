@@ -1,37 +1,250 @@
-{% extends "base.html" %}
+{% extends "base.html" %} 
 
-{% block title %}Results of {{ youtube_url }}{% endblock %}
+{% block title %}
+  Results of {{ video_name }}
+{% endblock %}
 
 {% block content %}
-<div>
-    <div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
-        <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
-            <i class="ri-menu-line cursor-pointer"></i>
-        </button>
-        <div>
-            <span class="text-m text-black dark:text-white ml-4">Results</span>
-        </div>
-    </div>
-
-    <!-- Add your result display logic here, similar to `results.html` -->
-    <!-- Example for the summary -->
-    <div class="mt-5 pt-5 flex justify-center">
-        <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
-            <thead class="text-white">
-                <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                    <th class="px-2 py-1">Interpretation of " {{ youtube_url }} "</th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-900 dark:text-white text-sm">
-                <tr>
-                    <td class="px-2 py-2">
-                        <!-- Add the logic to display the summary here -->
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Similar tables for comments and word clouds as in results.html -->
+<!-- HEADER -->
+<div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
+    <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
+        <i class="ri-menu-line cursor-pointer"></i>
+    </button>
+    <div>
+        <span class="text-m text-black dark:text-white ml-4">Results</span>
+    </div>       
 </div>
+
+<!-- SUMMARY -->
+<div class="mt-5 pt-5 flex justify-center">
+  <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
+    <thead class="text-white">
+      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <th class="px-2 py-1">Interpretation of " {{ video_name }} "</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-900 dark:text-white text-sm">
+      <tr>
+        <td class="px-2 py-2">
+          {% if created_at and positive_count is not none and negative_count is not none and neutral_count is not none and frequent_words %}
+            As of {{ created_at|format_date }}, this video has received {{ positive_count }} positive comments, {{ negative_count }} negative comments, and {{ neutral_count }} neutral comments. The most frequently used words are: 
+            {% for word in frequent_words %}
+              {% if loop.last %}
+                and '{{ word[0] }}'
+              {% else %}
+                '{{ word[0] }}',
+              {% endif %}
+            {% endfor %} which were used 
+            {% for word in frequent_words %} 
+              {% if loop.last %}
+                and {{ word[1] }} times,
+              {% else %}
+                {{ word[1] }},
+              {% endif %}
+            {% endfor %} respectively.
+          {% else %}
+            No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis.
+          {% endif %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>    
+
+<!-- TABLE FOR COMMENTS -->
+<div class="mt-5 pt-5 flex justify-center">
+  <table id="labeled-comments" class="table-auto ml-[50px] mr-[50px] mt-4">
+    <thead class="text-white">
+      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <th class="px-4 py-1">Comments</th>
+        <th class="px-2 py-1">Sentiments</th>
+      </tr>
+    </thead>
+    <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      {% for comment in comments %}
+      <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
+        <td class="px-2 py-2">{{ comment.comment }}</td>
+        <td class="px-2 py-2">{{ comment.sentiment }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="pagination-controls" class="flex justify-center mt-4"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const rowsPerPage = 5;
+    const table = document.getElementById('labeled-comments');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const paginationControls = document.getElementById('pagination-controls');
+    let currentPage = 1;
+
+    function renderTable() {
+      tbody.innerHTML = '';
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedRows = rows.slice(start, end);
+      paginatedRows.forEach(row => tbody.appendChild(row));
+    }
+
+    function renderPaginationControls() {
+      paginationControls.innerHTML = '';
+      const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+      // Create '<<' button
+      if (currentPage > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '<<';
+        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        prevButton.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(prevButton);
+      }
+
+      // Create page number buttons
+      const startPage = Math.max(1, currentPage - 1);
+      const endPage = Math.min(totalPages, startPage + 2);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (i === currentPage) {
+          pageButton.classList.add('font-bold');
+        }
+        pageButton.addEventListener('click', () => {
+          currentPage = i;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(pageButton);
+      }
+
+      // Add ellipsis if there are more pages
+      if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.textContent = '...';
+        ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
+        paginationControls.appendChild(ellipsis);
+      }
+
+      // Create last page button
+      if (endPage < totalPages) {
+        const lastPageButton = document.createElement('button');
+        lastPageButton.textContent = totalPages;
+        lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (totalPages === currentPage) {
+          lastPageButton.classList.add('font-bold');
+        }
+        lastPageButton.addEventListener('click', () => {
+          currentPage = totalPages;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(lastPageButton);
+      }
+
+      // Create '>>' button
+      if (currentPage < totalPages) {
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '>>';
+        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        nextButton.addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(nextButton);
+      }
+    }
+
+    renderTable();
+    renderPaginationControls();
+  });
+</script>
+
+<!-- TABLE FOR WORD COUNT -->
+<div class="flex justify-center mb-5 space-x-5 items-center">
+  <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
+    <table id="frequent-words" class="table-auto text-center text-sm w-full">
+      <thead class="text-white">
+        <tr class="bg-red-600 dark:bg-slate-700">
+          <th class="px-2 py-1">Word</th>
+          <th class="px-2 py-1">Count</th>
+          <th class="px-2 py-1">Sentiment</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-900 dark:text-white">
+        {% for word in frequent_words %}
+        <tr>
+          <td class="px-2 py-1">{{ word[0] }}</td>
+          <td class="px-2 py-1">{{ word[1] }}</td>
+          <td class="py-1">{{ word[2] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pie Chart -->
+  <div class="mt-[20px] ml-4 mr-[50px]">
+    <canvas id="pieChart" width="350px" height="350px"></canvas>
+  </div>
+</div>
+
+<script>
+  async function fetchSentimentData() {
+    try {
+      const response = await fetch('/analyze_home', { method: 'POST' });
+      if (!response.ok) throw new Error('Network response was not ok.');
+      return response.json();
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+      return { positive: 0, negative: 0, neutral: 0 };
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+    const sentimentData = await fetchSentimentData();
+    const pieChart = new Chart(pieChartCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Positive', 'Negative', 'Neutral'],
+        datasets: [{
+          data: [sentimentData.positive, sentimentData.negative, sentimentData.neutral],
+          backgroundColor: ['#2a9d8f', '#e76f51', '#f1faee'],
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.raw || 0;
+                return `${label}: ${value}`;
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
 {% endblock %}
