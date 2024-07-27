@@ -1,3 +1,4 @@
+from flask_dance.contrib.google import make_google_blueprint, google
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from random import *
@@ -18,6 +19,35 @@ from collections import Counter
 import base64
 
 auth = Blueprint('auth', __name__)
+
+# Google OAuth configuration
+google_bp = make_google_blueprint(
+    client_id='143865604684-gv3f3maepclm4lm8el4jvuijesge73l6.apps.googleusercontent.com',
+    client_secret='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',
+    redirect_to='auth.google_login'  # This should be the name of the view function
+)
+auth.register_blueprint(google_bp, url_prefix='/google')  # Use a consistent URL prefix
+
+@auth.route('/google-login')
+def google_login():
+    if not google.authorized:
+        return redirect(url_for('google.login'))
+    
+    resp = google.get('/plus/v1/people/me')
+    assert resp.ok, resp.text
+    google_info = resp.json()
+    google_id = google_info['id']
+    email = google_info['emails'][0]['value']
+    username = google_info['displayName']
+
+    user = User.query.filter_by(email=email).first()
+    if user is None:
+        user = User(username=username, email=email, confirmed_email=True)
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
+    return redirect(url_for('views.main'))
+
 
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
@@ -56,6 +86,7 @@ def logout():
 @auth.route('/')
 def home():
     return render_template("home.html")
+
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
