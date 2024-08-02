@@ -224,26 +224,29 @@
           </div>
           <div id="pagination-controls" class="flex justify-center mt-4"></div>
     
-          <!-- Frequent Words Table -->
-          <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
-              <table id="frequent-words" class="table-auto text-center text-sm w-full">
-                  <thead class="text-white">
-                      <tr class="bg-red-600 dark:bg-slate-700">
-                          <th class="px-2 py-1">Word</th>
-                          <th class="px-2 py-1">Count</th>
-                          <th class="px-2 py-1">Sentiment</th>
-                      </tr>
-                  </thead>
-                  <tbody class="text-gray-900 dark:text-white">
-                      <!-- Content will be injected by JavaScript -->
-                  </tbody>
-              </table>
-          </div>
-    
-          <!-- Pie Chart -->
-          <div class="mt-[20px] ml-4 mr-[50px]">
-              <canvas id="pieChart" width="350px" height="350px"></canvas>
-          </div>
+    <!-- Flex Container for Word Count and Pie Chart -->
+    <div class="flex justify-center mb-5 space-x-5 items-center">
+      <!-- Word Count Table -->
+      <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
+        <table id="frequent-words" class="table-auto text-center text-sm w-full">
+          <thead class="text-white">
+            <tr class="bg-red-600 dark:bg-slate-700">
+              <th class="px-2 py-1">Word</th>
+              <th class="px-2 py-1">Count</th>
+              <th class="px-2 py-1">Sentiment</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-900 dark:text-white">
+            <!-- Content will be injected by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pie Chart -->
+      <div class="mt-[20px] ml-4 mr-[50px]">
+        <canvas id="pieChart" width="350px" height="350px"></canvas>
+      </div>
+    </div>
     
           <!-- Word Cloud -->
           <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
