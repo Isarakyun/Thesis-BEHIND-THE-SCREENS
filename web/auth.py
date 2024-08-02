@@ -499,9 +499,12 @@ def analyze():
 
 import logging
 
+from flask import jsonify, request
+
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():
-    youtube_url2 = request.form.get('url2')
+    data = request.get_json()
+    youtube_url2 = data.get('url2')
     if not youtube_url2:
         return jsonify({'error': 'Please enter a valid YouTube URL.'}), 400
 
@@ -528,33 +531,55 @@ def analyze2():
             sentiment = sentiment_pipeline([comment])[0]
             sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
             sentiments2.append(sentiment)
-        except RuntimeError as e:  # Skip this comment and continue with the next one
-            continue
+        except RuntimeError:
+            continue  # Skip this comment and continue with the next one
         except Exception as e:
-            return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 400
-
-    positive_count2 = sum(1 for sentiment in sentiments2 if sentiment['label'] == 'Positive')
-    negative_count2 = sum(1 for sentiment in sentiments2 if sentiment['label'] == 'Negative')
-    neutral_count2 = sum(1 for sentiment in sentiments2 if sentiment['label'] == 'Neutral')
+            return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 500
+    
+    # for sentiment counter
+    positive_count2 = 0
+    negative_count2 = 0
+    neutral_count2 = 0
 
     all_comments_text2 = " ".join(filtered_comments2)
-    
-    try:
-        cleaned_comments2 = clean_text(all_comments_text2)
-    except Exception as e:
-        return jsonify({'error': f'Failed to clean text: {str(e)}'}), 400
 
+    for sentiment in sentiments2:
+        if sentiment['label'] == 'Positive':
+            positive_count2 += 1
+        elif sentiment['label'] == 'Negative':
+            negative_count2 += 1
+        else:
+            neutral_count2 += 1
+
+    # Generate frequent words
+    cleaned_comments2 = clean_text(all_comments_text2)
     word_count2 = Counter(word for word in cleaned_comments2.split() if word not in stop_words)
     most_common_words2 = word_count2.most_common(5)
-    frequent_words2 = [(word, count, sia.polarity_scores(word)['compound']) for word, count in most_common_words2]
+    frequent_words2 = []
+    for word, count in most_common_words2:
+        word_sentiment_scores = sia.polarity_scores(word)
+        compound_score = word_sentiment_scores['compound']
+        if compound_score >= 0.05:
+            word_sentiment_label = "Positive"
+        elif compound_score <= -0.05:
+            word_sentiment_label = "Negative"
+        else:
+            word_sentiment_label = "Neutral"
+        frequent_words2.append((word, count, word_sentiment_label))
 
+    # Generate summary
     summary2 = get_summary(all_comments_text2)
 
-    positive_words2 = [word for word in word_tokenize(all_comments_text2) if sia.polarity_scores(word)['compound'] > 0]
+    # WORD CLOUD
+    unlabeled_words2 = word_tokenize(all_comments_text2)
+
+    # Generate the positive word cloud
+    positive_words2 = [word for word in unlabeled_words2 if sia.polarity_scores(word)['compound'] > 0]
     positive_text2 = ' '.join(positive_words2)
     positive_img_str2 = word_cloud(positive_text2, 'winter')
     
-    negative_words2 = [word for word in word_tokenize(all_comments_text2) if sia.polarity_scores(word)['compound'] < 0]
+    # Generate the negative word cloud
+    negative_words2 = [word for word in unlabeled_words2 if sia.polarity_scores(word)['compound'] < 0]
     negative_text2 = ' '.join(negative_words2)
     negative_img_str2 = word_cloud(negative_text2, 'hot')
 
@@ -569,4 +594,5 @@ def analyze2():
         'positive_img_str2': positive_img_str2,
         'negative_img_str2': negative_img_str2
     }
+
     return jsonify(response)

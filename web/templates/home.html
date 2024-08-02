@@ -147,19 +147,21 @@
     <section id="analyze" class="p-6 my-12 scroll-mt-20 widescreen:section-min-height tallscreen:section-min-height text-center">
       <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Analyze Your YouTube Video</h2>
       <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube video you want to analyze below:</p>
-    
+  
       <!-- Input Bar -->
-      <form id="analysis-form2" method="POST">    
-        <div class="flex items-center justify-center mt-[50px]">
-          <input
-          class="flex w-[500px] flex-col gap-1.5 rounded-[26px] p-1.5 px-4 transition-colors bg-slate-100 text-black dark:bg-token-main-surface-secondary placeholder-gray-500 ml-10"
-          id="url2"
-          name="url2"
-          type="text"
-          placeholder="Youtube URL here..." 
-          />
-          <button type="submit" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600"><i class="ri-arrow-right-line"></i></button>
-        </div>
+      <form id="analysis-form2" method="POST">
+          <div class="flex items-center justify-center mt-[50px]">
+              <input
+                  class="flex w-[500px] flex-col gap-1.5 rounded-[26px] p-1.5 px-4 transition-colors bg-slate-100 text-black dark:bg-token-main-surface-secondary placeholder-gray-500 ml-10"
+                  id="url2"
+                  name="url"
+                  type="text"
+                  placeholder="Youtube URL here..." 
+              />
+              <button type="submit" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600">
+                  <i class="ri-arrow-right-line"></i>
+              </button>
+          </div>
       </form>
       
       <div id="loading-message" class="flex flex-col items-center justify-center mt-[50px] hidden">
@@ -175,50 +177,71 @@
               <p class="text-sm text-gray-700 dark:text-gray-300 ml-2">This may take a while depending on the number of comments.</p>
           </div>
       </div>
+  
+      <!-- Results Section -->
+      <div id="results-section" class="hidden">
+          <!-- Results will be injected here -->
+      </div>
+
+  
       
       <script>
-document.getElementById('analysis-form2').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const urlInput = document.getElementById('url2').value;
-    const formData = new FormData();
-    formData.append('url2', urlInput);
-
-    document.getElementById('loading-message').classList.remove('hidden');
-
-    fetch('/analyze2', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('loading-message').classList.add('hidden');
-        if (data.error) {
-            alert(data.error);
-        } else {
-            const urlParams = new URLSearchParams({
-                youtube_url2: urlInput,
-                video_name2: data.video_name2,
-                positive_count2: data.positive_count2,
-                negative_count2: data.negative_count2,
-                neutral_count2: data.neutral_count2,
-                summary2: data.summary2,
-                frequent_words2: JSON.stringify(data.frequent_words2),
-                comments2: JSON.stringify(data.comments2),
-                positive_img_str2: data.positive_img_str2,
-                negative_img_str2: data.negative_img_str2
+        document.getElementById('analysis-form2').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+        
+            const url = document.getElementById('url2').value;
+            document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
+        
+            fetch('/analyze2', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url2: url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
+        
+                if (data.error) {
+                    alert(data.error); // Show error message if any
+                    return;
+                }
+        
+                // Update the UI with the results
+                document.getElementById('results-section').innerHTML = `
+                    <div>
+                        <h2>Results of ${data.video_name2}</h2>
+                        <p>Positive Comments: ${data.positive_count2}</p>
+                        <p>Negative Comments: ${data.negative_count2}</p>
+                        <p>Neutral Comments: ${data.neutral_count2}</p>
+                        <h3>Summary</h3>
+                        <p>${data.summary2}</p>
+                        <h3>Frequent Words</h3>
+                        <ul>
+                            ${data.frequent_words2.map(word => `<li>${word[0]}: ${word[1]} (${word[2]})</li>`).join('')}
+                        </ul>
+                        <h3>Comments</h3>
+                        <ul>
+                            ${data.comments2.map(comment => `<li>${comment}</li>`).join('')}
+                        </ul>
+                        <h3>Word Cloud</h3>
+                        <div>
+                            <img src="data:image/png;base64,${data.positive_img_str2}" alt="Positive Word Cloud">
+                            <img src="data:image/png;base64,${data.negative_img_str2}" alt="Negative Word Cloud">
+                        </div>
+                    </div>
+                `;
+                document.getElementById('results-section').classList.remove('hidden'); // Show results section
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
             });
-
-            window.location.href = `/results2?${urlParams.toString()}`;
-        }
-    })
-    .catch(error => {
-        document.getElementById('loading-message').classList.add('hidden');
-        alert('An error occurred. Please try again.');
-    });
-});
-
-      </script>
+        });
+        </script>
+        
+        
       
     </section>
   
