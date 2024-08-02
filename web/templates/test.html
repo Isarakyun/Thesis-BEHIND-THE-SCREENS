@@ -1,289 +1,102 @@
-{% extends "base.html" %} {% block title %}Results of {{ youtube_url.video_name }}{% endblock %}
-
-{% block content %}
-<div>
-<div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
-    <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
-        <i class="ri-menu-line cursor-pointer"></i>
-    </button>
-    <div>
-        <span class="text-m text-black dark:text-white ml-4">Results</span>
-    </div>       
-</div>
-
-<!-- SUMMARY -->
-<div class="mt-5 pt-5 flex justify-center">
-  <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
-    <thead class="text-white">
-      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-        <th class="px-2 py-1">Interpretation of " {{ youtube_url.video_name }} "</th>
-      </tr>
-    </thead>
-    <tbody class="text-gray-900 dark:text-white text-sm">
-      <tr>
-        <!-- <td class="px-2 py-2">{{ summary }}</td> -->
-        <td class="px-2 py-2">
-          {% if youtube_url.created_at and count.positive is not none and count.negative is not none and count.neutral is not none and frequent_words %}
-            As of {{ youtube_url.created_at|format_date }}, this video has received {{ count.positive }} positive comments, {{ count.negative }} negative comments, and {{ count.neutral }} neutral comments. The most frequently used words are: 
-            {% for word in frequent_words %}
-              {% if loop.last %}
-                and '{{ word.word }}'
-              {% else %}
-                '{{ word.word }}',
-              {% endif %}
-            {% endfor %} which were used 
-            {% for word in frequent_words %} 
-              {% if loop.last %}
-                and {{ word.count }} times,
-              {% else %}
-                {{ word.count }},
-              {% endif %}
-            {% endfor %} respectively.
-          {% else %}
-            No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis.
-          {% endif %}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>    
-  
-<!-- TABLE FOR COMMENTS -->
-<div class="mt-5 pt-5 flex justify-center">
-  <table id="labeled-comments" class="table-auto ml-[50px] mr-[50px] mt-4">
-    <thead class="text-white">
-      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-        <th class="px-4 py-1">Comments</th>
-        <th class="px-2 py-1">Sentiments</th>
-      </tr>
-    </thead>
-    <tbody class="text-center text-gray-900 dark:text-white text-sm">
-      {% for comment in comments %}
-      <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
-        <td class="px-2 py-2">{{ comment.comment }}</td>
-        <td class="px-2 py-2">{{ comment.sentiment }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-<div id="pagination-controls" class="flex justify-center mt-4"></div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const rowsPerPage = 5;
-    const table = document.getElementById('labeled-comments');
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    const paginationControls = document.getElementById('pagination-controls');
-    let currentPage = 1;
-
-    function renderTable() {
-      tbody.innerHTML = '';
-      const start = (currentPage - 1) * rowsPerPage;
-      const end = start + rowsPerPage;
-      const paginatedRows = rows.slice(start, end);
-      paginatedRows.forEach(row => tbody.appendChild(row));
-    }
-
-    function renderPaginationControls() {
-      paginationControls.innerHTML = '';
-      const totalPages = Math.ceil(rows.length / rowsPerPage);
-
-      // Create '<<' button
-      if (currentPage > 1) {
-        const prevButton = document.createElement('button');
-        prevButton.textContent = '<<';
-        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-        prevButton.addEventListener('click', () => {
-          if (currentPage > 1) {
-            currentPage--;
-            renderTable();
-            renderPaginationControls();
-          }
-        });
-        paginationControls.appendChild(prevButton);
-      }
-
-      // Create page number buttons
-      const startPage = Math.max(1, currentPage - 1);
-      const endPage = Math.min(totalPages, startPage + 2);
-
-      for (let i = startPage; i <= endPage; i++) {
-        const pageButton = document.createElement('button');
-        pageButton.textContent = i;
-        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-        if (i === currentPage) {
-          pageButton.classList.add('font-bold');
-        }
-        pageButton.addEventListener('click', () => {
-          currentPage = i;
-          renderTable();
-          renderPaginationControls();
-        });
-        paginationControls.appendChild(pageButton);
-      }
-
-      // Add ellipsis if there are more pages
-      if (endPage < totalPages - 1) {
-        const ellipsis = document.createElement('span');
-        ellipsis.textContent = '...';
-        ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
-        paginationControls.appendChild(ellipsis);
-      }
-
-      // Create last page button
-      if (endPage < totalPages) {
-        const lastPageButton = document.createElement('button');
-        lastPageButton.textContent = totalPages;
-        lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-        if (totalPages === currentPage) {
-          lastPageButton.classList.add('font-bold');
-        }
-        lastPageButton.addEventListener('click', () => {
-          currentPage = totalPages;
-          renderTable();
-          renderPaginationControls();
-        });
-        paginationControls.appendChild(lastPageButton);
-      }
-
-      // Create '>>' button
-      if (currentPage < totalPages) {
-        const nextButton = document.createElement('button');
-        nextButton.textContent = '>>';
-        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-        nextButton.addEventListener('click', () => {
-          if (currentPage < totalPages) {
-            currentPage++;
-            renderTable();
-            renderPaginationControls();
-          }
-        });
-        paginationControls.appendChild(nextButton);
-      }
-    }
-
-    renderTable();
-    renderPaginationControls();
-  });
-</script>
-
-<div class="flex justify-center mb-5 space-x-5 items-center">
-  <!-- Table for Word Count -->
-  <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
-    <table id="frequent-words" class="table-auto text-center text-sm w-full">
-      <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700">
-          <th class="px-2 py-1">Word</th>
-          <th class="px-2 py-1">Count</th>
-          <th class="px-2 py-1">Sentiment</th>
-        </tr>
-      </thead>
-      <tbody class="text-gray-900 dark:text-white">
-        {% for word in frequent_words %}
-        <tr>
-          <td class="px-2 py-1">{{ word.word }}</td>
-          <td class="px-2 py-1">{{ word.count }}</td>
-          <td class="py-1">{{ word.sentiment }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- did i mention i love fictional characters -->
-<!-- Pie Chart -->
-<div class="mt-[20px] ml-4 mr-[50px]">
-  <canvas id="pieChart" width="350px" height="350px"></canvas>
-</div>
-
-</div>
-  <script>
-    async function fetchSentimentData(urlId) {
-      const response = await fetch(`/api/sentiment/${urlId}`);
-      const data = await response.json();
-      return data;
-    }
-    async function updatePieChart(urlId) {
-      const data = await fetchSentimentData(urlId);
-    const ctx = document.getElementById('pieChart').getContext('2d');
-    const pieChart = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: ['Negative', 'Positive', 'Neutral'],
-        datasets: [{
-          label: 'Sentiment Analysis',
-          data: [data.negative, data.positive, data.neutral],
-          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'], 
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'left',
-          },
-          tooltip: {
-            callbacks: {
-              label: function(tooltipItem) {
-                return tooltipItem.label + ': ' + tooltipItem.raw;
-              }
-            }
-          }
-        }
-      }
-    });
-  }
-
-  function getUrlParameter(name) {
-      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-      const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-      const results = regex.exec(location.search);
-      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-  }
-
-  function getUrlPathParameter(position) {
-      const pathSegments = window.location.pathname.split('/');
-      return pathSegments[position] || null;
-  }
-
-  window.onload = function() {
-      const urlId = getUrlPathParameter(2);
-      if (urlId) {
-          updatePieChart(urlId);
-      } else {
-          console.error('url_id parameter is missing in the URL');
-      }
-  };
-  </script>
-
-  <!-- WordCloud -->
-  <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
-    <a class="text-white font-bold ml-2">Word Cloud</a>
-  </div>     
-  <div class="pb-8">
-    <div class="flex justify-center">
-      <!-- POSITIVE WORD CLOUD -->
-      <div class="mt-[20px] ml-[50px] mr-4">
-        {% if image_positive_data %}
-          <img class="w-full rounded" src="data:image/png;base64,{{ image_positive_data }}">
-        {% else %}
-          <p class="text-black dark:text-white text-center mt-2">No positive words found.</p>
-        {% endif %}
-        <p class="text-black dark:text-white text-center mt-2">Positive</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Behind The Screens</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-800">
+      <div class="p-4">
+        <img src="your-logo.png" alt="Behind The Screens" class="h-12 mb-6">
+        <nav>
+          <ul>
+            <li class="mb-2">
+              <a href="#" class="flex items-center p-2 text-gray-200 hover:bg-gray-700 rounded">
+                <i class="ri-dashboard-line mr-3"></i>
+                Dashboard
+              </a>
+            </li>
+            <li class="mb-2">
+              <a href="#" class="flex items-center p-2 text-gray-200 hover:bg-gray-700 rounded">
+                <i class="ri-user-line mr-3"></i>
+                People
+              </a>
+            </li>
+            <li class="mb-2">
+              <a href="#" class="flex items-center p-2 text-gray-200 hover:bg-gray-700 rounded">
+                <i class="ri-file-list-line mr-3"></i>
+                Audit Trail
+              </a>
+            </li>
+            <li class="mb-2">
+              <a href="#" class="flex items-center p-2 text-gray-200 hover:bg-gray-700 rounded">
+                <i class="ri-history-line mr-3"></i>
+                Summary History
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
-      <!-- NEGATIVE WORD CLOUD -->
-      <div class="mt-[20px] ml-4 mr-[50px]">
-        {% if image_negative_data %}
-          <img class="w-full rounded" src="data:image/png;base64,{{ image_negative_data }}">
-        {% else %}
-          <p class="text-black dark:text-white text-center mt-2">No negative words found.</p>
-        {% endif %}
-        <p class="text-black dark:text-white text-center mt-2">Negative</p>
+      <div class="absolute bottom-0 left-0 p-4 w-full">
+        <div class="flex items-center">
+          <img src="admin-avatar.png" alt="Admin" class="h-10 w-10 rounded-full mr-3">
+          <span>Admin</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center">
+          <div class="relative mr-4">
+            <select class="bg-gray-800 text-gray-200 rounded-full px-4 py-2">
+              <option>Add filter</option>
+              <!-- Add more filter options here -->
+            </select>
+          </div>
+          <div class="relative">
+            <input type="text" placeholder="Search user" class="bg-gray-800 text-gray-200 rounded-full px-4 py-2">
+            <i class="ri-search-line absolute right-3 top-3 text-gray-500"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="bg-gray-700">
+              <th class="px-4 py-2">Name</th>
+              <th class="px-4 py-2">User ID</th>
+              <th class="px-4 py-2">Email address</th>
+              <th class="px-4 py-2">Gender</th>
+              <th class="px-4 py-2"></th>
+            </tr>
+          </thead>
+          <tbody class="bg-gray-800">
+            <tr class="border-t border-gray-700">
+              <td class="px-4 py-2 flex items-center">
+                <img src="avatar1.png" alt="User Avatar" class="h-10 w-10 rounded-full mr-3">
+                <span>Kristin Watson</span>
+              </td>
+              <td class="px-4 py-2">JSS 2</td>
+              <td class="px-4 py-2">michele.nava@example.com</td>
+              <td class="px-4 py-2">Female</td>
+              <td class="px-4 py-2 text-right">
+                <i class="ri-edit-line text-gray-400 hover:text-gray-200 cursor-pointer"></i>
+              </td>
+            </tr>
+            <!-- Repeat for other users -->
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-</div>
-{% endblock %}
+</body>
+</html>
