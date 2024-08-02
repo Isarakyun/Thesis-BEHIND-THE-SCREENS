@@ -268,99 +268,98 @@
       </div>
       
       <script>
-        document.getElementById('analysis-form2').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
-        
-            const url = document.getElementById('url2').value;
-            document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
-        
-            fetch('/analyze2', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url2: url })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-                document.getElementById('results-section').classList.remove('hidden'); // Show results section
-        
-                // Update summary
-                const summaryText = `As of today, this video has received ${data.positive_count2} positive comments, ${data.negative_count2} negative comments, and ${data.neutral_count2} neutral comments. The most frequently used words are: ${data.frequent_words2.map(word => `'${word[0]}'`).join(', ')} which were used ${data.frequent_words2.map(word => `${word[1]}`).join(', ')}, respectively.`;
-                document.getElementById('summary').innerHTML = `
-                    <thead class="text-white">
-                      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                        <th class="px-2 py-1">Interpretation of "${data.video_name2}"</th>
-                      </tr>
-                    </thead>
-                    <tbody class="text-gray-900 dark:text-white text-sm">
-                      <tr>
-                        <td class="px-2 py-2">${summaryText}</td>
-                      </tr>
-                    </tbody>`;
-        
-                // Update comments
-                const commentsTable = document.getElementById('labeled-comments').querySelector('tbody');
-                commentsTable.innerHTML = data.comments2.map(comment => `
-                    <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
-                        <td class="px-2 py-2">${comment.comment}</td>
-                        <td class="px-2 py-2">${comment.sentiment}</td>
-                    </tr>`).join('');
-        
-                // Update frequent words
-                const frequentWordsTable = document.getElementById('frequent-words').querySelector('tbody');
-                frequentWordsTable.innerHTML = data.frequent_words2.map(word => `
-                    <tr>
-                        <td class="px-2 py-1">${word[0]}</td>
-                        <td class="px-2 py-1">${word[1]}</td>
-                        <td class="py-1">${word[2]}</td>
-                    </tr>`).join('');
-        
-                // Update pie chart
-                const ctx = document.getElementById('pieChart').getContext('2d');
-                if (window.pieChartInstance) {
-                    window.pieChartInstance.destroy();
-                }
-                window.pieChartInstance = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Negative', 'Positive', 'Neutral'],
-                        datasets: [{
-                            label: 'Sentiment Analysis',
-                            data: [data.negative_count2, data.positive_count2, data.neutral_count2],
-                            backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
-                        }]
+document.getElementById('analysis-form2').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const url = document.getElementById('url2').value;
+    document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
+
+    fetch('/analyze2', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url2: url })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
+        document.getElementById('results-section').classList.remove('hidden'); // Show results section
+
+        // Update summary
+        const summaryText = `As of today, this video has received ${data.positive_count2} positive comments, ${data.negative_count2} negative comments, and ${data.neutral_count2} neutral comments. The most frequently used words are: ${data.frequent_words2.map(word => `'${word[0]}'`).join(', ')} which were used ${data.frequent_words2.map(word => `${word[1]}`).join(', ')}, respectively.`;
+        document.getElementById('summary').innerHTML = `
+            <thead class="text-white">
+                <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                    <th class="px-2 py-1">Interpretation of "${data.video_name2}"</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-900 dark:text-white text-sm">
+                <tr>
+                    <td class="px-2 py-2">${summaryText}</td>
+                </tr>
+            </tbody>`;
+
+        // Update comments
+        const commentsTable = document.getElementById('labeled-comments').querySelector('tbody');
+        commentsTable.innerHTML = data.comments2.map(comment => `
+            <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
+                <td class="px-2 py-2">${comment.comment}</td>
+                <td class="px-2 py-2">${comment.sentiment}</td>
+            </tr>`).join('');
+
+        // Update frequent words
+        const frequentWordsTable = document.getElementById('frequent-words').querySelector('tbody');
+        frequentWordsTable.innerHTML = data.frequent_words2.map(word => `
+            <tr>
+                <td class="px-2 py-1">${word[0]}</td>
+                <td class="px-2 py-1">${word[1]}</td>
+                <td class="py-1">${word[2]}</td>
+            </tr>`).join('');
+
+        // Update pie chart
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Negative', 'Positive', 'Neutral'],
+                datasets: [{
+                    label: 'Sentiment Analysis',
+                    data: [data.negative_count2, data.positive_count2, data.neutral_count2],
+                    backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'left',
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'left',
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(tooltipItem2) {
-                                        return tooltipItem2.label + ': ' + tooltipItem2.raw;
-                                    }
-                                }
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem2) {
+                                return tooltipItem2.label + ': ' + tooltipItem2.raw;
                             }
                         }
                     }
-                });
-        
-                // Update word clouds
-                document.getElementById('positive-word-cloud').src = `data:image/png;base64,${data.positive_img_str2}`;
-                document.getElementById('negative-word-cloud').src = `data:image/png;base64,${data.negative_img_str2}`;
-            })
-            .catch(error => {
-                document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-                alert('An error occurred. Please try again.');
-                console.error('Error:', error);
-            });
+                }
+            }
         });
-      </script>
+
+        // Update word clouds
+        document.getElementById('positive-word-cloud').src = `data:image/png;base64,${data.positive_img_str2}`;
+        document.getElementById('negative-word-cloud').src = `data:image/png;base64,${data.negative_img_str2}`;
+    })
+    .catch(error => {
+        document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
+        alert('An error occurred. Please try again.');
+        console.error('Error:', error);
+    });
+});
+
+        </script>
+        
     </section>
     
     

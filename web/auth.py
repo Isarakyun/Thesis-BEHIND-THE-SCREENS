@@ -6,7 +6,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 from .models import User, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import clean_text, word_cloud, get_summary, extract_comments
+from .analysis import clean_text, word_cloud, get_summary, extract_comments, analyze_summary
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
@@ -504,71 +504,65 @@ from flask import jsonify, request
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():
     data = request.get_json()
-    youtube_url2 = data.get('url2')
-    if not youtube_url2:
+    youtube_url = data.get('url2')
+    
+    if not youtube_url:
         return jsonify({'error': 'Please enter a valid YouTube URL.'}), 400
-
+    
     try:
-        yt = YouTube(youtube_url2)
-        video_name2 = yt.title
+        yt = YouTube(youtube_url)
+        video_name = yt.title
     except Exception as e:
         return jsonify({'error': f'Failed to extract video name: {str(e)}'}), 400
+    
+    # Extract comments
+    filtered_comments = extract_comments(youtube_url)
 
-    # Extracting comments from YouTube video
-    filtered_comments2 = extract_comments(youtube_url2)
+    positive_count = 0
+    negative_count = 0
+    neutral_count = 0
 
-    # Sentiment Analysis
-    label_mapping = {
-        "LABEL_0": "Negative",
-        "LABEL_1": "Neutral",
-        "LABEL_2": "Positive"
+    comments_data = []
+    for comment in filtered_comments:
+        sentiment_label, sentiment_score = analyze_summary(comment)
+        comments_data.append({'comment': comment, 'sentiment': sentiment_label})
+        if sentiment_label == 'Positive':
+            positive_count += 1
+        elif sentiment_label == 'Negative':
+            negative_count += 1
+        else:
+            neutral_count += 1
+
+    all_comments_text = " ".join(filtered_comments)
+    cleaned_comments = clean_text(all_comments_text)
+    word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
+    most_common_words = word_count.most_common(5)
+    frequent_words = []
+    for word, count in most_common_words:
+        word_sentiment_label, _ = analyze_summary(word)
+        frequent_words.append([word, count, word_sentiment_label])
+
+    summary = get_summary(all_comments_text)
+
+    # Generate Word Clouds
+    unlabeled_words = word_tokenize(all_comments_text)
+    positive_words = [word for word in unlabeled_words if analyze_summary(word)[0] == 'Positive']
+    positive_text = ' '.join(positive_words)
+    positive_img_str = word_cloud(positive_text, 'winter')
+    
+    negative_words = [word for word in unlabeled_words if analyze_summary(word)[0] == 'Negative']
+    negative_text = ' '.join(negative_words)
+    negative_img_str = word_cloud(negative_text, 'hot')
+
+    response = {
+        'video_name2': video_name,
+        'positive_count2': positive_count,
+        'negative_count2': negative_count,
+        'neutral_count2': neutral_count,
+        'comments2': comments_data,
+        'frequent_words2': frequent_words,
+        'positive_img_str2': positive_img_str,
+        'negative_img_str2': negative_img_str,
     }
 
-    # Sentiment Analysis for each comment
-    sentiments2 = []
-    for comment in filtered_comments2:
-        try:
-            sentiment = sentiment_pipeline([comment])[0]
-            sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
-            sentiments2.append(sentiment)
-        except RuntimeError as e:
-            continue  # Skip this comment and continue with the next one
-        except Exception as e:
-            return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 500
-
-    positive_count2 = sum(1 for sentiment in sentiments2 if sentiment['label'] == 'Positive')
-    negative_count2 = sum(1 for sentiment in sentiments2 if sentiment['label'] == 'Negative')
-    neutral_count2 = sum(1 for sentiment in sentiments2 if sentiment['label'] == 'Neutral')
-
-    all_comments_text2 = " ".join(filtered_comments2)
-
-    # Generate frequent words
-    cleaned_comments2 = clean_text(all_comments_text2)
-    word_count2 = Counter(word for word in cleaned_comments2.split() if word not in stop_words)
-    most_common_words2 = word_count2.most_common(5)
-    frequent_words2 = [(word, count, sia.polarity_scores(word)['compound']) for word, count in most_common_words2]
-
-    # Generate summary
-    summary2 = get_summary(all_comments_text2)
-
-    # Generate word clouds
-    positive_words = [word for word in word_tokenize(all_comments_text2) if sia.polarity_scores(word)['compound'] > 0]
-    negative_words = [word for word in word_tokenize(all_comments_text2) if sia.polarity_scores(word)['compound'] < 0]
-    positive_text = ' '.join(positive_words)
-    negative_text = ' '.join(negative_words)
-    positive_img_str2 = word_cloud(positive_text, 'winter')
-    negative_img_str2 = word_cloud(negative_text, 'hot')
-
-    return jsonify({
-        'video_name2': video_name2,
-        'positive_count2': positive_count2,
-        'negative_count2': negative_count2,
-        'neutral_count2': neutral_count2,
-        'summary2': summary2,
-        'frequent_words2': frequent_words2,
-        'comments2': [{'comment': comment, 'sentiment': sentiment['label']} for comment, sentiment in zip(filtered_comments2, sentiments2)],
-        'positive_img_str2': positive_img_str2,
-        'negative_img_str2': negative_img_str2
-    })
-
-
+    return jsonify(response), 200
