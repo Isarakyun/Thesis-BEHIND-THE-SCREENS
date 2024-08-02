@@ -1,5 +1,5 @@
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
@@ -13,30 +13,43 @@ from transformers import pipeline
 from nltk.tokenize import word_tokenize
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
-from transformers import AutoTokenizer
-from transformers import AutoModelForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from collections import Counter
 import base64
+import os
 
 auth = Blueprint('auth', __name__)
 
 # Google OAuth configuration
 google_bp = make_google_blueprint(
-    client_id='143865604684-gv3f3maepclm4lm8el4jvuijesge73l6.apps.googleusercontent.com',
-    client_secret='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',
-    redirect_to='auth.google_login'  # This should be the name of the view function
+    client_id=os.getenv('GOOGLE_OAUTH_CLIENT_ID'),
+    client_secret=os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'),
+    redirect_to='auth.google_login'
 )
-auth.register_blueprint(google_bp, url_prefix='/google')  # Use a consistent URL prefix
+auth.register_blueprint(google_bp, url_prefix='/google')
+
+# Initialize extensions
+mail = Mail()
+s = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
+sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
+tokenizer = AutoTokenizer.from_pretrained(MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+stop_words = set(stopwords.words('english'))
+sia = SentimentIntensityAnalyzer()
 
 @auth.route('/google-login')
 def google_login():
+    print("In google_login route")
     if not google.authorized:
-        return redirect(url_for('google.login'))
+        print("User not authorized, redirecting to Google login")
+        redirect_uri = url_for('google.login')
+        print("Redirect URI: ", redirect_uri)
+        return redirect(redirect_uri)
     
     resp = google.get('/plus/v1/people/me')
     assert resp.ok, resp.text
     google_info = resp.json()
-    google_id = google_info['id']
     email = google_info['emails'][0]['value']
     username = google_info['displayName']
 
@@ -47,6 +60,14 @@ def google_login():
         db.session.commit()
     login_user(user)
     return redirect(url_for('views.main'))
+
+
+
+print("Google Client ID:", os.getenv('GOOGLE_OAUTH_CLIENT_ID'))
+print("Google Client Secret:", os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'))
+
+
+
 
 
 mail = Mail()
@@ -476,22 +497,22 @@ def analyze():
 
     return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id))
 
-@auth.route('/analyze_home', methods=['POST'])
-def analyze_home():
-    youtube_url = request.form.get('url')
-    # Ensure youtube_url is provided
-    if not youtube_url:
-        flash('Please enter a valid YouTube URL.', category='error')
-        return redirect(url_for('views.home'))
-    try:
-        yt = YouTube(youtube_url)
-        video_name = yt.title
-    except Exception as e:
-        flash(f'Failed to extract video name: {str(e)}', category='error')
-        return redirect(url_for('views.home'))
+import logging
 
-    # Extract comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
-    filtered_comments = extract_comments(youtube_url)
+@auth.route('/analyze2', methods=['POST'])
+def analyze2():
+    youtube_url2 = request.form.get('url2')
+    if not youtube_url2:
+        return jsonify({'error': 'Please enter a valid YouTube URL.'}), 400
+
+    try:
+        yt = YouTube(youtube_url2)
+        video_name2 = yt.title
+    except Exception as e:
+        return jsonify({'error': f'Failed to extract video name: {str(e)}'}), 400
+
+    # Extracting comments from YouTube video
+    filtered_comments2 = extract_comments(youtube_url2)
 
     # Sentiment Analysis
     label_mapping = {
@@ -501,74 +522,51 @@ def analyze_home():
     }
 
     # Sentiment Analysis for each comment
-    sentiments = []
-    for comment in filtered_comments:
+    sentiments2 = []
+    for comment in filtered_comments2:
         try:
             sentiment = sentiment_pipeline([comment])[0]
             sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
-            sentiments.append(sentiment)
-        except RuntimeError as e: # This occurs because of the length of the comment. RoBERTa can only handle a maximum of 512 tokens.
-            continue  # Skip this comment and continue with the next one
+            sentiments2.append(sentiment)
+        except RuntimeError as e:  # Skip this comment and continue with the next one
+            continue
         except Exception as e:
-            flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
-            return redirect(url_for('views.home'))
+            return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 400
+
+    positive_count2 = sum(1 for sentiment in sentiments2 if sentiment['label'] == 'Positive')
+    negative_count2 = sum(1 for sentiment in sentiments2 if sentiment['label'] == 'Negative')
+    neutral_count2 = sum(1 for sentiment in sentiments2 if sentiment['label'] == 'Neutral')
+
+    all_comments_text2 = " ".join(filtered_comments2)
     
-    # for sentiment counter
-    positive_count = 0
-    negative_count = 0
-    neutral_count = 0
+    try:
+        cleaned_comments2 = clean_text(all_comments_text2)
+    except Exception as e:
+        return jsonify({'error': f'Failed to clean text: {str(e)}'}), 400
 
-    for sentiment in sentiments:
-        if sentiment['label'] == 'Positive':
-            positive_count += 1
-        elif sentiment['label'] == 'Negative':
-            negative_count += 1
-        else:
-            neutral_count += 1
+    word_count2 = Counter(word for word in cleaned_comments2.split() if word not in stop_words)
+    most_common_words2 = word_count2.most_common(5)
+    frequent_words2 = [(word, count, sia.polarity_scores(word)['compound']) for word, count in most_common_words2]
 
-    all_comments_text = " ".join(filtered_comments)
+    summary2 = get_summary(all_comments_text2)
 
-    # Generate summary
-    summary = get_summary(all_comments_text)
-
-    # Generate frequent words
-    cleaned_comments = clean_text(all_comments_text)
-    word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
-    most_common_words = word_count.most_common(5)
-    frequent_words = []
-    for word, count in most_common_words:
-        word_sentiment_scores = sia.polarity_scores(word)
-        compound_score = word_sentiment_scores['compound']
-        if compound_score >= 0.05:
-            word_sentiment_label = "Positive"
-        elif compound_score <= -0.05:
-            word_sentiment_label = "Negative"
-        else:
-            word_sentiment_label = "Neutral"
-        frequent_words.append((word, count, word_sentiment_label))
-
-    # WORD CLOUD
-    unlabeled_words = word_tokenize(all_comments_text)
-
-    # Generate the positive word cloud
-    positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
-    positive_text = ' '.join(positive_words)
-    positive_img_str = word_cloud(positive_text, 'winter')
+    positive_words2 = [word for word in word_tokenize(all_comments_text2) if sia.polarity_scores(word)['compound'] > 0]
+    positive_text2 = ' '.join(positive_words2)
+    positive_img_str2 = word_cloud(positive_text2, 'winter')
     
-    # Generate the negative word cloud
-    negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
-    negative_text = ' '.join(negative_words)
-    negative_img_str = word_cloud(negative_text, 'hot')
+    negative_words2 = [word for word in word_tokenize(all_comments_text2) if sia.polarity_scores(word)['compound'] < 0]
+    negative_text2 = ' '.join(negative_words2)
+    negative_img_str2 = word_cloud(negative_text2, 'hot')
 
-    # Redirect to results2.html with the results
-    return render_template('results2.html', 
-                           youtube_url=youtube_url, 
-                           video_name=video_name,
-                           positive_count=positive_count, 
-                           negative_count=negative_count, 
-                           neutral_count=neutral_count,
-                           summary=summary,
-                           frequent_words=frequent_words,
-                           comments=filtered_comments,
-                           positive_img_str=positive_img_str,
-                           negative_img_str=negative_img_str)
+    response = {
+        'video_name2': video_name2,
+        'positive_count2': positive_count2,
+        'negative_count2': negative_count2,
+        'neutral_count2': neutral_count2,
+        'summary2': summary2,
+        'frequent_words2': frequent_words2,
+        'comments2': filtered_comments2,
+        'positive_img_str2': positive_img_str2,
+        'negative_img_str2': negative_img_str2
+    }
+    return jsonify(response)
