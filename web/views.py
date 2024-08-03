@@ -8,6 +8,7 @@ import re
 import sys
 import os
 import base64
+import json
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -124,9 +125,37 @@ def user_agreement():
 def about_us():
     return render_template('about_us.html', user=current_user)
 
+@views.route('/results2')
+def results2():
+    youtube_url2 = request.args.get('youtube_url2')
+    video_name2 = request.args.get('video_name2')
+    positive_count2 = int(request.args.get('positive_count2', 0))
+    negative_count2 = int(request.args.get('negative_count2', 0))
+    neutral_count2 = int(request.args.get('neutral_count2', 0))
+    summary2 = request.args.get('summary2', '')
+    frequent_words2 = json.loads(request.args.get('frequent_words2', '[]'))
+    comments2 = json.loads(request.args.get('comments2', '[]'))
+    positive_img_str2 = request.args.get('positive_img_str2', '')
+    negative_img_str2 = request.args.get('negative_img_str2', '')
+
+    return render_template('results2.html', 
+                           youtube_url2=youtube_url2, 
+                           video_name2=video_name2,
+                           positive_count2=positive_count2, 
+                           negative_count2=negative_count2, 
+                           neutral_count2=neutral_count2,
+                           summary2=summary2,
+                           frequent_words2=frequent_words2,
+                           comments2=comments2,
+                           positive_img_str2=positive_img_str2,
+                           negative_img_str2=negative_img_str2)
+
+
+
 # This route is for testing pages
 @views.route('/test')
 def test():
     # Assuming you have a way to get the user from the session or some other method
     user = session.get('user')  # Retrieve the user object from the session
     return render_template('test.html', user=user)
+

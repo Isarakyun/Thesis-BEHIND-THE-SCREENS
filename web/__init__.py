@@ -4,15 +4,22 @@ from flask_login import LoginManager
 from flask_mail import Mail, Message
 from datetime import datetime, timedelta
 from itsdangerous import URLSafeTimedSerializer
+from dotenv import load_dotenv
+import os
 
+# Initialize extensions
 db = SQLAlchemy()
-DB_NAME = "behindthescreens"
 mail = Mail()
 
 def create_app():
+    # Load environment variables from .env file
+    load_dotenv()
+
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'commentsanalysisbehindthescreens'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{DB_NAME}'
+    
+    # Apply configuration
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'commentsanalysisbehindthescreens')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}'
     db.init_app(app)
 
     app.config.from_pyfile('config.cfg')

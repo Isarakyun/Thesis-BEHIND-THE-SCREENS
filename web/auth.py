@@ -1,23 +1,74 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask_dance.contrib.google import make_google_blueprint, google
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from .models import User, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import clean_text, word_cloud, get_summary, extract_comments
+from .analysis import clean_text, word_cloud, get_summary, extract_comments, analyze_summary
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
 from nltk.tokenize import word_tokenize
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
-from transformers import AutoTokenizer
-from transformers import AutoModelForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from collections import Counter
 import base64
+import os
 
 auth = Blueprint('auth', __name__)
+
+# Google OAuth configuration
+google_bp = make_google_blueprint(
+    client_id=os.getenv('GOOGLE_OAUTH_CLIENT_ID'),
+    client_secret=os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'),
+    redirect_to='auth.google_login'
+)
+auth.register_blueprint(google_bp, url_prefix='/google')
+
+# Initialize extensions
+mail = Mail()
+s = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
+sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
+tokenizer = AutoTokenizer.from_pretrained(MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+stop_words = set(stopwords.words('english'))
+sia = SentimentIntensityAnalyzer()
+
+@auth.route('/google-login')
+def google_login():
+    print("In google_login route")
+    if not google.authorized:
+        print("User not authorized, redirecting to Google login")
+        redirect_uri = url_for('google.login')
+        print("Redirect URI: ", redirect_uri)
+        return redirect(redirect_uri)
+    
+    resp = google.get('/plus/v1/people/me')
+    assert resp.ok, resp.text
+    google_info = resp.json()
+    email = google_info['emails'][0]['value']
+    username = google_info['displayName']
+
+    user = User.query.filter_by(email=email).first()
+    if user is None:
+        user = User(username=username, email=email, confirmed_email=True)
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
+    return redirect(url_for('views.main'))
+
+
+
+print("Google Client ID:", os.getenv('GOOGLE_OAUTH_CLIENT_ID'))
+print("Google Client Secret:", os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'))
+
+
+
+
 
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
@@ -56,6 +107,7 @@ def logout():
 @auth.route('/')
 def home():
     return render_template("home.html")
+
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
@@ -445,99 +497,72 @@ def analyze():
 
     return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id))
 
-@auth.route('/analyze_home', methods=['POST'])
-def analyze_home():
-    youtube_url = request.form.get('url')
-    # Ensure youtube_url is provided
+import logging
+
+from flask import jsonify, request
+
+@auth.route('/analyze2', methods=['POST'])
+def analyze2():
+    data = request.get_json()
+    youtube_url = data.get('url2')
+    
     if not youtube_url:
-        flash('Please enter a valid YouTube URL.', category='error')
-        return redirect(url_for('views.home'))
+        return jsonify({'error': 'Please enter a valid YouTube URL.'}), 400
+    
     try:
         yt = YouTube(youtube_url)
         video_name = yt.title
     except Exception as e:
-        flash(f'Failed to extract video name: {str(e)}', category='error')
-        return redirect(url_for('views.home'))
-
-    # Extract comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
+        return jsonify({'error': f'Failed to extract video name: {str(e)}'}), 400
+    
+    # Extract comments
     filtered_comments = extract_comments(youtube_url)
 
-    # Sentiment Analysis
-    label_mapping = {
-        "LABEL_0": "Negative",
-        "LABEL_1": "Neutral",
-        "LABEL_2": "Positive"
-    }
-
-    # Sentiment Analysis for each comment
-    sentiments = []
-    for comment in filtered_comments:
-        try:
-            sentiment = sentiment_pipeline([comment])[0]
-            sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
-            sentiments.append(sentiment)
-        except RuntimeError as e: # This occurs because of the length of the comment. RoBERTa can only handle a maximum of 512 tokens.
-            continue  # Skip this comment and continue with the next one
-        except Exception as e:
-            flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
-            return redirect(url_for('views.home'))
-    
-    # for sentiment counter
     positive_count = 0
     negative_count = 0
     neutral_count = 0
 
-    for sentiment in sentiments:
-        if sentiment['label'] == 'Positive':
+    comments_data = []
+    for comment in filtered_comments:
+        sentiment_label, sentiment_score = analyze_summary(comment)
+        comments_data.append({'comment': comment, 'sentiment': sentiment_label})
+        if sentiment_label == 'Positive':
             positive_count += 1
-        elif sentiment['label'] == 'Negative':
+        elif sentiment_label == 'Negative':
             negative_count += 1
         else:
             neutral_count += 1
 
     all_comments_text = " ".join(filtered_comments)
-
-    # Generate summary
-    summary = get_summary(all_comments_text)
-
-    # Generate frequent words
     cleaned_comments = clean_text(all_comments_text)
     word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
     most_common_words = word_count.most_common(5)
     frequent_words = []
     for word, count in most_common_words:
-        word_sentiment_scores = sia.polarity_scores(word)
-        compound_score = word_sentiment_scores['compound']
-        if compound_score >= 0.05:
-            word_sentiment_label = "Positive"
-        elif compound_score <= -0.05:
-            word_sentiment_label = "Negative"
-        else:
-            word_sentiment_label = "Neutral"
-        frequent_words.append((word, count, word_sentiment_label))
+        word_sentiment_label, _ = analyze_summary(word)
+        frequent_words.append([word, count, word_sentiment_label])
 
-    # WORD CLOUD
+    summary = get_summary(all_comments_text)
+
+    # Generate Word Clouds
     unlabeled_words = word_tokenize(all_comments_text)
-
-    # Generate the positive word cloud
-    positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
+    positive_words = [word for word in unlabeled_words if analyze_summary(word)[0] == 'Positive']
     positive_text = ' '.join(positive_words)
     positive_img_str = word_cloud(positive_text, 'winter')
     
-    # Generate the negative word cloud
-    negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
+    negative_words = [word for word in unlabeled_words if analyze_summary(word)[0] == 'Negative']
     negative_text = ' '.join(negative_words)
     negative_img_str = word_cloud(negative_text, 'hot')
 
-    # Redirect to results2.html with the results
-    return render_template('results2.html', 
-                           youtube_url=youtube_url, 
-                           video_name=video_name,
-                           positive_count=positive_count, 
-                           negative_count=negative_count, 
-                           neutral_count=neutral_count,
-                           summary=summary,
-                           frequent_words=frequent_words,
-                           comments=filtered_comments,
-                           positive_img_str=positive_img_str,
-                           negative_img_str=negative_img_str)
+    response = {
+        'video_name2': video_name,
+        'positive_count2': positive_count,
+        'negative_count2': negative_count,
+        'neutral_count2': neutral_count,
+        'comments2': comments_data,
+        'frequent_words2': frequent_words,
+        'positive_img_str2': positive_img_str,
+        'negative_img_str2': negative_img_str,
+    }
+
+    return jsonify(response), 200
