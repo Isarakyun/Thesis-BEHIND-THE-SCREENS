@@ -6,7 +6,7 @@
     <link href="../../static/css/styles.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/custom-scrollbar.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
-    <title>Behind the Screens</title> 
+    <title>Behind the Screens - Summary History</title> 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .hidden {
@@ -14,7 +14,7 @@
         }
         .video-title {
             display: inline-block;
-            max-width: 100%; 
+            max-width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -28,7 +28,7 @@
             z-index: 50;
             position: fixed;
             top: 0;
-            left: 256px; 
+            left: 256px;
             right: 0;
             transition: left 0.3s ease-in-out;
         }
@@ -87,20 +87,20 @@
 <body>
     <div class="sidebar" id="sidebar" aria-hidden="true">
         <div class="flex items-center justify-center pb-2">
-            <img src="./static/BTS-logo-with-name.png" alt="BTS Logo" class="w-56 h-auto">
+            <img src="{{ url_for('static', filename='BTS-logo-with-name.png') }}" alt="BTS Logo" class="w-56 h-auto">
         </div>
         <div class="divider"></div>
         <nav class="mt-4">
-            <a href="/dashboard" class="nav-link">
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-link">
                 <i class="ri-dashboard-line nav-icon"></i> Dashboard
             </a>
-            <a href="/people" class="nav-link">
-                <i class="ri-user-line nav-icon"></i> People
+            <a href="{{ url_for('admin.users') }}" class="nav-link">
+                <i class="ri-user-line nav-icon"></i> Users
             </a>
-            <a href="/audit-trail" class="nav-link">
+            <a href="{{ url_for('admin.audit_trail') }}" class="nav-link">
                 <i class="ri-file-list-line nav-icon"></i> Audit Trail
             </a>
-            <a href="/summary-history" class="nav-link">
+            <a href="{{ url_for('admin.summary_history') }}" class="nav-link">
                 <i class="ri-history-line nav-icon"></i> Summary History
             </a>
         </nav>
@@ -111,7 +111,7 @@
             <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton" aria-label="Toggle Sidebar">
                 <i class="ri-menu-line cursor-pointer"></i>
             </button>
-            <span class="text-m text-black dark:text-white ml-4">Dashboard</span>
+            <span class="text-m text-black dark:text-white ml-4">Summary History</span>
         </div>
         <div>
             <button onclick="window.location.href='/logout'" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
@@ -122,57 +122,23 @@
 
     <main class="main-content" id="content">
         <div class="p-4">
-            <div class="flex justify-between gap-4">
-                <div class="bg-white rounded-3xl shadow-lg p-6 w-full max-w-sm text-center">
-                    <div class="mb-4">
-                        <div class="text-2xl font-bold">ON BOARD</div>
-                        <div class="text-5xl font-bold mt-2">0</div>
-                    </div>
-                </div>
-        
-                <div class="bg-white rounded-3xl shadow-lg p-6 w-full max-w-sm text-center">
-                    <div class="mb-4">
-                        <div class="text-2xl font-bold">ON LEAVE</div>
-                        <div class="text-5xl font-bold mt-2">0</div>
-                    </div>
-                </div>
-        
-                <div class="bg-white rounded-3xl shadow-lg p-6 w-full max-w-sm text-center">
-                    <div class="mb-4">
-                        <div class="text-2xl font-bold">OFF BOARD</div>
-                        <div class="text-5xl font-bold mt-2">0</div>
-                    </div>
-                </div>
-            </div>
-        
-            <!-- User Table -->
+            <!-- Summary History Table -->
             <div class="bg-gray-800 rounded-3xl shadow-lg mt-6">
                 <div class="overflow-x-auto rounded-3xl">
                     <table class="min-w-full bg-gray-900 text-white rounded-3xl">
                         <thead>
                             <tr class="w-full bg-gray-700 rounded-3xl">
-                                <th class="py-3 px-6 text-left rounded-tl-3xl">Name</th>
-                                <th class="py-3 px-6 text-left">User ID</th>
-                                <th class="py-3 px-6 text-left">Email Address</th>
-                                <th class="py-3 px-6 text-left">Gender</th>
-                                <th class="py-3 px-6 text-center rounded-tr-3xl">Action</th>
+                                <th class="py-3 px-6 text-left rounded-tl-3xl">Date</th>
+                                <th class="py-3 px-6 text-left">Summary</th>
+                                <th class="py-3 px-6 text-left rounded-tr-3xl">Details</th>
                             </tr>
                         </thead>
                         <tbody class="bg-gray-800">
-                            {% for user in users %}
+                            {% for summary in summaries %}
                             <tr class="border-b border-gray-700">
-                                <td class="py-4 px-6 flex items-center">
-                                    <img class="w-10 h-10 rounded-full mr-3" src="{{ user.profile_pic }}" alt="User Image">
-                                    <span>{{ user.username }}</span>
-                                </td>
-                                <td class="py-4 px-6">{{ user.id }}</td>
-                                <td class="py-4 px-6">{{ user.email }}</td>
-                                <td class="py-4 px-6">{{ user.gender }}</td>
-                                <td class="py-4 px-6 text-center">
-                                    <button class="text-blue-500 hover:text-blue-700">
-                                        <i class="ri-edit-2-line"></i>
-                                    </button>
-                                </td>
+                                <td class="py-4 px-6">{{ summary.created_at }}</td>
+                                <td class="py-4 px-6">{{ summary.summary }}</td>
+                                <td class="py-4 px-6">{{ summary.details }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

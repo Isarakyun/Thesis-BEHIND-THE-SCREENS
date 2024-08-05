@@ -36,7 +36,7 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
-    from .models import User, YoutubeUrl, Comments, Admin
+    from .models import User, Admin, YoutubeUrl, Comments
 
     @login_manager.user_loader
     def load_user(user_id):

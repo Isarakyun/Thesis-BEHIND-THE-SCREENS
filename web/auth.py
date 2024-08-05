@@ -91,7 +91,7 @@ def login():
         admin = Admin.query.filter_by(email=email).first()
         if admin:
             print(f"Admin user found: {admin.email}")
-            if admin.check_password(password):
+            if admin.password == password:  # Compare plaintext passwords
                 print("Admin password correct")
                 login_user(admin)
                 return redirect(url_for('admin.dashboard'))
@@ -102,7 +102,7 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user:
             print(f"User found: {user.email}")
-            if check_password_hash(user.password, password):
+            if user.password == password:  # Compare plaintext passwords
                 print("User password correct")
                 login_user(user, remember=True)
                 return redirect(url_for('views.main'))
