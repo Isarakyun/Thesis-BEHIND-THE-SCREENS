@@ -82,6 +82,44 @@
             border-bottom: 1px solid #333;
             margin: 0.5rem 0;
         }
+        .table-cell {
+            text-align: center; /* Center text in table cells */
+        }
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 50; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        body.modal-open {
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
@@ -122,29 +160,35 @@
 
     <main class="main-content" id="content">
         <div class="p-4">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="showModal()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                    + Add New
+                </button>
+            </div>
             <!-- User Table -->
             <div class="bg-gray-800 rounded-3xl shadow-lg mt-6">
                 <div class="overflow-x-auto rounded-3xl">
                     <table class="min-w-full bg-gray-900 text-white rounded-3xl">
                         <thead>
                             <tr class="w-full bg-gray-700 rounded-3xl">
-                                <th class="py-3 px-6 text-left rounded-tl-3xl">Name</th>
-                                <th class="py-3 px-6 text-left">User ID</th>
-                                <th class="py-3 px-6 text-left">Email Address</th>
-                                <th class="py-3 px-6 text-left">Gender</th>
+                                <th class="py-3 px-6 text-center rounded-tl-3xl">Profile Pic</th>
+                                <th class="py-3 px-6 text-center">Username</th>
+                                <th class="py-3 px-6 text-center">User ID</th>
+                                <th class="py-3 px-6 text-center">Email Address</th>
+                                <th class="py-3 px-6 text-center">Confirmed Email</th>
                                 <th class="py-3 px-6 text-center rounded-tr-3xl">Action</th>
                             </tr>
                         </thead>
                         <tbody class="bg-gray-800">
                             {% for user in users %}
                             <tr class="border-b border-gray-700">
-                                <td class="py-4 px-6 flex items-center">
-                                    <img class="w-10 h-10 rounded-full mr-3" src="{{ user.profile_pic }}" alt="User Image">
-                                    <span>{{ user.username }}</span>
+                                <td class="py-4 px-6 flex items-center justify-center">
+                                    <img class="w-10 h-10 rounded-full" src="{{ user.profile_pic }}" alt="User Image">
                                 </td>
-                                <td class="py-4 px-6">{{ user.id }}</td>
-                                <td class="py-4 px-6">{{ user.email }}</td>
-                                <td class="py-4 px-6">{{ user.gender }}</td>
+                                <td class="py-4 px-6 table-cell">{{ user.username }}</td>
+                                <td class="py-4 px-6 table-cell">{{ user.id }}</td>
+                                <td class="py-4 px-6 table-cell">{{ user.email }}</td>
+                                <td class="py-4 px-6 table-cell">{{ 'Yes' if user.confirmed_email else 'No' }}</td>
                                 <td class="py-4 px-6 text-center">
                                     <button class="text-blue-500 hover:text-blue-700">
                                         <i class="ri-edit-2-line"></i>
@@ -159,11 +203,48 @@
         </div>
     </main>
 
+    <!-- The Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal()">&times;</span>
+            <h2>Add New User</h2>
+            <form action="{{ url_for('admin.add_user') }}" method="post">
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" name="username" id="username" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" id="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password" id="password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label for="profile_pic" class="block text-sm font-medium text-gray-700">Profile Picture URL</label>
+                    <input type="text" name="profile_pic" id="profile_pic" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+                <div class="mb-4">
+                    <label for="confirmed_email" class="block text-sm font-medium text-gray-700">Confirmed Email</label>
+                    <select name="confirmed_email" id="confirmed_email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const menuToggleButton = document.getElementById('menuToggleButton');
         const sidebar = document.getElementById('sidebar');
         const content = document.getElementById('content');
         const topBar = document.getElementById('topBar');
+        const addUserModal = document.getElementById('addUserModal');
 
         menuToggleButton.addEventListener('click', () => {
             sidebar.classList.toggle('sidebar-hidden');
@@ -171,6 +252,31 @@
             topBar.style.left = sidebar.classList.contains('sidebar-hidden') ? '0' : '256px';
             sidebar.setAttribute('aria-hidden', sidebar.classList.contains('sidebar-hidden'));
         });
+
+        // Function to show modal
+        function showModal() {
+            addUserModal.style.display = 'block';
+            document.body.classList.add('modal-open');
+        }
+
+        // Function to hide modal
+        function hideModal() {
+            addUserModal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        // Close the modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target == addUserModal) {
+                hideModal();
+            }
+        }
+
+        // Close button event
+        document.querySelector('.close').addEventListener('click', hideModal);
+
+        // Button to show the modal
+        document.querySelector('button[onclick*="showModal"]').addEventListener('click', showModal);
     </script>
 </body>
 </html>

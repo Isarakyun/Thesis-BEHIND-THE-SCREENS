@@ -1,7 +1,6 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
-from werkzeug.security import generate_password_hash, check_password_hash
 
 class YoutubeUrl(db.Model):
     __tablename__ = 'youtube_url'
@@ -73,11 +72,21 @@ class User(db.Model, UserMixin):
     sentimentCounter = db.relationship('SentimentCounter')
     wordCloudImage = db.relationship('WordCloudImage')
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'confirmed_email': self.confirmed_email,
+            'profile_pic': self.profile_pic,
+            'created_at': self.created_at,
+        }
+
 class Admin(db.Model, UserMixin):
     __tablename__ = 'admin'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)  # Change to `password`
+    password = db.Column(db.String(128), nullable=False)
 
     @property
     def is_active(self):

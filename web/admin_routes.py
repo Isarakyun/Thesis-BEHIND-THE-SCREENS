@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
+from werkzeug.security import generate_password_hash
 from .models import User, Comments, YoutubeUrl
+from . import db
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -37,3 +39,23 @@ def summary_history():
 def users():
     users = User.query.all()
     return render_template('admin_users.html', users=users)
+
+@admin_bp.route('/add-user', methods=['POST'])
+@admin_required
+def add_user():
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    profile_pic = request.form.get('profile_pic')
+    confirmed_email = bool(int(request.form.get('confirmed_email')))
+
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        flash('Email address already exists.', 'error')
+        return redirect(url_for('admin.users'))
+
+    new_user = User(username=username, email=email, password=generate_password_hash(password, method='sha256'), profile_pic=profile_pic, confirmed_email=confirmed_email)
+    db.session.add(new_user)
+    db.session.commit()
+    flash('User added successfully!', 'success')
+    return redirect(url_for('admin.users'))

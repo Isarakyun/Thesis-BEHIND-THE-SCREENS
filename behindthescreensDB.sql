@@ -15,7 +15,7 @@ CREATE TABLE user (
 CREATE TABLE admin (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(150) NOT NULL UNIQUE,
-    password_hash VARCHAR(128) NOT NULL
+    password VARCHAR(1000) NOT NULL
 );
 
 CREATE TABLE youtube_url (
@@ -78,5 +78,13 @@ CREATE TABLE word_cloud (
     FOREIGN KEY (url_id) REFERENCES youtube_url(id)
 );
 
--- Insert admin user
-INSERT INTO admin (email, password_hash) VALUES ('admin', 'pbkdf2:sha256:260000$Vh8XJmUJ$7d52aa26bca0d7924ccbeebe233d6cd83a2727f20ac6f53baf621b77a68a78b8');
+-- Insert admin user with plaintext password
+INSERT INTO admin (email, password) VALUES ('admin', '1234');
+
+-- Insert users with plaintext passwords
+INSERT INTO user (username, password, email, profile_pic) VALUES 
+('user1', 'password1', 'user1@example.com', 'default.jpg'),
+('user2', 'password2', 'user2@example.com', 'default.jpg'),
+('user3', 'password3', 'user3@example.com', 'default.jpg'),
+('user4', 'password4', 'user4@example.com', 'default.jpg'),
+('user5', 'password5', 'user5@example.com', 'default.jpg');
