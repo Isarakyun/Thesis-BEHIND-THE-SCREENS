@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from .models import User, Comments, YoutubeUrl
@@ -38,7 +38,8 @@ def summary_history():
 @admin_required
 def users():
     users = User.query.all()
-    return render_template('admin_users.html', users=users)
+    users_dict = [user.to_dict() for user in users]  # Convert User objects to dictionaries
+    return render_template('admin_users.html', users=users_dict)
 
 @admin_bp.route('/add-user', methods=['POST'])
 @admin_required
@@ -54,8 +55,55 @@ def add_user():
         flash('Email address already exists.', 'error')
         return redirect(url_for('admin.users'))
 
-    new_user = User(username=username, email=email, password=generate_password_hash(password, method='sha256'), profile_pic=profile_pic, confirmed_email=confirmed_email)
+    new_user = User(
+        username=username,
+        email=email,
+        password=generate_password_hash(password, method='sha256'),
+        profile_pic=profile_pic,
+        confirmed_email=confirmed_email
+    )
     db.session.add(new_user)
     db.session.commit()
     flash('User added successfully!', 'success')
     return redirect(url_for('admin.users'))
+
+@admin_bp.route('/edit-user', methods=['POST'])
+@admin_required
+def edit_user():
+    user_id = request.form.get('id')
+    username = request.form.get('username')
+    email = request.form.get('email')
+    profile_pic = request.form.get('profile_pic')
+    confirmed_email = bool(int(request.form.get('confirmed_email')))
+    password = request.form.get('password')  # Optional field for password
+
+    user = User.query.get(user_id)
+    if user:
+        user.username = username
+        user.email = email
+        user.profile_pic = profile_pic
+        user.confirmed_email = confirmed_email
+        if password:
+            user.password = generate_password_hash(password, method='sha256')
+
+        db.session.commit()
+        flash('User updated successfully!', 'success')
+    else:
+        flash('User not found.', 'error')
+
+    return redirect(url_for('admin.users'))
+
+@admin_bp.route('/delete-user', methods=['POST'])
+@admin_required
+def delete_user():
+    user_id = request.json.get('id')
+
+    user = User.query.get(user_id)
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        flash('User deleted successfully!', 'success')
+    else:
+        flash('User not found.', 'error')
+
+    return jsonify(success=True)

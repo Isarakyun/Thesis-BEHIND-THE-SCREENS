@@ -79,7 +79,7 @@ class User(db.Model, UserMixin):
             'email': self.email,
             'confirmed_email': self.confirmed_email,
             'profile_pic': self.profile_pic,
-            'created_at': self.created_at,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
         }
 
 class Admin(db.Model, UserMixin):
