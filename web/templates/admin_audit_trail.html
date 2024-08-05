@@ -6,14 +6,15 @@
     <link href="../../static/css/styles.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/custom-scrollbar.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
-    <title>Admin Audit Trail</title> 
+    <title>Behind the Screens - Audit Trail</title> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
- .hidden {
+        .hidden {
             display: none;
         }
         .video-title {
             display: inline-block;
-            max-width: 100%; 
+            max-width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -27,7 +28,7 @@
             z-index: 50;
             position: fixed;
             top: 0;
-            left: 256px; 
+            left: 256px;
             right: 0;
             transition: left 0.3s ease-in-out;
         }
@@ -113,7 +114,7 @@
             <span class="text-m text-black dark:text-white ml-4">Audit Trail</span>
         </div>
         <div>
-            <button onclick="window.location.href='{{ url_for('auth.logout') }}'" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
+            <button onclick="window.location.href='/logout'" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
                 Logout
             </button>
         </div>
@@ -121,8 +122,29 @@
 
     <main class="main-content" id="content">
         <div class="p-4">
-            <h2 class="text-2xl font-bold text-white">Audit Trail</h2>
-            <!-- Add your audit trail content here -->
+            <!-- Audit Trail Table -->
+            <div class="bg-gray-800 rounded-3xl shadow-lg mt-6">
+                <div class="overflow-x-auto rounded-3xl">
+                    <table class="min-w-full bg-gray-900 text-white rounded-3xl text-align: center">
+                        <thead>
+                            <tr class="w-full bg-gray-700 rounded-3xl">
+                                <th class="py-3 px-6 text-left rounded-tl-3xl">Username</th>
+                                <th class="py-3 px-6 text-left">Action</th>
+                                <th class="py-3 px-6 text-left rounded-tr-3xl">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-gray-800">
+                            {% for audit in audit_trails %}
+                            <tr class="border-b border-gray-700 text-align: center">
+                                <td class="py-4 px-6">{{ audit.username }}</td>
+                                <td class="py-4 px-6">{{ audit.action }}</td>
+                                <td class="py-4 px-6">{{ audit.timestamp }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main>
 

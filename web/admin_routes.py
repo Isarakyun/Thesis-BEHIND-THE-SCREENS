@@ -48,7 +48,7 @@ def add_user():
     email = request.form.get('email')
     password = request.form.get('password')
     profile_pic = request.form.get('profile_pic')
-    confirmed_email = bool(int(request.form.get('confirmed_email')))
+    confirmed_email = bool(request.form.get('confirmed_email'))
 
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
@@ -74,7 +74,7 @@ def edit_user():
     username = request.form.get('username')
     email = request.form.get('email')
     profile_pic = request.form.get('profile_pic')
-    confirmed_email = bool(int(request.form.get('confirmed_email')))
+    confirmed_email = bool(request.form.get('confirmed_email'))
     password = request.form.get('password')  # Optional field for password
 
     user = User.query.get(user_id)
