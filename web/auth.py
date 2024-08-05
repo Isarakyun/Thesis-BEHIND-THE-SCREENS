@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import User, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
+from .models import User, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .analysis import clean_text, word_cloud, get_summary, extract_comments, analyze_summary
@@ -85,15 +85,32 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
+        print(f"Attempting login with email: {email}")
+
+        # Check if the user is an admin
+        admin = Admin.query.filter_by(email=email).first()
+        if admin:
+            print(f"Admin user found: {admin.email}")
+            if admin.check_password(password):
+                print("Admin password correct")
+                login_user(admin)
+                return redirect(url_for('admin.dashboard'))
+            else:
+                print("Admin password incorrect")
+                flash('Incorrect password, try again.', category='error')
+
         user = User.query.filter_by(email=email).first()
         if user:
+            print(f"User found: {user.email}")
             if check_password_hash(user.password, password):
-                # flash('Logged in successfully!', category='success')
+                print("User password correct")
                 login_user(user, remember=True)
                 return redirect(url_for('views.main'))
             else:
+                print("User password incorrect")
                 flash('Incorrect password, try again.', category='error')
         else:
+            print("Email does not exist")
             flash('Email does not exist.', category='error')
     return render_template('login.html', user=current_user)
 
@@ -202,10 +219,8 @@ def confirm_email(token):
     try:
         email = s.loads(token, salt='email-confirm', max_age=600)
     except  SignatureExpired:
-        # return 'The token is expired!'
         return render_template("expired_url.html")
     except BadTimeSignature:
-        # return 'The token is invalid!'
         return render_template("invalid_url.html")
     user = User.query.filter_by(email=email).first()
     user.confirmed_email = True
@@ -358,10 +373,8 @@ def reset_password(token):
                 mail.send(msg)
                 return redirect(url_for('views.password_reset_success'))
     except  SignatureExpired:
-        # return 'The token is expired!'
         return render_template("expired_url.html")
     except BadTimeSignature:
-        # return 'The token is invalid!'
         return render_template("invalid_url.html")
     
     return render_template("reset_password.html")

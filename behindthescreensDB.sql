@@ -12,6 +12,12 @@ CREATE TABLE user (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password_hash VARCHAR(128) NOT NULL
+);
+
 CREATE TABLE youtube_url (
     id INT AUTO_INCREMENT PRIMARY KEY,
     url VARCHAR(150) NOT NULL,
@@ -71,3 +77,6 @@ CREATE TABLE word_cloud (
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (url_id) REFERENCES youtube_url(id)
 );
+
+-- Insert admin user
+INSERT INTO admin (email, password_hash) VALUES ('admin', 'pbkdf2:sha256:260000$Vh8XJmUJ$7d52aa26bca0d7924ccbeebe233d6cd83a2727f20ac6f53baf621b77a68a78b8');

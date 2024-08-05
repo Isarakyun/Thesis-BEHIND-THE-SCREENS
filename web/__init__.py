@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_mail import Mail, Message
 from datetime import datetime, timedelta
 from itsdangerous import URLSafeTimedSerializer
@@ -10,6 +10,7 @@ import os
 # Initialize extensions
 db = SQLAlchemy()
 mail = Mail()
+login_manager = LoginManager()
 
 def create_app():
     # Load environment variables from .env file
@@ -24,26 +25,25 @@ def create_app():
 
     app.config.from_pyfile('config.cfg')
     mail.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
 
     from .views import views
     from .auth import auth
+    from .admin_routes import admin_bp
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 
-    from .models import User, YoutubeUrl, Comments
-
-    with app.app_context():
-        db.create_all()
-
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
-    login_manager.init_app(app)
+    from .models import User, YoutubeUrl, Comments, Admin
 
     @login_manager.user_loader
-    def load_user(id):
-        return User.query.get(int(id))
-    
+    def load_user(user_id):
+        if user_id.startswith('admin_'):
+            return Admin.query.get(int(user_id.split('_')[1]))
+        return User.query.get(int(user_id))
+
     def format_date(value):
         today = datetime.today().date()
         if isinstance(value, datetime):
