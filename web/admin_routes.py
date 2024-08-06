@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
-from .models import User, Comments, YoutubeUrl, AuditTrail
-from werkzeug.security import generate_password_hash, check_password_hash  # Add this line
+from werkzeug.security import generate_password_hash
+from .models import User, Comments, YoutubeUrl, AuditTrail, SummarizedComments
 from . import db
 
 admin_bp = Blueprint('admin', __name__)
@@ -43,7 +43,18 @@ def audit_trail():
 @admin_bp.route('/summary-history')
 @admin_required
 def summary_history():
-    return render_template('admin_summary_history.html')
+    summaries = db.session.query(SummarizedComments).all()
+    summary_details = []
+    for summary in summaries:
+        video = YoutubeUrl.query.get(summary.url_id)
+        user = User.query.get(summary.user_id)
+        summary_details.append({
+            'created_at': summary.created_at,
+            'video_url': video.url,
+            'video_name': video.video_name,
+            'username': user.username
+        })
+    return render_template('admin_summary_history.html', summaries=summary_details)
 
 @admin_bp.route('/users')
 @admin_required
