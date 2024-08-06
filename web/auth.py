@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import User, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
+from .models import User, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, AuditTrail
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .analysis import clean_text, word_cloud, get_summary, extract_comments, analyze_summary
@@ -17,6 +17,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from collections import Counter
 import base64
 import os
+
 
 auth = Blueprint('auth', __name__)
 
@@ -37,6 +38,14 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 stop_words = set(stopwords.words('english'))
 sia = SentimentIntensityAnalyzer()
+
+# Audit Trail Logger
+def log_audit_trail(action):
+    if current_user.is_authenticated:
+        username = current_user.username if hasattr(current_user, 'username') else current_user.email
+        audit_trail = AuditTrail(username=username, action=action)
+        db.session.add(audit_trail)
+        db.session.commit()
 
 @auth.route('/google-login')
 def google_login():
@@ -59,16 +68,11 @@ def google_login():
         db.session.add(user)
         db.session.commit()
     login_user(user)
+    log_audit_trail(f"User {username} logged in with Google")
     return redirect(url_for('views.main'))
-
-
 
 print("Google Client ID:", os.getenv('GOOGLE_OAUTH_CLIENT_ID'))
 print("Google Client Secret:", os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'))
-
-
-
-
 
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
@@ -94,6 +98,7 @@ def login():
             if admin.password == password:  # Compare plaintext passwords
                 print("Admin password correct")
                 login_user(admin)
+                log_audit_trail("Logged in")
                 return redirect(url_for('admin.dashboard'))
             else:
                 print("Admin password incorrect")
@@ -105,6 +110,7 @@ def login():
             if user.password == password:  # Compare plaintext passwords
                 print("User password correct")
                 login_user(user, remember=True)
+                log_audit_trail("Logged in")
                 return redirect(url_for('views.main'))
             else:
                 print("User password incorrect")
@@ -117,14 +123,15 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
+    username = current_user.username if hasattr(current_user, 'username') else current_user.email
     logout_user()
     flash('Logged out successfully!', category='success')
+    log_audit_trail(f"User {username} logged out")
     return redirect(url_for('auth.login'))
 
 @auth.route('/')
 def home():
     return render_template("home.html")
-
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
@@ -151,6 +158,7 @@ def sign_up():
             new_user = User(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
+            log_audit_trail(f"User {username} signed up")
 
             token = s.dumps(email, salt='email-confirm')
             msg = Message('Email Confirmation', sender='behindthescreens.thesis@gmail.com', recipients=[email])
@@ -225,6 +233,7 @@ def confirm_email(token):
     user = User.query.filter_by(email=email).first()
     user.confirmed_email = True
     db.session.commit()
+    log_audit_trail(f"User {user.username} confirmed email")
 
     return render_template("email_verified.html")
 
@@ -291,7 +300,7 @@ def forgot_password():
             </html>
         """.format(link, link)
         mail.send(msg)
-
+        log_audit_trail(f"User {user.username} requested password reset")
         return redirect(url_for('views.mail_sent'))
     else:
         flash('Email does not exist.', category='error')
@@ -371,6 +380,7 @@ def reset_password(token):
                     </html>
                 """.format(link, link)
                 mail.send(msg)
+                log_audit_trail(f"User {user.username} reset password")
                 return redirect(url_for('views.password_reset_success'))
     except  SignatureExpired:
         return render_template("expired_url.html")
@@ -396,6 +406,7 @@ def analyze():
     new_youtube_url = YoutubeUrl(url=youtube_url, user_id=current_user.id, video_name=video_name)
     db.session.add(new_youtube_url)
     db.session.commit()
+    log_audit_trail(f"Started analysis for video '{video_name}'")
 
     # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
     filtered_comments = extract_comments(youtube_url)
@@ -507,8 +518,10 @@ def analyze():
         )
         db.session.add(wordcloud_image)
     db.session.commit()
+    log_audit_trail(f"Completed analysis for video '{video_name}'")
 
     return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id))
+
 
 import logging
 

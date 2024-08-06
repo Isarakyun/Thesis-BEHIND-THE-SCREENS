@@ -136,9 +136,9 @@
                         <tbody class="bg-gray-800">
                             {% for audit in audit_trails %}
                             <tr class="border-b border-gray-700">
-                                <td class="py-4 px-6 table-cell">{{ audit.username }}</td>
-                                <td class="py-4 px-6 table-cell">{{ audit.action }}</td>
-                                <td class="py-4 px-6 table-cell">{{ audit.timestamp }}</td>
+                                <td class="py-4 px-6 text-center">{{ audit.username }}</td>
+                                <td class="py-4 px-6 text-center">{{ audit.action }}</td>
+                                <td class="py-4 px-6 text-center">{{ audit.timestamp }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

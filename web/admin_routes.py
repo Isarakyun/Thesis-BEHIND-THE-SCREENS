@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
-from werkzeug.security import generate_password_hash
-from .models import User, Comments, YoutubeUrl
+from .models import User, Comments, YoutubeUrl, AuditTrail
+from werkzeug.security import generate_password_hash, check_password_hash  # Add this line
 from . import db
 
 admin_bp = Blueprint('admin', __name__)
@@ -15,6 +15,16 @@ def admin_required(view):
     wrapped_view.__name__ = view.__name__
     return wrapped_view
 
+def log_audit_trail(action):
+    if current_user.is_authenticated:
+        if hasattr(current_user, 'username'):
+            username = current_user.username
+        else:
+            username = current_user.email  # For admin users
+        new_audit = AuditTrail(username=username, action=action)
+        db.session.add(new_audit)
+        db.session.commit()
+
 @admin_bp.route('/dashboard')
 @admin_required
 def dashboard():
@@ -27,7 +37,8 @@ def dashboard():
 @admin_bp.route('/audit-trail')
 @admin_required
 def audit_trail():
-    return render_template('admin_audit_trail.html')
+    audit_trails = AuditTrail.query.order_by(AuditTrail.timestamp.desc()).all()
+    return render_template('admin_audit_trail.html', audit_trails=audit_trails)
 
 @admin_bp.route('/summary-history')
 @admin_required
@@ -38,7 +49,7 @@ def summary_history():
 @admin_required
 def users():
     users = User.query.all()
-    users_dict = [user.to_dict() for user in users]  # Convert User objects to dictionaries
+    users_dict = [user.to_dict() for user in users]
     return render_template('admin_users.html', users=users_dict)
 
 @admin_bp.route('/add-user', methods=['POST'])
@@ -48,7 +59,7 @@ def add_user():
     email = request.form.get('email')
     password = request.form.get('password')
     profile_pic = request.form.get('profile_pic')
-    confirmed_email = bool(request.form.get('confirmed_email'))
+    confirmed_email = bool(int(request.form.get('confirmed_email')))
 
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
@@ -64,6 +75,7 @@ def add_user():
     )
     db.session.add(new_user)
     db.session.commit()
+    log_audit_trail(f"Added user {username}")
     flash('User added successfully!', 'success')
     return redirect(url_for('admin.users'))
 
@@ -74,7 +86,7 @@ def edit_user():
     username = request.form.get('username')
     email = request.form.get('email')
     profile_pic = request.form.get('profile_pic')
-    confirmed_email = bool(request.form.get('confirmed_email'))
+    confirmed_email = bool(int(request.form.get('confirmed_email')))
     password = request.form.get('password')  # Optional field for password
 
     user = User.query.get(user_id)
@@ -87,6 +99,7 @@ def edit_user():
             user.password = generate_password_hash(password, method='sha256')
 
         db.session.commit()
+        log_audit_trail(f"Edited user {username}")
         flash('User updated successfully!', 'success')
     else:
         flash('User not found.', 'error')
@@ -102,6 +115,7 @@ def delete_user():
     if user:
         db.session.delete(user)
         db.session.commit()
+        log_audit_trail(f"Deleted user {user.username}")
         flash('User deleted successfully!', 'success')
     else:
         flash('User not found.', 'error')

@@ -2,6 +2,13 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
+class AuditTrail(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), nullable=False)
+    action = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
+
 class YoutubeUrl(db.Model):
     __tablename__ = 'youtube_url'
     id = db.Column(db.Integer, primary_key=True)
@@ -79,7 +86,7 @@ class User(db.Model, UserMixin):
             'email': self.email,
             'confirmed_email': self.confirmed_email,
             'profile_pic': self.profile_pic,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'created_at': self.created_at,
         }
 
 class Admin(db.Model, UserMixin):
