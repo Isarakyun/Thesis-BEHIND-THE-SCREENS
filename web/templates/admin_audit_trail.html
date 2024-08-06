@@ -125,20 +125,20 @@
             <!-- Audit Trail Table -->
             <div class="bg-gray-800 rounded-3xl shadow-lg mt-6">
                 <div class="overflow-x-auto rounded-3xl">
-                    <table class="min-w-full bg-gray-900 text-white rounded-3xl text-align: center">
+                    <table class="min-w-full bg-gray-900 text-white rounded-3xl">
                         <thead>
                             <tr class="w-full bg-gray-700 rounded-3xl">
-                                <th class="py-3 px-6 text-left rounded-tl-3xl">Username</th>
-                                <th class="py-3 px-6 text-left">Action</th>
-                                <th class="py-3 px-6 text-left rounded-tr-3xl">Timestamp</th>
+                                <th class="py-3 px-6 text-center rounded-tl-3xl">Username</th>
+                                <th class="py-3 px-6 text-center">Action</th>
+                                <th class="py-3 px-6 text-center rounded-tr-3xl">Timestamp</th>
                             </tr>
                         </thead>
                         <tbody class="bg-gray-800">
                             {% for audit in audit_trails %}
-                            <tr class="border-b border-gray-700 text-align: center">
-                                <td class="py-4 px-6">{{ audit.username }}</td>
-                                <td class="py-4 px-6">{{ audit.action }}</td>
-                                <td class="py-4 px-6">{{ audit.timestamp }}</td>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-4 px-6 table-cell">{{ audit.username }}</td>
+                                <td class="py-4 px-6 table-cell">{{ audit.action }}</td>
+                                <td class="py-4 px-6 table-cell">{{ audit.timestamp }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
