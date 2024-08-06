@@ -1,7 +1,13 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
-from flask_migrate import Migrate
+
+class AuditTrail(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), nullable=False)
+    action = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
 
 class YoutubeUrl(db.Model):
     __tablename__ = 'youtube_url'
@@ -30,6 +36,7 @@ class SummarizedComments(db.Model):
     summary = db.Column(db.String(50000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())  # Added created_at field
 
 class FrequentWords(db.Model):
     __tablename__ = 'frequent_words'
@@ -72,3 +79,34 @@ class User(db.Model, UserMixin):
     frequentWords = db.relationship('FrequentWords')
     sentimentCounter = db.relationship('SentimentCounter')
     wordCloudImage = db.relationship('WordCloudImage')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'confirmed_email': self.confirmed_email,
+            'profile_pic': self.profile_pic,
+            'created_at': self.created_at,
+        }
+
+class Admin(db.Model, UserMixin):
+    __tablename__ = 'admin'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return f'admin_{self.id}'
