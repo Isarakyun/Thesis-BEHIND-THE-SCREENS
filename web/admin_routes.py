@@ -49,7 +49,7 @@ def summary_history():
         video = YoutubeUrl.query.get(summary.url_id)
         user = User.query.get(summary.user_id)
         summary_details.append({
-            'created_at': summary.created_at,
+            'created_at': video.created_at,
             'video_url': video.url,
             'video_name': video.video_name,
             'username': user.username

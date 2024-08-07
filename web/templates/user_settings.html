@@ -3,182 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
     <link href="../static/css/styles.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: white;
-            color: black;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .bg-primary {
-            background-color: #f0f0f0; /* light gray for containers */
-        }
-        .bg-secondary {
-            background-color: #e0e0e0; /* slightly darker gray */
-        }
-        .text-primary {
-            color: black;
-        }
-        .text-secondary {
-            color: gray;
-        }
-        .button-primary {
-            background-color: #d0d0d0; /* button color */
-            color: black;
-        }
-        .profile-photo {
-            background-color: #d0d0d0; /* light mode background for profile photo */
-        }
-        .pass-container {
-            background-color: white; /* light mode background for password container */
-            color: black; /* text color in light mode */
-        }
-        .delete-account,
-        .link-account2 {
-            background-color: white; /* light mode background for delete and link account */
-            color: black; /* text color in light mode */
-        }
-        /* Dark mode specific styles */
-        body.dark-mode {
-            background-color: black;
-            color: white;
-        }
-        body.dark-mode .bg-primary {
-            background-color: #2d3748;
-        }
-        body.dark-mode .bg-secondary {
-            background-color: #4a5568;
-        }
-        body.dark-mode .text-primary {
-            color: white;
-        }
-        body.dark-mode .text-secondary {
-            color: #a0aec0;
-        }
-        body.dark-mode .button-primary {
-            background-color: #4a5568;
-            color: white;
-        }
-        body.dark-mode .profile-photo {
-            background-color: #4a5568; /* dark mode background for profile photo */
-        }
-        body.dark-mode .email-container,
-        body.dark-mode .link-google,
-        body.dark-mode .delete-account {
-            background-color: #1a202c;
-            color: white;
-        }
-        body.dark-mode .pass-container {
-            background-color: #1a202c;
-            color: white;
-        }
-        body.dark-mode .text-gray-800 {
-            color: #d8d8d8; /* Adjust to your desired gray shade */
-        }
-        body.dark-mode .delete-account2 {
-            background-color: #1a202c; /* dark mode background for delete account */
-            color: white; /* text color in dark mode */
-        }
-        body.dark-mode .link-account2 {
-            background-color: #1a202c; /* dark mode background for link account */
-            color: white; /* text color in dark mode */
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Account Settings</title>
 </head>
-<body class="flex justify-center items-center min-h-screen">
-
-    <div class="w-full max-w-4xl mx-auto p-6 bg-primary rounded-lg shadow-md flex gap-8" style="width: 70%; height: 70%;">
-        <!-- Left Column -->
-        <div class="w-2/3">
-            <h1 class="text-2xl font-bold mb-6 text-primary">Account Settings</h1>
-            <!-- Account Details -->
-            <div class="bg-secondary p-4 rounded-lg mb-6">
-                <h2 class="text-xl font-semibold mb-4 text-primary">Account Details</h2>
-                <div class="mb-4">
-                    <label for="email" class="block mb-1 text-secondary">Email</label>
-                    <div id="email-container" class="email-container light-mode flex items-center justify-between p-2 rounded bg-gray-100">
-                        <span id="email" class="text-gray-800">example@gmail.com</span>
-                        <button class="p-1">
-                            <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V14h3.828l7.586-7.586a2 2 0 000-2.828zM6 13v-2.172l9-9L17.172 4 8.172 13H6zM4 16h8v2H4v-2z"/>
-                            </svg>
-                        </button>
+<body class="bg-slate-200 dark:bg-[#121212]">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            {% if category == 'error' %}
+            <div id="alert-{{ loop.index }}" class="alert bg-red-500 text-black p-3 text-sm">
+                {{ message }}
+                <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+            {% else %}
+            <div id="alert-{{ loop.index }}" class="alert bg-blue-600 text-white p-3 text-sm">
+                {{ message }}
+                <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+            {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div class="flex justify-center items-center min-h-full ">
+        <div class="w-full max-w-4xl mx-auto p-6 rounded-lg shadow-md flex gap-8" style="width: 70%; height: 70%;">
+            <!-- Left Column -->
+            <div class="w-2/5">
+                <div class="flex">
+                    <div class="text-xl text-black dark:text-white">
+                        <a href="/main" class="px-3 py-2 hover:bg-gray-800 rounded-full"><i class="ri-arrow-left-line"></i></a>
+                    </div>
+                    <h1 class="ml-2 text-2xl font-bold mb-6 text-black dark:text-white">Account Settings</h1>
+                </div>
+                <hr>
+                <div class="w-full text-black dark:text-slate-200">
+                    <div id="username-button" class="mt-2 relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer">
+                        <div class="ml-4">
+                            <button onclick="toggleUsernameSettings()" class="pt-3 pb-3">Username</button>
+                            <i class="ri-arrow-right-line absolute right-3 top-3"></i>
+                        </div>
+                    </div>
+                    <div id="email-button" class="relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer">
+                        <div class="ml-4">
+                            <button onclick="toggleEmailSettings()" class="pt-3 pb-3">Email</button>
+                            <i class="ri-arrow-right-line absolute right-3 top-3"></i>
+                        </div>
+                    </div>
+                    <div id="password-button" class="relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer">
+                        <div class="ml-4">
+                            <button onclick="togglePasswordSettings()" class="pt-3 pb-3">Password</button>
+                            <i class="ri-arrow-right-line absolute right-3 top-3"></i>
+                        </div>
+                    </div>
+                    <div id="delete-button" class="relative text-red-500 hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer">
+                        <div class="ml-4">
+                            <button onclick="toggleDeleteAccount()" class="pt-3 pb-3">Delete Account</button>
+                            <i class="ri-arrow-right-line absolute right-3 top-3"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center text-secondary">
+                        To manage or delete your account, please visit our <a href="#" class="text-blue-400 hover:underline">Account Management FAQ</a>.
                     </div>
                 </div>
-                <div class="mb-4">
-                    <label for="password" class="block mb-1 text-secondary">Password</label>
-                    <div id="password-container" class="pass-container light-mode flex items-center justify-between p-2 rounded bg-gray-100">
-                        <span id="password" class="text-gray-800">********</span>
-                        <button class="p-1">
-                            <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V14h3.828l7.586-7.586a2 2 0 000-2.828zM6 13v-2.172l9-9L17.172 4 8.172 13H6zM4 16h8v2H4v-2z"/>
-                            </svg>
-                        </button>
+            </div>
+            <!-- Right Column -->
+            <div class="w-3/5">
+    
+                <div>
+                    <h2 class="text-xl font-semibold mb-4 text-black dark:text-white">Account Information</h2>
+                    <!-- Description -->
+                    <div id="description" class="mb-6">
+                        <p class="text-black dark:text-slate-400">View or change your account information. Click on the options on the left to get started.</p>
+                    </div>
+                    <!-- Username Change -->
+                    <div id="username-change" class="hidden p-4 rounded-lg mb-6">
+                    <form method="POST" action="#">
+                        <div>
+                            <label for="username" class="block mb-2 text-black dark:text-slate-200">Username</label>
+                            <div>
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="username"
+                                        name="username"
+                                        type="text"
+                                        value="{{ username }}">
+                            </div>
+                        </div>
+                        <!-- Save Button -->
+                        <div class="w-full mt-6 flex justify-end">
+                            <div class="bg-blue-600 text-center text-white rounded">
+                                <button type="submit" class="px-4 py-2 rounded-lg">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+    
+                    <!-- Email Change -->
+                    <div id="email-change" class="hidden p-4 rounded-lg mb-6">
+                    <form method="POST" action="#">
+                        <div>
+                            <label for="email" class="block mb-2 text-black dark:text-slate-200">Email</label>
+                            <div>
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        value="{{ email }}">
+                            </div>
+                        </div>
+                        <!-- Save Button -->
+                        <div class="w-full mt-6 flex justify-end">
+                            <div class="bg-blue-600 text-center text-white rounded">
+                                <button type="submit" class="px-4 py-2 rounded-lg">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+    
+                    <!-- Email: Confirm Password -->
+                    <!-- <div id="email-password-confirm" class="p-4 rounded-lg mb-6 hidden">
+                        <div class="mb-6">
+                            <p class="text-black dark:text-slate-400">Before you can change your email, please confirm your password.</p>
+                        </div>
+                        <form method="POST" action="/">
+                        <div>
+                            <label for="email-password" class="block mb-1 text-black dark:text-slate-200">Confirm Your Password</label>
+                            <div class="mb-4 relative">
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="email-password"
+                                        name="email-password"
+                                        type="password">
+                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-email-password" onclick="togglePasswordVisibility()"></i>
+                                <div class="mt-2 text-sm text-blue-500">
+                                    <a href="/forgot">Forgot Password?</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full mt-6 flex justify-end">
+                            <div class="bg-blue-600 text-center text-white rounded">
+                                <button type="submit" class="px-4 py-2 rounded-lg">Confirm</button>
+                            </div>
+                        </div>
+                    </form>
+                    </div> -->
+    
+                    <!-- Password Change -->
+                    <div id="password-change" class="p-4 rounded-lg mb-6 hidden">
+                    <form method="POST" action="/change-password">
+                        <div>
+                            <label for="password" class="block mb-1 text-black dark:text-slate-200">Current Password</label>
+                            <div class="mb-4 relative">
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="password"
+                                        name="password"
+                                        type="password">
+                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-password" onclick="togglePasswordVisibility()"></i>
+                                <div class="mt-2 text-sm text-blue-500">
+                                    <a href="/forgot">Forgot Password?</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="newpassword" class="block mb-1 text-black dark:text-slate-200">New Password</label>
+                            <div class="mb-4 relative">
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="newpassword"
+                                        name="newpassword"
+                                        type="password">
+                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-newpassword" onclick="togglePasswordVisibility()"></i>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="confirmpassword" class="block mb-1 text-black dark:text-slate-200">Confirm Password</label>
+                            <div class="mb-4 relative">
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="confirmpassword"
+                                        name="confirmpassword"
+                                        type="password">
+                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-confirmpassword" onclick="togglePasswordVisibility()"></i>
+                            </div>
+                        </div>
+                        <!-- Save Button -->
+                        <div class="w-full mt-6 flex justify-end">
+                            <div class="bg-blue-600 text-center text-white rounded">
+                                <button type="submit" class="px-4 py-2 rounded-lg">Save</button>
+                            </div>
+                        </div>
+                    </form>
                     </div>
                 </div>
-                <div class="text-right">
-                    <a href="#" class="text-blue-400 hover:underline">Log out of all devices</a>
-                </div>
             </div>
-            <!-- Settings -->
-            <div class="bg-secondary p-4 rounded-lg">
-                <h2 class="text-xl font-semibold mb-4 text-primary">Settings</h2>
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-primary">Enable dark mode</span>
-                    <input type="checkbox" class="toggle-checkbox" id="dark-mode">
-                </div>
-                <p class="mb-4 text-secondary">To manage parental controls for profiles on your account, visit Edit Profiles and select a Profile.</p>
-                <a href="#" class="flex items-center justify-between p-2 rounded mb-4 link-account2">
-                    <span class="">Link Account to Google</span>
-                    <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M7 10h6v2H7v-2z"/>
-                    </svg>
-                </a>
-                <a href="#" class="flex items-center justify-between p-2 rounded delete-account">
-                    <span class="">Delete Account</span>
-                    <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M7 10h6v2H7v-2z"/>
-                    </svg>
-                </a>
-                
-            </div>
-            <!-- Save Changes Button -->
-            <div class="mt-6 text-center">
-                <button class="button-primary px-4 py-2 rounded-lg">Save Changes</button>
-            </div>
-
-            <div class="mt-4 text-center text-secondary">
-                To manage or delete your account, please visit our <a href="#" class="text-blue-400 hover:underline">Account Management FAQ</a>.
-            </div>
-        </div>
-        <!-- Right Column -->
-        <div class="w-1/3 flex flex-col items-center">
-            <h2 class="text-xl font-semibold mb-4 text-primary">Profile Photo</h2>
-            <div class="profile-photo w-32 h-32 mx-auto mb-4 rounded-full"></div>
-            <button class="button-primary px-4 py-2 rounded-lg mb-4">Change photo</button>
-            <button class="button-primary px-4 py-2 rounded-lg">Remove photo</button>
         </div>
     </div>
-
     <script>
-        const darkModeToggle = document.getElementById('dark-mode');
-        const body = document.body;
-
-        // Initial check for the prefers-color-scheme setting
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            darkModeToggle.checked = true;
-            body.classList.add('dark-mode');
+        function togglePasswordVisibility() {
+            var passwordField = document.getElementById("password");
+            var newPasswordField = document.getElementById("newpassword");
+            var confirmPasswordField = document.getElementById("confirmpassword");
+            var togglePasswordIcon = document.getElementById("toggle-password");
+            var toggleNewPasswordIcon = document.getElementById("toggle-newpassword");
+            var toggleConfirmPasswordIcon = document.getElementById("toggle-confirmpassword");
+        
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                newPasswordField.type = "text";
+                confirmPasswordField.type = "text";
+                togglePasswordIcon.classList.remove("fa-eye");
+                togglePasswordIcon.classList.add("fa-eye-slash");
+                toggleNewPasswordIcon.classList.remove("fa-eye");
+                toggleNewPasswordIcon.classList.add("fa-eye-slash");
+                toggleConfirmPasswordIcon.classList.remove("fa-eye");
+                toggleConfirmPasswordIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                newPasswordField.type = "password";
+                confirmPasswordField.type = "password";
+                togglePasswordIcon.classList.remove("fa-eye-slash");
+                togglePasswordIcon.classList.add("fa-eye");
+                toggleNewPasswordIcon.classList.remove("fa-eye-slash");
+                toggleNewPasswordIcon.classList.add("fa-eye");
+                toggleConfirmPasswordIcon.classList.remove("fa-eye-slash");
+                toggleConfirmPasswordIcon.classList.add("fa-eye");
+            }
+        }
+        
+        function toggleUsernameSettings() {
+            var description = document.getElementById("description");
+            var usernameChange = document.getElementById("username-change");
+            var emailChange = document.getElementById("email-change");
+            var passwordChange = document.getElementById("password-change");
+            var deleteAccount = document.getElementById("delete-account");
+            
+            description.classList.add("hidden");
+            usernameChange.classList.remove("hidden");
+            emailChange.classList.add("hidden");
+            passwordChange.classList.add("hidden");
+            deleteAccount.classList.add("hidden");
         }
 
-        darkModeToggle.addEventListener('change', function() {
-            if (this.checked) {
-                body.classList.add('dark-mode');
-            } else {
-                body.classList.remove('dark-mode');
-            }
+        function toggleEmailSettings() {
+            var description = document.getElementById("description");
+            var usernameChange = document.getElementById("username-change");
+            var emailChange = document.getElementById("email-change");
+            var passwordChange = document.getElementById("password-change");
+            var deleteAccount = document.getElementById("delete-account");
+            
+            description.classList.add("hidden");
+            usernameChange.classList.add("hidden");
+            emailChange.classList.remove("hidden");
+            passwordChange.classList.add("hidden");
+            deleteAccount.classList.add("hidden");
+        }
+
+        function togglePasswordSettings() {
+            var description = document.getElementById("description");
+            var usernameChange = document.getElementById("username-change");
+            var emailChange = document.getElementById("email-change");
+            var passwordChange = document.getElementById("password-change");
+            var deleteAccount = document.getElementById("delete-account");
+            
+            description.classList.add("hidden");
+            usernameChange.classList.add("hidden");
+            emailChange.classList.add("hidden");
+            passwordChange.classList.remove("hidden");
+            deleteAccount.classList.add("hidden");
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach((alert, index) => {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000); // 5000 milliseconds = 5 seconds
+            });
         });
     </script>
-
 </body>
 </html>

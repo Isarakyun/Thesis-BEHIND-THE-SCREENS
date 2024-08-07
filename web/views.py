@@ -4,7 +4,6 @@ from flask import session
 from . import db
 from sqlalchemy.orm import joinedload, aliased
 from .models import User, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
-import re
 import sys
 import os
 import base64
@@ -15,7 +14,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 print(sys.path)  # Debug print to check the system path
 
 # Import the vader_model functions from the parent directory
-from VADER_model import fetch_youtube_comments, analyze_youtube_comments
+# from VADER_model import fetch_youtube_comments, analyze_youtube_comments
 
 views = Blueprint('views', __name__)
 
@@ -85,12 +84,15 @@ def results(youtube_url_id):
 @views.route('/settings')
 @login_required
 def settings():
-    return render_template("user_settings.html", user=current_user)
+    user_id = current_user.id
+    username = current_user.username
+    email = current_user.email
+    return render_template("user_settings.html", user=current_user, username=username, email=email)
 
 @views.route('/admin')
-# @login_required
+@login_required
 def admin():
-    return render_template("admin.html")
+    return render_template("admin.html", user=current_user)
 
 # @views.route('/analyze-youtube', methods=['POST'])
 # def analyze_youtube():
@@ -155,7 +157,6 @@ def results2():
 # This route is for testing pages
 @views.route('/test')
 def test():
-    # Assuming you have a way to get the user from the session or some other method
-    user = session.get('user')  # Retrieve the user object from the session
+    user = session.get('user') 
     return render_template('test.html', user=user)
 

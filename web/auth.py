@@ -96,27 +96,27 @@ def login():
         if admin:
             print(f"Admin user found: {admin.email}")
             if admin.password == password:  # Compare plaintext passwords
-                print("Admin password correct")
+                # print("Admin password correct")
                 login_user(admin)
                 log_audit_trail("Logged in")
                 return redirect(url_for('admin.dashboard'))
             else:
-                print("Admin password incorrect")
+                # print("Admin password incorrect")
                 flash('Incorrect password, try again.', category='error')
 
         user = User.query.filter_by(email=email).first()
         if user:
-            print(f"User found: {user.email}")
-            if user.password == password:  # Compare plaintext passwords
-                print("User password correct")
+            # print(f"User found: {user.email}")
+            if check_password_hash(user.password, password):
+                # print("User password correct")
                 login_user(user, remember=True)
                 log_audit_trail("Logged in")
                 return redirect(url_for('views.main'))
             else:
-                print("User password incorrect")
+                # print("User password incorrect")
                 flash('Incorrect password, try again.', category='error')
         else:
-            print("Email does not exist")
+            # print("Email does not exist")
             flash('Email does not exist.', category='error')
     return render_template('login.html', user=current_user)
 
@@ -388,6 +388,29 @@ def reset_password(token):
         return render_template("invalid_url.html")
     
     return render_template("reset_password.html")
+
+@auth.route('/change-password', methods=['POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_password = request.form.get('password')
+        new_password = request.form.get('newpassword')
+        confirm_password = request.form.get('confirmpassword')
+        if check_password_hash(current_user.password, current_password):
+            if new_password == confirm_password:
+                if len(new_password) < 8:
+                    flash('Password must be at least 8 characters.', category='error')
+                else:
+                    current_user.password = generate_password_hash(new_password, method='sha256')
+                    db.session.commit()
+                    log_audit_trail(f"User {current_user.username} changed password")
+                    flash('Password changed successfully!', category='success')
+                    return redirect(url_for('views.settings'))
+            else:
+                flash('Passwords do not match.', category='error')
+        else:
+            flash('Incorrect password.', category='error')
+    return render_template("user_settings.html")
 
 @auth.route('/analyze', methods=['POST'])
 @login_required

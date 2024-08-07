@@ -89,9 +89,9 @@ CREATE TABLE audit_trail (
 INSERT INTO admin (email, password) VALUES ('admin', '1234');
 
 -- Insert users with plaintext passwords
-INSERT INTO user (username, password, email, profile_pic) VALUES 
-('user1', 'password1', 'user1@example.com', 'default.jpg'),
-('user2', 'password2', 'user2@example.com', 'default.jpg'),
-('user3', 'password3', 'user3@example.com', 'default.jpg'),
-('user4', 'password4', 'user4@example.com', 'default.jpg'),
-('user5', 'password5', 'user5@example.com', 'default.jpg');
+-- INSERT INTO user (username, password, email, profile_pic) VALUES 
+-- ('user1', 'password1', 'user1@example.com', 'default.jpg'),
+-- ('user2', 'password2', 'user2@example.com', 'default.jpg'),
+-- ('user3', 'password3', 'user3@example.com', 'default.jpg'),
+-- ('user4', 'password4', 'user4@example.com', 'default.jpg'),
+-- ('user5', 'password5', 'user5@example.com', 'default.jpg');
