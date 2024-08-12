@@ -36,7 +36,6 @@ class SummarizedComments(db.Model):
     summary = db.Column(db.String(50000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())  # Added created_at field
 
 class FrequentWords(db.Model):
     __tablename__ = 'frequent_words'

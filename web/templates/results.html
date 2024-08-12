@@ -47,10 +47,21 @@
     </tbody>
   </table>
 </div>    
-  
+
+  <!-- Dropdown for sentiment selection -->
+<div class="mt-5 pt-5 flex justify-end ml-[50px] mr-[50px] shadow-lg">
+  <select id="sentiment-filter" class="mb-4 px-4 py-2 border border-red-600 dark:border-slate-700 rounded bg-slate-200 dark:bg-[#121212] text-black dark:text-white">
+    <option value="all">All</option>
+    <option value="Positive">Positive</option>
+    <option value="Negative">Negative</option>
+    <option value="Neutral">Neutral</option>
+  </select>
+</div>
+
 <!-- TABLE FOR COMMENTS -->
-<div class="mt-5 pt-5 flex justify-center">
-  <table id="labeled-comments" class="table-auto ml-[50px] mr-[50px] mt-4">
+ <!-- ALL COMMENTS -->
+<div id="all-comments" class="flex justify-center overflow-hidden">
+  <table id="labeled-comments" class="w-full ml-[50px] mr-[50px]">
     <thead class="text-white">
       <tr class="bg-red-600 dark:bg-slate-700 text-lg">
         <th class="px-4 py-1">Comments</th>
@@ -67,15 +78,85 @@
     </tbody>
   </table>
 </div>
-<div id="pagination-controls" class="flex justify-center mt-4"></div>
+<div id="all-pagination-controls" class="flex justify-center mt-4"></div>
 
+<!-- POSITIVE COMMENTS -->
+<div id="positive-comments" class="flex justify-center overflow-hidden hidden">
+  <table id="labeled-positive-comments" class="w-full ml-[50px] mr-[50px]">
+    <thead class="text-white">
+      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <th class="px-4 py-1">Comments</th>
+        <th class="px-2 py-1">Sentiments</th>
+      </tr>
+    </thead>
+    <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      {% for comment in comments %}
+        {% if comment.sentiment == 'Positive' %}
+        <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
+          <td class="px-2 py-2">{{ comment.comment }}</td>
+          <td class="px-2 py-2">{{ comment.sentiment }}</td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="positive-pagination-controls" class="flex justify-center mt-4 hidden"></div>
+
+<!-- NEGATIVE COMMENTS -->
+<div id="negative-comments" class="flex justify-center overflow-hidden hidden">
+  <table id="labeled-negative-comments" class="w-full ml-[50px] mr-[50px]">
+    <thead class="text-white">
+      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <th class="px-4 py-1">Comments</th>
+        <th class="px-2 py-1">Sentiments</th>
+      </tr>
+    </thead>
+    <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      {% for comment in comments %}
+        {% if comment.sentiment == 'Negative' %}
+        <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
+          <td class="px-2 py-2">{{ comment.comment }}</td>
+          <td class="px-2 py-2">{{ comment.sentiment }}</td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="negative-pagination-controls" class="flex justify-center mt-4 hidden"></div>
+
+<!-- NEUTRAL COMMENTS -->
+<div id="neutral-comments" class="flex justify-center overflow-hidden hidden">
+  <table id="labeled-neutral-comments" class="w-full ml-[50px] mr-[50px]">
+    <thead class="text-white">
+      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <th class="px-4 py-1">Comments</th>
+        <th class="px-2 py-1">Sentiments</th>
+      </tr>
+    </thead>
+    <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      {% for comment in comments %}
+        {% if comment.sentiment == 'Neutral' %}
+        <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
+          <td class="px-2 py-2">{{ comment.comment }}</td>
+          <td class="px-2 py-2">{{ comment.sentiment }}</td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="neutral-pagination-controls" class="flex justify-center mt-4 hidden"></div>
+
+<!-- SCRIPT FOR ALL COMMENTS -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const rowsPerPage = 5;
     const table = document.getElementById('labeled-comments');
     const tbody = table.querySelector('tbody');
     const rows = Array.from(tbody.querySelectorAll('tr'));
-    const paginationControls = document.getElementById('pagination-controls');
+    const paginationControls = document.getElementById('all-pagination-controls');
     let currentPage = 1;
 
     function renderTable() {
@@ -93,7 +174,7 @@
       // Create '<<' button
       if (currentPage > 1) {
         const prevButton = document.createElement('button');
-        prevButton.textContent = '<<';
+        prevButton.textContent = '←';
         prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
         prevButton.addEventListener('click', () => {
           if (currentPage > 1) {
@@ -151,7 +232,7 @@
       // Create '>>' button
       if (currentPage < totalPages) {
         const nextButton = document.createElement('button');
-        nextButton.textContent = '>>';
+        nextButton.textContent = '→';
         nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
         nextButton.addEventListener('click', () => {
           if (currentPage < totalPages) {
@@ -167,6 +248,370 @@
     renderTable();
     renderPaginationControls();
   });
+</script>
+
+<!-- SCRIPT FOR POSITIVE COMMENTS -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const rowsPerPage = 5;
+    const table = document.getElementById('labeled-positive-comments');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const paginationControls = document.getElementById('positive-pagination-controls');
+    let currentPage = 1;
+
+    function renderTable() {
+      tbody.innerHTML = '';
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedRows = rows.slice(start, end);
+      paginatedRows.forEach(row => tbody.appendChild(row));
+    }
+
+    function renderPaginationControls() {
+      paginationControls.innerHTML = '';
+      const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+      // Create '<<' button
+      if (currentPage > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '←';
+        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        prevButton.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(prevButton);
+      }
+
+      // Create page number buttons
+      const startPage = Math.max(1, currentPage - 1);
+      const endPage = Math.min(totalPages, startPage + 2);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (i === currentPage) {
+          pageButton.classList.add('font-bold');
+        }
+        pageButton.addEventListener('click', () => {
+          currentPage = i;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(pageButton);
+      }
+
+      // Add ellipsis if there are more pages
+      if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.textContent = '...';
+        ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
+        paginationControls.appendChild(ellipsis);
+      }
+
+      // Create last page button
+      if (endPage < totalPages) {
+        const lastPageButton = document.createElement('button');
+        lastPageButton.textContent = totalPages;
+        lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (totalPages === currentPage) {
+          lastPageButton.classList.add('font-bold');
+        }
+        lastPageButton.addEventListener('click', () => {
+          currentPage = totalPages;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(lastPageButton);
+      }
+
+      // Create '>>' button
+      if (currentPage < totalPages) {
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '→';
+        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        nextButton.addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(nextButton);
+      }
+    }
+
+    renderTable();
+    renderPaginationControls();
+  });
+</script>
+
+<!-- SCRIPT FOR NEGATIVE COMMENTS -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const rowsPerPage = 5;
+    const table = document.getElementById('labeled-negative-comments');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const paginationControls = document.getElementById('negative-pagination-controls');
+    let currentPage = 1;
+
+    function renderTable() {
+      tbody.innerHTML = '';
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedRows = rows.slice(start, end);
+      paginatedRows.forEach(row => tbody.appendChild(row));
+    }
+
+    function renderPaginationControls() {
+      paginationControls.innerHTML = '';
+      const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+      // Create '<<' button
+      if (currentPage > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '←';
+        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        prevButton.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(prevButton);
+      }
+
+      // Create page number buttons
+      const startPage = Math.max(1, currentPage - 1);
+      const endPage = Math.min(totalPages, startPage + 2);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (i === currentPage) {
+          pageButton.classList.add('font-bold');
+        }
+        pageButton.addEventListener('click', () => {
+          currentPage = i;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(pageButton);
+      }
+
+      // Add ellipsis if there are more pages
+      if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.textContent = '...';
+        ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
+        paginationControls.appendChild(ellipsis);
+      }
+
+      // Create last page button
+      if (endPage < totalPages) {
+        const lastPageButton = document.createElement('button');
+        lastPageButton.textContent = totalPages;
+        lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (totalPages === currentPage) {
+          lastPageButton.classList.add('font-bold');
+        }
+        lastPageButton.addEventListener('click', () => {
+          currentPage = totalPages;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(lastPageButton);
+      }
+
+      // Create '>>' button
+      if (currentPage < totalPages) {
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '→';
+        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        nextButton.addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(nextButton);
+      }
+    }
+
+    renderTable();
+    renderPaginationControls();
+  });
+</script>
+
+<!-- SCRIPT FOR NEUTRAL COMMENTS -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const rowsPerPage = 5;
+    const table = document.getElementById('labeled-neutral-comments');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const paginationControls = document.getElementById('neutral-pagination-controls');
+    let currentPage = 1;
+
+    function renderTable() {
+      tbody.innerHTML = '';
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedRows = rows.slice(start, end);
+      paginatedRows.forEach(row => tbody.appendChild(row));
+    }
+
+    function renderPaginationControls() {
+      paginationControls.innerHTML = '';
+      const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+      // Create '<<' button
+      if (currentPage > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '←';
+        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        prevButton.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(prevButton);
+      }
+
+      // Create page number buttons
+      const startPage = Math.max(1, currentPage - 1);
+      const endPage = Math.min(totalPages, startPage + 2);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (i === currentPage) {
+          pageButton.classList.add('font-bold');
+        }
+        pageButton.addEventListener('click', () => {
+          currentPage = i;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(pageButton);
+      }
+
+      // Add ellipsis if there are more pages
+      if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.textContent = '...';
+        ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
+        paginationControls.appendChild(ellipsis);
+      }
+
+      // Create last page button
+      if (endPage < totalPages) {
+        const lastPageButton = document.createElement('button');
+        lastPageButton.textContent = totalPages;
+        lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (totalPages === currentPage) {
+          lastPageButton.classList.add('font-bold');
+        }
+        lastPageButton.addEventListener('click', () => {
+          currentPage = totalPages;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(lastPageButton);
+      }
+
+      // Create '>>' button
+      if (currentPage < totalPages) {
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '→';
+        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        nextButton.addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(nextButton);
+      }
+    }
+
+    renderTable();
+    renderPaginationControls();
+  });
+</script>
+
+<!-- SCRIPT FOR FILTERING COMMENTS (hiding and unhiding the table) -->
+<script>
+  document.getElementById('sentiment-filter'). addEventListener('change', function() {
+    var selectedSentiment = this.value;
+    var allComments = document.getElementById('all-comments');
+    var positiveComments = document.getElementById('positive-comments');
+    var negativeComments = document.getElementById('negative-comments');
+    var neutralComments = document.getElementById('neutral-comments');
+
+    var allPaginationControls = document.getElementById('all-pagination-controls');
+    var positivePaginationControls = document.getElementById('positive-pagination-controls');
+    var negativePaginationControls = document.getElementById('negative-pagination-controls');
+    var neutralPaginationControls = document.getElementById('neutral-pagination-controls');
+
+    if (selectedSentiment === 'all') {
+      allComments.classList.remove('hidden');
+      positiveComments.classList.add('hidden');
+      negativeComments.classList.add('hidden');
+      neutralComments.classList.add('hidden');
+
+      allPaginationControls.classList.remove('hidden');
+      positivePaginationControls.classList.add('hidden');
+      negativePaginationControls.classList.add('hidden');
+      neutralPaginationControls.classList.add('hidden');
+    } 
+    else if (selectedSentiment === 'Positive') {
+      allComments.classList.add('hidden');
+      positiveComments.classList.remove('hidden');
+      negativeComments.classList.add('hidden');
+      neutralComments.classList.add('hidden');
+
+      allPaginationControls.classList.add('hidden');
+      positivePaginationControls.classList.remove('hidden');
+      negativePaginationControls.classList.add('hidden');
+      neutralPaginationControls.classList.add('hidden');
+    } 
+    else if (selectedSentiment === 'Negative') {
+      allComments.classList.add('hidden');
+      positiveComments.classList.add('hidden');
+      negativeComments.classList.remove('hidden');
+      neutralComments.classList.add('hidden');
+      
+      allPaginationControls.classList.add('hidden');
+      positivePaginationControls.classList.add('hidden');
+      negativePaginationControls.classList.remove('hidden');
+      neutralPaginationControls.classList.add('hidden');
+    } 
+    else if (selectedSentiment === 'Neutral') {
+      allComments.classList.add('hidden');
+      positiveComments.classList.add('hidden');
+      negativeComments.classList.add('hidden');
+      neutralComments.classList.remove('hidden');
+      
+      allPaginationControls.classList.add('hidden');
+      positivePaginationControls.classList.add('hidden');
+      negativePaginationControls.classList.add('hidden');
+      neutralPaginationControls.classList.remove('hidden');
+    }
+  })
 </script>
 
 <div class="flex justify-center mb-5 space-x-5 items-center">
