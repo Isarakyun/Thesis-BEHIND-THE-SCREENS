@@ -122,10 +122,10 @@
 
     <div class="top-bar" id="topBar">
         <div class="left-section">
-            <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton" aria-label="Toggle Sidebar">
-                <i class="ri-menu-line cursor-pointer"></i>
+            <button type="button" class="text-lg text-white" id="menuToggleButton" aria-label="Toggle Sidebar">
+                <i class="ri-menu-line cursor-pointer text-white"></i>
             </button>
-            <span class="text-m text-black dark:text-white ml-4">Dashboard</span>
+            <span class="text-m text-white ml-4">Dashboard</span>
         </div>
         <div>
             <button onclick="window.location.href='{{ url_for('auth.logout') }}'" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
@@ -133,6 +133,7 @@
             </button>
         </div>
     </div>
+    
 
     <main class="main-content" id="content">
         <div class="p-4">

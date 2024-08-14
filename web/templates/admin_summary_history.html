@@ -56,10 +56,11 @@
             padding-top: 3.5rem;
             min-height: 100vh;
             background-color: #181818;
-            transition: margin-left 0.3s ease-in-out;
+            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
         }
         .main-content-expanded {
-            margin-left: 0.
+            margin-left: 0;
+            width: 100%;
         }
         .nav-link {
             display: flex;
@@ -80,7 +81,7 @@
         }
         .divider {
             border-bottom: 1px solid #333;
-            margin: 0.5rem 0.
+            margin: 0.5rem 0;
         }
     </style>
 </head>
@@ -108,13 +109,13 @@
 
     <div class="top-bar" id="topBar">
         <div class="left-section">
-            <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton" aria-label="Toggle Sidebar">
-                <i class="ri-menu-line cursor-pointer"></i>
+            <button type="button" class="text-lg text-white" id="menuToggleButton" aria-label="Toggle Sidebar">
+                <i class="ri-menu-line cursor-pointer text-white"></i>
             </button>
-            <span class="text-m text-black dark:text-white ml-4">Summary History</span>
+            <span class="text-m text-white ml-4">Summary History</span>
         </div>
         <div>
-            <button onclick="window.location.href='/logout'" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
+            <button onclick="window.location.href='{{ url_for('auth.logout') }}'" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
                 Logout
             </button>
         </div>

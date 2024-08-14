@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, logout_user
 from werkzeug.security import generate_password_hash
 from .models import User, Comments, YoutubeUrl, AuditTrail, SummarizedComments
 from . import db
@@ -21,6 +21,11 @@ def log_audit_trail(action):
             username = current_user.username
         else:
             username = current_user.email  # For admin users
+        
+        # Only append "User" if the action isn't "Logged out" or "Logged in"
+        if action not in ["Logged out", "Logged in"]:
+            action = f"User {username} {action}"
+        
         new_audit = AuditTrail(username=username, action=action)
         db.session.add(new_audit)
         db.session.commit()
@@ -132,3 +137,11 @@ def delete_user():
         flash('User not found.', 'error')
 
     return jsonify(success=True)
+
+@admin_bp.route('/logout')
+@admin_required
+def admin_logout():
+    log_audit_trail("Logged out")  # Simplify the logout action message
+    logout_user()
+    flash('Admin logged out successfully!', 'success')
+    return redirect(url_for('auth.login'))
