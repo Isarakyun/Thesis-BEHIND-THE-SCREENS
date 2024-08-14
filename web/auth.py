@@ -123,10 +123,9 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
-    username = current_user.username if hasattr(current_user, 'username') else current_user.email
+    log_audit_trail("Logged out")  # Simplify the logout action message
     logout_user()
-    flash('Logged out successfully!', category='success')
-    log_audit_trail(f"User {username} logged out")
+    flash('Logged out successfully!', 'success')
     return redirect(url_for('auth.login'))
 
 @auth.route('/')
