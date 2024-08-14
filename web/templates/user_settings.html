@@ -38,27 +38,27 @@
                 </div>
                 <hr>
                 <div class="w-full text-black dark:text-slate-200">
-                    <div id="username-button" class="mt-2 relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer">
+                    <div id="username-button" class="mt-2 relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer" onclick="toggleUsernameSettings()">
                         <div class="ml-4">
-                            <button onclick="toggleUsernameSettings()" class="pt-3 pb-3">Username</button>
+                            <button class="pt-3 pb-3">Username</button>
                             <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                         </div>
                     </div>
-                    <div id="email-button" class="relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer">
+                    <div id="email-button" class="relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer" onclick="toggleEmailSettings()">
                         <div class="ml-4">
-                            <button onclick="toggleEmailSettings()" class="pt-3 pb-3">Email</button>
+                            <button class="pt-3 pb-3">Email</button>
                             <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                         </div>
                     </div>
-                    <div id="password-button" class="relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer">
+                    <div id="password-button" class="relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer" onclick="togglePasswordSettings()">
                         <div class="ml-4">
-                            <button onclick="togglePasswordSettings()" class="pt-3 pb-3">Password</button>
+                            <button class="pt-3 pb-3">Password</button>
                             <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                         </div>
                     </div>
-                    <div id="delete-button" class="relative text-red-500 hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer">
+                    <div id="delete-button" class="relative text-red-500 hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer" onclick="toggleDeleteAccount()">
                         <div class="ml-4">
-                            <button onclick="toggleDeleteAccount()" class="pt-3 pb-3">Delete Account</button>
+                            <button class="pt-3 pb-3">Delete Account</button>
                             <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                         </div>
                     </div>
@@ -67,6 +67,7 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Right Column -->
             <div class="w-3/5">
     
@@ -78,7 +79,18 @@
                     </div>
                     <!-- Username Change -->
                     <div id="username-change" class="hidden p-4 rounded-lg mb-6">
-                    <form method="POST" action="#">
+                    <form method="POST" action="/change-username">
+                        <div class="mb-4 hidden">
+                            <label for="old-username" class="block mb-2 text-black dark:text-slate-200">Current Username</label>
+                            <div>
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="old-username"
+                                        name="old-username"
+                                        type="text"
+                                        value="{{ username }}"
+                                        readonly>
+                            </div>
+                        </div>
                         <div>
                             <label for="username" class="block mb-2 text-black dark:text-slate-200">Username</label>
                             <div>
@@ -100,7 +112,18 @@
     
                     <!-- Email Change -->
                     <div id="email-change" class="hidden p-4 rounded-lg mb-6">
-                    <form method="POST" action="#">
+                    <form method="POST" action="/change-email">
+                        <div class="mb-4 hidden">
+                            <label for="old-email" class="block mb-2 text-black dark:text-slate-200">Current Email</label>
+                            <div>
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="old-email"
+                                        name="old-email"
+                                        type="email"
+                                        value="{{ email }}"
+                                        readonly>
+                            </div>
+                        </div>
                         <div>
                             <label for="email" class="block mb-2 text-black dark:text-slate-200">Email</label>
                             <div>
@@ -193,6 +216,39 @@
                         </div>
                     </form>
                     </div>
+
+                    <!-- Delete Account -->
+                    <div id="delete-account" class=" p-4 rounded-lg mb-6 hidden">
+                        <p class="text-red-500 mb-2">This action is irreversible!</p>
+                        <form method="POST" action="/delete-account">
+                        <div>
+                            <label for="deleteaccountpassword" class="block mb-1 text-black dark:text-slate-200">Confirm the deletion of your account by entering your password.</label>
+                            <div class="mb-4 relative">
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="deleteaccountpassword"
+                                        name="deleteaccountpassword"
+                                        type="password">
+                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-deleteaccountpassword" onclick="togglePasswordVisibility()"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="confirmdeleteaccountpassword" class="block mb-1 text-black dark:text-slate-200">Re-enter Password</label>
+                            <div class="mb-4 relative">
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="confirmdeleteaccountpassword"
+                                        name="confirmdeleteaccountpassword"
+                                        type="password">
+                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-confirmdeleteaccountpassword" onclick="togglePasswordVisibility()"></i>
+                            </div>
+                            <p class="text-black dark:text-slate-400 mb-2">Once your account has been deleted, there is no getting back of your data.</p>
+                            <!-- Delete Account Button -->
+                            <div class="w-full mt-6 flex justify-end">
+                                <div class="bg-red-600 text-center text-white rounded">
+                                    <button type="submit" class="px-4 py-2 rounded-lg">Delete Account</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -205,30 +261,48 @@
             var togglePasswordIcon = document.getElementById("toggle-password");
             var toggleNewPasswordIcon = document.getElementById("toggle-newpassword");
             var toggleConfirmPasswordIcon = document.getElementById("toggle-confirmpassword");
-        
+
+            var deleteAccountPasswordField = document.getElementById("deleteaccountpassword");
+            var confirmDeleteAccountPasswordField = document.getElementById("confirmdeleteaccountpassword");
+            var toggleDeleteAccountPassword = document.getElementById("toggle-deleteaccountpassword");
+            var toggleConfirmDeleteAccountPassword = document.getElementById("toggle-confirmdeleteaccountpassword");
+
             if (passwordField.type === "password") {
                 passwordField.type = "text";
                 newPasswordField.type = "text";
                 confirmPasswordField.type = "text";
+                deleteAccountPasswordField.type = "text";
+                confirmDeleteAccountPasswordField.type = "text";
+
                 togglePasswordIcon.classList.remove("fa-eye");
                 togglePasswordIcon.classList.add("fa-eye-slash");
                 toggleNewPasswordIcon.classList.remove("fa-eye");
                 toggleNewPasswordIcon.classList.add("fa-eye-slash");
                 toggleConfirmPasswordIcon.classList.remove("fa-eye");
                 toggleConfirmPasswordIcon.classList.add("fa-eye-slash");
+                toggleDeleteAccountPassword.classList.remove("fa-eye");
+                toggleDeleteAccountPassword.classList.add("fa-eye-slash");
+                toggleConfirmDeleteAccountPassword.classList.remove("fa-eye");
+                toggleConfirmDeleteAccountPassword.classList.add("fa-eye-slash");
             } else {
                 passwordField.type = "password";
                 newPasswordField.type = "password";
                 confirmPasswordField.type = "password";
+                deleteAccountPasswordField.type = "password";
+                confirmDeleteAccountPasswordField.type = "password";
                 togglePasswordIcon.classList.remove("fa-eye-slash");
                 togglePasswordIcon.classList.add("fa-eye");
                 toggleNewPasswordIcon.classList.remove("fa-eye-slash");
                 toggleNewPasswordIcon.classList.add("fa-eye");
                 toggleConfirmPasswordIcon.classList.remove("fa-eye-slash");
                 toggleConfirmPasswordIcon.classList.add("fa-eye");
+                toggleDeleteAccountPassword.classList.remove("fa-eye-slash");
+                toggleDeleteAccountPassword.classList.add("fa-eye");
+                toggleConfirmDeleteAccountPassword.classList.remove("fa-eye-slash");
+                toggleConfirmDeleteAccountPassword.classList.add("fa-eye");
             }
         }
-        
+
         function toggleUsernameSettings() {
             var description = document.getElementById("description");
             var usernameChange = document.getElementById("username-change");
@@ -269,6 +343,20 @@
             emailChange.classList.add("hidden");
             passwordChange.classList.remove("hidden");
             deleteAccount.classList.add("hidden");
+        }
+
+        function toggleDeleteAccount() {
+            var description = document.getElementById("description");
+            var usernameChange = document.getElementById("username-change");
+            var emailChange = document.getElementById("email-change");
+            var passwordChange = document.getElementById("password-change");
+            var deleteAccount = document.getElementById("delete-account");
+            
+            description.classList.add("hidden");
+            usernameChange.classList.add("hidden");
+            emailChange.classList.add("hidden");
+            passwordChange.classList.add("hidden");
+            deleteAccount.classList.remove("hidden");
         }
 
         document.addEventListener('DOMContentLoaded', (event) => {

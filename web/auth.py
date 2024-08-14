@@ -412,6 +412,201 @@ def change_password():
             flash('Incorrect password.', category='error')
     return render_template("user_settings.html")
 
+@auth.route('/change-username', methods=['POST'])
+@login_required
+def change_username():
+    if request.method == 'POST':
+        old_username = request.form.get('old-username')
+        new_username = request.form.get('username')
+        existing_username = User.query.filter_by(username=new_username).first()
+        if existing_username:
+            flash('Username already exists.', category='error')
+            return redirect(url_for('views.settings'))
+        else:
+            current_user.username = new_username
+            db.session.commit()
+            log_audit_trail(f"User '{old_username}' changed username to '{new_username}'")
+            flash('Username changed successfully!', category='success')
+            return redirect(url_for('views.settings'))
+    return render_template("user_settings.html")
+
+@auth.route('/change-email', methods=['POST'])
+@login_required
+def change_email():
+    if request.method == 'POST':
+        old_email = request.form.get('old-email')
+        new_email = request.form.get('email')
+        existing_email = User.query.filter_by(email=new_email).first()
+        if existing_email:
+            flash('Email already exists.', category='error')
+            return redirect(url_for('views.settings'))
+        else:
+            current_user.confirmed_email = False
+            current_user.email = new_email
+            db.session.commit()
+            log_audit_trail(f"User '{old_email}' changed email to '{new_email}'")
+            flash('Please check your email to verify the changes.', category='success')
+
+            # send mail to the new email for email confirmation/verification
+            token = s.dumps(new_email, salt='email-confirm')
+            msg = Message('Email Change Confirmation', sender='behindthescreens.thesis@gmail.com', recipients=[new_email])
+            link = url_for('auth.change_email_confirmation', token=token, _external=True)
+            msg.html = """
+                <html>
+                <head>
+                    <style>
+                        .email-content {{
+                            margin: 20px;
+                            padding: 20px;
+                            background-color: #e5e7eb;
+                        }}
+                        .email-header {{
+                            font-size: 24px;
+                            line-height: 32px;
+                            font-weight: 600;
+                            color: #881337;
+                            text-align: center;
+                        }}
+                        .email-body {{
+                            font-weight: 500;
+                            font-size: 18px;
+                            line-height: 28px;
+                            margin-top: 8px;
+                            color: #4b5563;
+                        }}
+                        .email-footer {{
+                            margin-top: 8px;
+                            font-size: 14px;
+                            line-height: 20px;
+                            color: #fb7185;
+                        }}
+                        .text-center {{
+                            text-align: center;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class="email-outline">
+                        <div class="text-center">
+                            <div class="text-center">
+                            <img src="https://pbs.twimg.com/media/GSYY7T8XsAALUY1?format=png&name=small" height="25%" viewBox="0 0 524.67004 531.39694">
+                            </div>
+                            <div class="email-header">Change of Email Address</div>
+                            <div class="email-body">
+                                Behind the Screens is a platform that allows you to analyze the sentiment of YouTube comments. <br>
+                                You have changed your email to this one, to verify, please click this <a href="{}">link</a>. Thank you for your continued support!
+                            </div>
+                            <div class="email-footer">
+                                If you didn't make this request, ignore this email. This email is automated, please do not reply.
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            """.format(link, link)
+            mail.send(msg)
+
+            # send mail to the old email that user changed their email
+            old_email_msg = Message('Email Changed', sender='behindthescreens.thesis@gmail.com', recipients=[old_email])
+            old_email_msg.html = """
+                <html>
+                <head>
+                    <style>
+                        .email-content {{
+                            margin: 20px;
+                            padding: 20px;
+                            background-color: #e5e7eb;
+                        }}
+                        .email-header {{
+                            font-size: 24px;
+                            line-height: 32px;
+                            font-weight: 600;
+                            color: #881337;
+                            text-align: center;
+                        }}
+                        .email-body {{
+                            font-weight: 500;
+                            font-size: 18px;
+                            line-height: 28px;
+                            margin-top: 8px;
+                            color: #4b5563;
+                        }}
+                        .email-footer {{
+                            margin-top: 8px;
+                            font-size: 14px;
+                            line-height: 20px;
+                            color: #fb7185;
+                        }}
+                        .text-center {{
+                            text-align: center;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class="email-outline">
+                        <div class="text-center">
+                            <div class="text-center">
+                            <img src="https://pbs.twimg.com/media/GSYY7T8XsAALUY1?format=png&name=small" height="25%" viewBox="0 0 524.67004 531.39694">
+                            </div>
+                            <div class="email-header">Your Email Has Been Changed</div>
+                            <div class="email-body">
+                                This email is no longer connected to the account in our platform. <br> If you didn't make this request, please contact our support team.
+                                Behind the Screens is a platform that allows you to analyze the sentiment of YouTube comments.
+                            </div>
+                            <div class="email-footer">
+                                If you didn't make this request, ignore this email. This email is automated, please do not reply.
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            """.format()
+            mail.send(old_email_msg)
+
+            return redirect(url_for('views.settings'))
+    return render_template("user_settings.html")
+
+@auth.route('/change-email-confirmation/<token>')
+@login_required
+def change_email_confirmation(token):
+    try:
+        email = s.loads(token, salt='email-confirm', max_age=600)
+    except  SignatureExpired:
+        return render_template("expired_url.html")
+    except BadTimeSignature:
+        return render_template("invalid_url.html")
+    current_user.confirmed_email = True
+    db.session.commit()
+    log_audit_trail(f"User {current_user.username} confirmed change of email to {email}")
+    return render_template("change_email_success.html")
+
+@auth.route('/delete-account', methods=['POST'])
+@login_required
+def delete_account():
+    if request.method == 'POST':
+        password = request.form.get('deleteaccountpassword')
+        confirm_delete = request.form.get('confirmdeleteaccountpassword')
+        if check_password_hash(current_user.password, password):
+            if password == confirm_delete:
+                # Delete related rows from other tables
+                db.session.query(WordCloudImage).filter_by(user_id=current_user.id).delete()
+                db.session.query(SentimentCounter).filter_by(user_id=current_user.id).delete()
+                db.session.query(FrequentWords).filter_by(user_id=current_user.id).delete()
+                db.session.query(SummarizedComments).filter_by(user_id=current_user.id).delete()
+                db.session.query(Comments).filter_by(user_id=current_user.id).delete()
+                db.session.query(YoutubeUrl).filter_by(user_id=current_user.id).delete()
+                # Delete the user
+                db.session.delete(current_user)
+                db.session.commit()
+                log_audit_trail(f"User {current_user.username} deleted account")
+                return redirect(url_for('auth.home'))
+            else:
+                flash('Passwords do not match.', category='error')
+        else:
+            flash('Incorrect password.', category='error')
+
+    return redirect(url_for('views.settings'))
+
 @auth.route('/analyze', methods=['POST'])
 @login_required
 def analyze():
