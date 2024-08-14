@@ -588,6 +588,64 @@ def delete_account():
         confirm_delete = request.form.get('confirmdeleteaccountpassword')
         if check_password_hash(current_user.password, password):
             if password == confirm_delete:
+                email = current_user.email
+                # send mail user's email to inform them that their account has been deleted
+                msg = Message('Account Deleted', sender='behindthescreens.thesis@gmail.com', recipients=[email])
+                msg.html = """
+                    <html>
+                    <head>
+                        <style>
+                            .email-content {{
+                                margin: 20px;
+                                padding: 20px;
+                                background-color: #e5e7eb;
+                            }}
+                            .email-header {{
+                                font-size: 24px;
+                                line-height: 32px;
+                                font-weight: 600;
+                                color: #881337;
+                                text-align: center;
+                            }}
+                            .email-body {{
+                                font-weight: 500;
+                                font-size: 18px;
+                                line-height: 28px;
+                                margin-top: 8px;
+                                color: #4b5563;
+                            }}
+                            .email-footer {{
+                                margin-top: 8px;
+                                font-size: 14px;
+                                line-height: 20px;
+                                color: #fb7185;
+                            }}
+                            .text-center {{
+                                text-align: center;
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="email-outline">
+                            <div class="text-center">
+                                <div class="text-center">
+                                <img src="https://pbs.twimg.com/media/GSYY7T8XsAALUY1?format=png&name=small" height="25%" viewBox="0 0 524.67004 531.39694">
+                                </div>
+                                <div class="email-header">Your Account Has Been Deleted</div>
+                                <div class="email-body">
+                                    Thank you for using our platform. We're sad to see you go! You have successfully deleted your account. <br> A reminder that you can always sign up again if you change your mind. <br>
+                                    Behind the Screens is a platform that allows you to analyze the sentiment of YouTube comments.
+                                </div>
+                                <div class="email-footer">
+                                    Once your account has been deleted, you can no longer retrieve it. This email is automated, please do not reply.
+                                </div>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                """.format()
+                mail.send(msg)
+
                 # Delete related rows from other tables
                 db.session.query(WordCloudImage).filter_by(user_id=current_user.id).delete()
                 db.session.query(SentimentCounter).filter_by(user_id=current_user.id).delete()
