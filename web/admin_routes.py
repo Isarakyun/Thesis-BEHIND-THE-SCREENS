@@ -15,20 +15,16 @@ def admin_required(view):
     wrapped_view.__name__ = view.__name__
     return wrapped_view
 
+# Audit Trail Logger
 def log_audit_trail(action):
     if current_user.is_authenticated:
-        if hasattr(current_user, 'username'):
-            username = current_user.username
-        else:
-            username = current_user.email  # For admin users
-        
-        # Only append "User" if the action isn't "Logged out" or "Logged in"
-        if action not in ["Logged out", "Logged in"]:
-            action = f"{action}"
-        
-        new_audit = AuditTrail(username=username, action=action)
-        db.session.add(new_audit)
+        user_id = current_user.id
+        audit_trail = AuditTrail(user_id=user_id, action=action)
+        db.session.add(audit_trail)
         db.session.commit()
+
+
+
 
 @admin_bp.route('/dashboard')
 @admin_required

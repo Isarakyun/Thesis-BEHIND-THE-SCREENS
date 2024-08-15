@@ -86,6 +86,10 @@ CREATE TABLE audit_trail (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE audit_trail ADD COLUMN user_id INT NOT NULL;
+ALTER TABLE audit_trail ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES user(id);
+
+
 -- Insert admin user with plaintext password
 INSERT INTO admin (email, password) VALUES ('admin', '1234');
 
