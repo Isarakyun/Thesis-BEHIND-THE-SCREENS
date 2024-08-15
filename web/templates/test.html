@@ -1,100 +1,209 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
     <link href="../static/css/styles.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <title>Email has been changed!</title>
-    <style>
-         @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #181818;
-            }
-            .bg-gray-100 {
-                background-color: #181818;
-            }
-            .text-black {
-                color: #ef4444;
-            }
-            .bg-white {
-                background-color: #181818;
-            }
-            .text-gray-700 {
-                color: white;
-            }
-            .text-gray-600 {
-                color: #ccc;
-            }
-            .text-gray-500 {
-                color: white;
-            }
-            .border-gray-200 {
-                border-color: #555;
-            }
-            .focus:border-gray-200 {
-                border-color: #555;
-            }
-            .focus:ring-gray-300 {
-                box-shadow: 0 0 0 2px #555;
-            }
-            .hover\:bg-gray-50 {
-              background-color: #121212;
-            }
-            .bg-black {
-                background-color: #880808;
-            }
-            .hover:bg-gray-800 {
-                background-color: #7c1010;
-            }
-            .focus:bg-black {
-                background-color: #121212;
-            }
-            .focus:ring-gray-900 {
-                box-shadow: 0 0 0 2px #2C2C2C;
-            }
-        }
-    </style>
+    <title>About Us</title>
 </head>
-   <body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-        {% if category == 'error' %}
-        <div class="alert bg-red-500 text-black p-3 text-sm">
-            {{ message }}
-            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-        {% else %}
-        <div class="alert bg-blue-600 text-white p-3 text-sm">
-            {{ message }}
-            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-        {% endif %}
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
-   <div class="flex h-screen">
-    <!-- Left Pane -->
-    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-200 text-red-500">
-      <div class="max-w-md text-center">
-        <a href="/"><img src="./../static/BTS-logo-with-name.png" width="524.67004" height="531.39694" class="w-full" viewBox="0 0 524.67004 531.39694"></a>
-        </div>
-    </div>
+<body class="{% if page_name == 'about_us' %}dark bg-gray-50 dark:bg-gray-800{% else %}bg-gray-50{% endif %}">
+    <header class="bg-red-800 dark:bg-black text-white sticky top-0 z-20">
+        <section class="max-w-6xl mx-auto p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">
+                <a href="/#hero"> 🖥️ BEHIND THE SCREENS </a>
+            </h1>
+            <nav class="hidden sm:flex space-x-8 text-m" aria-label="main">
+                <a href="/#services" class="hover:opacity-90">Services</a>
+                <a href="/#analyze" class="hover:opacity-90">Analyze</a>
+                <a href="/#features" class="hover:opacity-90">Features</a>
+                <a href="/#contact" class="hover:opacity-90">Contact Us</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                <a href="/" id="home" class="hover:opacity-90 text-m">Home</a>
+                <a href="/main" id="home" class="hover:opacity-90 text-m">Analysis</a>
+                <a href="/logout" id="logout" class="hover:opacity-90 text-m">Logout</a>
+                {% else %}
+                <a href="/login" id="login" class="hover:opacity-90 text-m">Log In</a>
+                <a href="/sign-up" id="signUp" class="hover:opacity-90 text-m">Sign Up</a>
+                {% endif %}
+                <button id="mobile-open-button" class="text-3xl sm:hidden focus:outline-none">
+                    &#9776;
+                </button>
+            </div>
+        </section>
+    </header>
 
-    <!-- Right Pane -->
-    <div class="w-full bg-slate-300 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
-      <div class="max-w-md w-full p-6">
-        <h1 class="text-3xl font-semibold mb-6 text-red-500 text-center">Email Changed and Verified!</h1>
-        <h1 class="text-sm font-semibold mb-6 text-gray-500 text-center">Thank you for the continuous support. Your email has been changed and verified.</h1>
-        <div class="mt-4 text-sm text-gray-600 text-center">
-          <p>Start or continue analyzing videos <button onclick="location.href='/main'" class="text-red-500 hover:cursor-pointer">here</button>.
-          </p>
+    <!-- About Us Sections -->
+    <section class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
+        <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+
+            <!-- Section 1 -->
+            <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="order-1 md:order-2">
+                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">
+                        <br class="block sm:hidden" />Emmanuel Gonzales
+                    </h2>
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                        I am a 23-year-old, third-year college student majoring in Computer Science. I am also one of the developers of this website, mainly on the frontend side.
+                    </p>
+                </div>
+
+                <div class="order-2 md:order-1">
+                    <div class="flex justify-center items-center">
+                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/emmanpfp2.jpg" alt="Emmanuel Gonzales">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
+    </section>
+
+    <!-- Section 2 -->
+    <section class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
+        <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+            <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="order-1">
+                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">
+                        <br class="block sm:hidden" />Jarelle Pamintuan
+                    </h2>
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                        A digital illustrator who is interested in Data Science and/or Data Analysis (and Fuwa Minato).
+                    </p>
+                </div>
+
+                <div class="order-2">
+                    <div class="flex justify-center items-center">
+                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/bruv wala akong matinong pic pag tao mode.jpg" alt="Jarelle Pamintuan">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3 -->
+    <section class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
+        <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+            <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="order-1 md:order-2">
+                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">Nathaniel Fernandez
+                    </h2>
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                        Phasellus volutpat, nisl sed fermentum tempor, lorem ipsum dignissim leo, sit amet rutrum
+                        diam risus non justo.
+                    </p>
+                </div>
+
+                <div class="order-2 md:order-1">
+                    <div class="flex justify-center items-center">
+                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/nath2x2.png" alt="Nathaniel Fernandez">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4 -->
+    <section class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
+        <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+            <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="order-1">
+                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">Ziggy Co
+                    </h2>
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                        Fusce pretium, elit vitae laoreet vestibulum, magna quam lacinia neque, non interdum felis
+                        metus vel magna.
+                    </p>
+                </div>
+
+                <div class="order-2">
+                    <div class="flex justify-center items-center">
+                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/eyy panis pfp.jpg" alt="Ziggy Co">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5 -->
+    <section class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
+        <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+            <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="order-1 md:order-2">
+                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">Joshua Casupang
+                    </h2>
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                        Sed pharetra metus sit amet justo tempor, nec laoreet purus interdum. Proin luctus mi
+                        vestibulum magna iaculis, vel euismod velit maximus.
+                    </p>
+                </div>
+
+                <div class="order-2 md:order-1">
+                    <div class="flex justify-center items-center">
+                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/josh.jpg" alt="Joshua Casupang">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 6 -->
+    <section class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
+        <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+            <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="order-1">
+                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">EJ Feliciano
+                    </h2>
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                        Proin sed felis eu nisl bibendum mattis. Donec sodales quam sed dictum aliquam.
+                    </p>
+                </div>
+
+                <div class="order-2">
+                    <div class="flex justify-center items-center">
+                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/EJ.jpg" alt="EJ Feliciano">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="bg-red-800 dark:bg-black text-white text-sm">
+        <section class="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row sm:justify-between">
+            <address>
+                <h2>Behind the Screens, Inc.</h2>
+                383 Bacolor Main<br>
+                Pampanga, Philippines 12345-5555<br>
+                Email: <a href="mailto:behindthescreen.com" class="hover:underline">behindthescreen.com</a><br>
+                Phone: <a href="tel:+15555555555" class="hover:underline">(555) 555-5555</a>
+            </address>
+            <nav class="hidden md:flex flex-col gap-2" aria-label="footer">
+              <a href="/#rockets" class="hover:opacity-90">Services</a>
+              <a href="{{ url_for('views.about_us') }}" class="hover:opacity-90">About Us</a>
+              <a href="{{ url_for('views.user_agreement') }}" class="hover:opacity-90">User Terms</a>
+              <a href="/#contact" class="hover:opacity-90">Contact Us</a>
+          </nav>          
+            <div class="flex flex-col sm:gap-2">
+                <p class="text-right">Copyright &copy; <span id="year">2024</p>
+                <p class="text-right">All Rights Reserved</p>
+            </div>
+        </section>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>
 </body>
 </html>
-
