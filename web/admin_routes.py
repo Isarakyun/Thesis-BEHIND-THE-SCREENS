@@ -24,7 +24,7 @@ def log_audit_trail(action):
         
         # Only append "User" if the action isn't "Logged out" or "Logged in"
         if action not in ["Logged out", "Logged in"]:
-            action = f"User {username} {action}"
+            action = f"{action}"
         
         new_audit = AuditTrail(username=username, action=action)
         db.session.add(new_audit)
@@ -91,7 +91,7 @@ def add_user():
     )
     db.session.add(new_user)
     db.session.commit()
-    log_audit_trail(f"Added user {username}")
+    log_audit_trail(f"Admin added {username}'s account")
     flash('User added successfully!', 'success')
     return redirect(url_for('admin.users'))
 
