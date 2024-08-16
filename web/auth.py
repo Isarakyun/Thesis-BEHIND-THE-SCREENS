@@ -42,10 +42,11 @@ sia = SentimentIntensityAnalyzer()
 # Audit Trail Logger
 def log_audit_trail(action):
     if current_user.is_authenticated:
-        username = current_user.username if hasattr(current_user, 'username') else current_user.email
-        audit_trail = AuditTrail(username=username, action=action)
+        user_id = current_user.id
+        audit_trail = AuditTrail(user_id=user_id, action=action)
         db.session.add(audit_trail)
         db.session.commit()
+
 
 @auth.route('/google-login')
 def google_login():

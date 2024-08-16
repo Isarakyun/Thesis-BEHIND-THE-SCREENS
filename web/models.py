@@ -4,9 +4,10 @@ from sqlalchemy.sql import func
 
 class AuditTrail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     action = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+    user = db.relationship('User', backref='audit_trails')
     
 
 class YoutubeUrl(db.Model):

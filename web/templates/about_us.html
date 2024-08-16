@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +7,63 @@
     <link href="../static/css/styles.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <title>About Us</title>
-    
+    <style>
+        /* Custom styles for dark mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212; /* Set to the required dark background color */
+                color: #cbd5e0; /* Adjusted text color for readability */
+            }
+
+            h2 {
+                color: #ffffff; /* Text color for headings in dark mode */
+            }
+
+            p {
+                color: #a0aec0; /* Text color for paragraphs in dark mode */
+            }
+
+            .bg-gray-300 {
+                background-color: #2d3748; /* Background for elements that are gray in light mode */
+            }
+
+            footer {
+                color: #ffffff; /* Set text color to white in dark mode */
+            }
+        }
+
+        /* Custom styles for light mode */
+        @media (prefers-color-scheme: light) {
+            body {
+                background-color: #f7fafc; /* Light background color */
+                color: #2d3748; /* Text color in light mode */
+            }
+
+            h2 {
+                color: #1a202c; /* Text color for headings in light mode */
+            }
+
+            p {
+                color: #4a5568; /* Text color for paragraphs in light mode */
+            }
+
+            .bg-gray-300 {
+                background-color: #e2e8f0; /* Background for elements that are gray in dark mode */
+            }
+
+            footer {
+                color: #1a202c; /* Set text color to dark in light mode */
+            }
+        }
+        
+        /* Header and Footer colors - consistent across light and dark modes */
+        header, footer {
+            background-color: #dc2626; /* Set the background color for both header and footer */
+        }
+    </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-800">
-    <header class="dark:bg-black text-white bg-red-800 sticky top-0 z-20">
+<body>
+    <header class="text-white bg-red-800 sticky top-0 z-20">
         <section class="max-w-6xl mx-auto p-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold">
                 <a href="/#hero"> 🖥️ BEHIND THE SCREENS </a>
@@ -38,33 +91,35 @@
     </header>
 
     <!-- About Us Sections -->
+
+    <section class="flex flex-col justify-center items-center p-6 gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
+        <div class="max-w-2xl text-center">
+            <p class="text-2xl font-semibold leading-relaxed md:text-3xl text-justify">
+                Hello! We, the developers, are 4th year college students from DHVSU taking Computer Science. This website is part of our thesis study.
+            </p>
+        </div>
+    </section>
+    
+    
+    
+
     <section class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
         <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
 
             <!-- Section 1 -->
             <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="order-1 md:order-2">
-                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">Hey 👋 I am
+                    <h2 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
                         <br class="block sm:hidden" />Emmanuel Gonzales
                     </h2>
-                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
-                        I am a 23 year old, third year college student major in Computer Science. I am also one of the developer of this website, mainly  frontend side.
-                    </p>
-
-                    <p class="mt-4 text-xl text-gray-600 dark:text-gray-300 md:mt-8">
-                        <span class="relative inline-block">
-                            <span class="absolute inline-block w-full bottom-0.5 h-2 bg-yellow-300 dark:bg-gray-900"></span>
-                            <span class="relative"> Have a question? </span>
-                        </span>
-                        <br class="block sm:hidden" />Ask me on <a href="#" title=""
-                            class="transition-all duration-200 text-sky-500 dark:text-sky-400 hover:text-sky-600 dark:hover:text-sky-500 hover:underline">Twitter</a>
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
+                        A farmer in Stardew Valley.
                     </p>
                 </div>
-
                 <div class="order-2 md:order-1">
                     <div class="flex justify-center items-center">
-                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
-                            <img class="w-full h-full object-cover" src="./static/emmanpfp2.jpg" alt="Business Woman">
+                        <div class="w-96 h-100 md:w-140 md:h-140 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/emmanpfp2.jpg" alt="Emmanuel Gonzales">
                         </div>
                     </div>
                 </div>
@@ -77,18 +132,18 @@
         <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
             <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="order-1">
-                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">Second Section
+                    <h2 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+                        <br class="block sm:hidden" />Jarelle Pamintuan
                     </h2>
-                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in magna eget justo bibendum
-                        ullamcorper. Sed quis ullamcorper felis.
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
+                        A digital illustrator who is interested in Data Science and/or Data Analysis (and Fuwa Minato).
                     </p>
                 </div>
 
                 <div class="order-2">
                     <div class="flex justify-center items-center">
-                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
-                            <img class="w-full h-full object-cover" src="https://cdn.rareblocks.xyz/collection/celebration/images/team/1/business-woman.png" alt="Business Woman">
+                        <div class="w-96 h-100 md:w-140 md:h-140 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/bruv wala akong matinong pic pag tao mode.jpg" alt="Jarelle Pamintuan">
                         </div>
                     </div>
                 </div>
@@ -101,9 +156,9 @@
         <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
             <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="order-1 md:order-2">
-                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">Third Section
+                    <h2 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">Nathaniel Fernandez
                     </h2>
-                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
                         Phasellus volutpat, nisl sed fermentum tempor, lorem ipsum dignissim leo, sit amet rutrum
                         diam risus non justo.
                     </p>
@@ -111,8 +166,8 @@
 
                 <div class="order-2 md:order-1">
                     <div class="flex justify-center items-center">
-                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
-                            <img class="w-full h-full object-cover" src="https://cdn.rareblocks.xyz/collection/celebration/images/team/1/business-woman.png" alt="Business Woman">
+                        <div class="w-96 h-100 md:w-140 md:h-140 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/nath2x2.png" alt="Nathaniel Fernandez">
                         </div>
                     </div>
                 </div>
@@ -125,9 +180,9 @@
         <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
             <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="order-1">
-                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">Fourth Section
+                    <h2 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">Ziggy Co
                     </h2>
-                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
                         Fusce pretium, elit vitae laoreet vestibulum, magna quam lacinia neque, non interdum felis
                         metus vel magna.
                     </p>
@@ -135,8 +190,8 @@
 
                 <div class="order-2">
                     <div class="flex justify-center items-center">
-                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
-                            <img class="w-full h-full object-cover" src="https://cdn.rareblocks.xyz/collection/celebration/images/team/1/business-woman.png" alt="Business Woman">
+                        <div class="w-96 h-100 md:w-140 md:h-140 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/eyy panis pfp.jpg" alt="Ziggy Co">
                         </div>
                     </div>
                 </div>
@@ -149,9 +204,9 @@
         <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
             <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="order-1 md:order-2">
-                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">Fifth Section
+                    <h2 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">Joshua Casupang
                     </h2>
-                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
                         Sed pharetra metus sit amet justo tempor, nec laoreet purus interdum. Proin luctus mi
                         vestibulum magna iaculis, vel euismod velit maximus.
                     </p>
@@ -159,8 +214,8 @@
 
                 <div class="order-2 md:order-1">
                     <div class="flex justify-center items-center">
-                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
-                            <img class="w-full h-full object-cover" src="https://cdn.rareblocks.xyz/collection/celebration/images/team/1/business-woman.png" alt="Business Woman">
+                        <div class="w-96 h-100 md:w-140 md:h-140 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/josh.jpg" alt="Joshua Casupang">
                         </div>
                     </div>
                 </div>
@@ -173,17 +228,17 @@
         <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
             <div class="grid items-center grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="order-1">
-                    <h2 class="text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl lg:text-5xl">Sixth Section
+                    <h2 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">EJ Feliciano
                     </h2>
-                    <p class="max-w-lg mt-3 text-xl leading-relaxed text-gray-600 dark:text-gray-300 md:mt-8">
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
                         Proin sed felis eu nisl bibendum mattis. Donec sodales quam sed dictum aliquam.
                     </p>
                 </div>
 
                 <div class="order-2">
                     <div class="flex justify-center items-center">
-                        <div class="w-96 h-100 md:w-140 md:h-140 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
-                            <img class="w-full h-full object-cover" src="https://cdn.rareblocks.xyz/collection/celebration/images/team/1/business-woman.png" alt="Business Woman">
+                        <div class="w-96 h-100 md:w-140 md:h-140 rounded-full overflow-hidden">
+                            <img class="w-full h-full object-cover" src="./static/EJ.jpg" alt="EJ Feliciano">
                         </div>
                     </div>
                 </div>
@@ -191,28 +246,27 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer id="footer" class="dark:bg-black bg-red-800 text-white text-sm">
+    <footer id="footer" class="bg-red-800 text-white text-sm">
         <section class="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row sm:justify-between">
             <address>
                 <!-- TO DO -->
-                <h2>Behind the Screens, Inc.</h2>
+                <h2 class="text-white">Behind the Screens, Inc.</h2>
                 383 Bacolor Main<br>
                 Pampanga, Philippines 12345-5555<br>
                 Email: <a href="mailto:behindthescreen.com">behindthescreen.com</a><br>
                 Phone: <a href="tel:+15555555555">(555) 555-5555</a>
             </address>
             <nav class="hidden md:flex flex-col gap-2" aria-label="footer">
-              <a href="/#rockets" class="hover:opacity-90">Services</a>
-              <!-- <a href="{{ url_for('views.test') }}" class="hover:opacity-90">Testing page</a> -->
-              <a href="{{ url_for('views.about_us') }}" class="hover:opacity-90">About Us</a>
-              <a href="{{ url_for('views.user_agreement') }}" class="hover:opacity-90">User Terms</a>
-              <a href="/#contact" class="hover:opacity-90">Contact Us</a>
-          </nav>          
+                <a href="#rockets" class="hover:opacity-90">Services</a>
+                <a href="{{ url_for('views.about_us') }}" class="hover:opacity-90">About Us</a>
+                <a href="{{ url_for('views.user_agreement') }}" class="hover:opacity-90">User Terms</a>
+                <a href="#contact" class="hover:opacity-90">Contact Us</a>
+            </nav>          
             <div class="flex flex-col sm:gap-2">
-                <p class="text-right">Copyright &copy; <span id="year">2024</p>
-                <p class="text-right">All Rights Reserved</p>
+                <h2 class="text-right text-white">Copyright &copy; <span id="year">2024</span></h2>
+                <h2 class="text-right text-white">All Rights Reserved</h2>
             </div>
+            
         </section>
     </footer>
 

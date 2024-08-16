@@ -37,7 +37,7 @@ CREATE TABLE comments (
     FOREIGN KEY (url_id) REFERENCES youtube_url(id)
 );
 
-CREATE TABLE summarized_comments_new (
+CREATE TABLE summarized_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     summary VARCHAR(50000) NOT NULL,
     url_id INT NOT NULL,
@@ -46,13 +46,6 @@ CREATE TABLE summarized_comments_new (
     FOREIGN KEY (url_id) REFERENCES youtube_url(id),
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
-
-INSERT INTO summarized_comments_new (id, summary, url_id, user_id)
-SELECT id, summary, url_id, user_id FROM summarized_comments;
-
-DROP TABLE summarized_comments;
-
-RENAME TABLE summarized_comments_new TO summarized_comments;
 
 CREATE TABLE frequent_words (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -92,6 +85,10 @@ CREATE TABLE audit_trail (
     action VARCHAR(500) NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE audit_trail ADD COLUMN user_id INT NOT NULL;
+ALTER TABLE audit_trail ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES user(id);
+
 
 -- Insert admin user with plaintext password
 INSERT INTO admin (email, password) VALUES ('admin', '1234');
