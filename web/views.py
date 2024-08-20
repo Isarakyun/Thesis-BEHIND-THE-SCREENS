@@ -102,9 +102,13 @@ def mail_sent():
 def password_reset_success():
     return render_template("reset_password_success.html")
 
-@views.route('/useragreement')
+@views.route('/user-agreement')
 def user_agreement():
     return render_template('user_agreement.html', user=current_user)
+
+@views.route('/privacy-policy')
+def privacy_policy():
+    return render_template('privacy_policy.html', user=current_user)
 
 @views.route('/about-us')
 def about_us():
