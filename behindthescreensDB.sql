@@ -7,7 +7,7 @@ CREATE TABLE user (
     username VARCHAR(150) NOT NULL,
     password VARCHAR(1000) NOT NULL,
     email VARCHAR(150) NOT NULL,
-    profile_pic VARCHAR(150),
+    -- profile_pic VARCHAR(150),
     confirmed_email BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -81,22 +81,13 @@ CREATE TABLE word_cloud (
 
 CREATE TABLE audit_trail (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(150) NOT NULL,
+    -- username VARCHAR(150) NOT NULL,
     action VARCHAR(500) NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(id)
 );
-
-ALTER TABLE audit_trail ADD COLUMN user_id INT NOT NULL;
-ALTER TABLE audit_trail ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES user(id);
 
 
 -- Insert admin user with plaintext password
 INSERT INTO admin (email, password) VALUES ('admin', '1234');
-
--- -- Insert users with plaintext passwords
--- INSERT INTO user (username, password, email, profile_pic) VALUES 
--- ('user1', 'password1', 'user1@example.com', 'default.jpg'),
--- ('user2', 'password2', 'user2@example.com', 'default.jpg'),
--- ('user3', 'password3', 'user3@example.com', 'default.jpg'),
--- ('user4', 'password4', 'user4@example.com', 'default.jpg'),
--- ('user5', 'password5', 'user5@example.com', 'default.jpg');

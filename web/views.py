@@ -94,23 +94,6 @@ def settings():
 def admin():
     return render_template("admin.html", user=current_user)
 
-# @views.route('/analyze-youtube', methods=['POST'])
-# def analyze_youtube():
-#     youtube_url = request.form.get('youtube_url')
-#     if youtube_url:
-#         playlist_id = extract_playlist_id(youtube_url)
-#         if playlist_id:
-#             # Hardcoded YouTube API key - replace this with a secure method to store keys
-#             api_key = "AIzaSyDUyMia8oNCLvvKR3KEOBesQ6m_40U9b58"
-#             csv_file = 'comments_data.csv'
-#             output_csv_file = 'VADERs_sentiment_analysis_results.csv'
-
-#             fetch_youtube_comments(api_key, [playlist_id], csv_file)
-#             analyze_youtube_comments(csv_file, output_csv_file)
-            
-#             return redirect(url_for('views.home'))
-#     return redirect(url_for('views.home'))
-
 @views.route('/mail-sent')
 def mail_sent():
     return render_template("mail_sent.html")
@@ -152,11 +135,13 @@ def results2():
                            positive_img_str2=positive_img_str2,
                            negative_img_str2=negative_img_str2)
 
-
+@views.app_errorhandler(404)
+def page_not_found(e):
+    return render_template('404NotFound.html', user=current_user), 404
 
 # This route is for testing pages
 @views.route('/test')
 def test():
     user = session.get('user') 
-    return render_template('test.html', user=user)
+    return render_template('404NotFound.html', user=user)
 

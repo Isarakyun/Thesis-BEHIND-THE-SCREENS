@@ -22,16 +22,16 @@ import os
 auth = Blueprint('auth', __name__)
 
 # Google OAuth configuration
-google_bp = make_google_blueprint(
-    client_id=os.getenv('GOOGLE_OAUTH_CLIENT_ID'),
-    client_secret=os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'),
-    redirect_to='auth.google_login'
-)
-auth.register_blueprint(google_bp, url_prefix='/google')
+# google_bp = make_google_blueprint(
+#     client_id=os.getenv('GOOGLE_OAUTH_CLIENT_ID'),
+#     client_secret=os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'),
+#     redirect_to='auth.google_login'
+# )
+# auth.register_blueprint(google_bp, url_prefix='/google')
 
 # Initialize extensions
 mail = Mail()
-s = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+s = URLSafeTimedSerializer('SECRET_KEY')
 MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
 sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
@@ -48,41 +48,32 @@ def log_audit_trail(action):
         db.session.commit()
 
 
-@auth.route('/google-login')
-def google_login():
-    print("In google_login route")
-    if not google.authorized:
-        print("User not authorized, redirecting to Google login")
-        redirect_uri = url_for('google.login')
-        print("Redirect URI: ", redirect_uri)
-        return redirect(redirect_uri)
+# @auth.route('/google-login')
+# def google_login():
+#     print("In google_login route")
+#     if not google.authorized:
+#         print("User not authorized, redirecting to Google login")
+#         redirect_uri = url_for('google.login')
+#         print("Redirect URI: ", redirect_uri)
+#         return redirect(redirect_uri)
     
-    resp = google.get('/plus/v1/people/me')
-    assert resp.ok, resp.text
-    google_info = resp.json()
-    email = google_info['emails'][0]['value']
-    username = google_info['displayName']
+#     resp = google.get('/plus/v1/people/me')
+#     assert resp.ok, resp.text
+#     google_info = resp.json()
+#     email = google_info['emails'][0]['value']
+#     username = google_info['displayName']
 
-    user = User.query.filter_by(email=email).first()
-    if user is None:
-        user = User(username=username, email=email, confirmed_email=True)
-        db.session.add(user)
-        db.session.commit()
-    login_user(user)
-    log_audit_trail(f"User {username} logged in with Google")
-    return redirect(url_for('views.main'))
+#     user = User.query.filter_by(email=email).first()
+#     if user is None:
+#         user = User(username=username, email=email, confirmed_email=True)
+#         db.session.add(user)
+#         db.session.commit()
+#     login_user(user)
+#     log_audit_trail(f"User {username} logged in with Google")
+#     return redirect(url_for('views.main'))
 
-print("Google Client ID:", os.getenv('GOOGLE_OAUTH_CLIENT_ID'))
-print("Google Client Secret:", os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'))
-
-mail = Mail()
-s = URLSafeTimedSerializer('SECRET_KEY')
-MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
-sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
-tokenizer = AutoTokenizer.from_pretrained(MODEL)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL)
-stop_words = set(stopwords.words('english'))
-sia = SentimentIntensityAnalyzer()
+# print("Google Client ID:", os.getenv('GOOGLE_OAUTH_CLIENT_ID'))
+# print("Google Client Secret:", os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'))
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
