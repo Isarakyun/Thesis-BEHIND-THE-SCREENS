@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link href="../static/css/styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Invalid Link</title>
+    <style>
+         @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #181818;
+            }
+            .bg-gray-100 {
+                background-color: #181818;
+            }
+            .text-black {
+                color: #ef4444;
+            }
+            .bg-white {
+                background-color: #181818;
+            }
+            .text-gray-700 {
+                color: white;
+            }
+            .text-gray-600 {
+                color: #ccc;
+            }
+            .text-gray-500 {
+                color: white;
+            }
+            .border-gray-200 {
+                border-color: #555;
+            }
+            .focus:border-gray-200 {
+                border-color: #555;
+            }
+            .focus:ring-gray-300 {
+                box-shadow: 0 0 0 2px #555;
+            }
+            .hover\:bg-gray-50 {
+              background-color: #121212;
+            }
+            .bg-black {
+                background-color: #880808;
+            }
+            .hover:bg-gray-800 {
+                background-color: #7c1010;
+            }
+            .focus:bg-black {
+                background-color: #121212;
+            }
+            .focus:ring-gray-900 {
+                box-shadow: 0 0 0 2px #2C2C2C;
+            }
+        }
+    </style>
+</head>
+   <body>
+   <div class="flex h-screen">
+    <!-- Left Pane -->
+    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-200 text-red-500">
+      <div class="max-w-md text-center">
+        <a href="/"><img src="./../static/BTS-logo-with-name.png" width="524.67004" height="531.39694" class="w-full" viewBox="0 0 524.67004 531.39694"></a>
+        </div>
+    </div>
+
+    <!-- Right Pane -->
+    <div class="w-full bg-slate-300 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
+      <div class="max-w-md w-full p-6">
+        <h1 class="text-3xl font-semibold mb-6 text-red-500 text-center">Analysis Interrupted</h1>
+        <div class="mt-4 text-sm text-gray-600 text-center">
+          <p>This might be due to server timeout, database timeout, server crash, or network issues. You can go back <button onclick="location.href='/main'" class="text-red-500 hover:cursor-pointer">here</button> to redo the analysis.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

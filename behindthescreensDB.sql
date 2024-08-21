@@ -18,10 +18,20 @@ CREATE TABLE admin (
     password VARCHAR(1000) NOT NULL
 );
 
-CREATE TABLE youtube_url (
+CREATE TABLE get_url (
     id INT AUTO_INCREMENT PRIMARY KEY,
     url VARCHAR(150) NOT NULL,
+    attempt VARCHAR(150) NOT NULL,
+    user_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user(id)
+);
+
+CREATE TABLE youtube_url (
+    id INT PRIMARY KEY,
+    url VARCHAR(150) NOT NULL,
     video_name VARCHAR(500) NOT NULL,
+    video_id VARCHAR(150) NOT NULL,
     user_id INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user(id)
