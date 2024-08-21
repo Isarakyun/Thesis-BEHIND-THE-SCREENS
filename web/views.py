@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash
 from flask_login import login_required, current_user
 from flask import session
 from . import db
@@ -86,7 +86,8 @@ def settings():
     user_id = current_user.id
     username = current_user.username
     email = current_user.email
-    return render_template("user_settings.html", user=current_user, username=username, email=email, user_id=user_id)
+    confirmed_email = current_user.confirmed_email
+    return render_template("user_settings.html", user=current_user, username=username, email=email, user_id=user_id, confirmed_email=confirmed_email)
 
 @views.route('/admin')
 @login_required

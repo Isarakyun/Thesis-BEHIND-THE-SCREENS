@@ -395,6 +395,71 @@ def change_username():
             return redirect(url_for('views.settings'))
     return render_template("user_settings.html")
 
+@auth.route('/resend-confirmation', methods=['POST'])
+@login_required
+def resend_confirmation():
+    email = current_user.email
+    token = s.dumps(email, salt='email-confirm')
+    msg = Message('Email Confirmation', sender='behindthescreens.thesis@gmail.com', recipients=[email])
+    link = url_for('auth.confirm_email', token=token, _external=True)
+    msg.html = """
+        <html>
+        <head>
+            <style>
+                .email-content {{
+                    margin: 20px;
+                    padding: 20px;
+                    background-color: #e5e7eb;
+                }}
+                .email-header {{
+                    font-size: 24px;
+                    line-height: 32px;
+                    font-weight: 600;
+                    color: #881337;
+                    text-align: center;
+                }}
+                .email-body {{
+                    font-weight: 500;
+                    font-size: 18px;
+                    line-height: 28px;
+                    margin-top: 8px;
+                    color: #4b5563;
+                }}
+                .email-footer {{
+                    margin-top: 8px;
+                    font-size: 14px;
+                    line-height: 20px;
+                    color: #fb7185;
+                }}
+                .text-center {{
+                    text-align: center;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="email-outline">
+                <div class="text-center">
+                    <div class="text-center">
+                    <img src="https://pbs.twimg.com/media/GSYY7T8XsAALUY1?format=png&name=small" height="25%" viewBox="0 0 524.67004 531.39694">
+                    </div>
+                    <div class="email-header">Welcome to Behind the Screens!</div>
+                    <div class="email-body">
+                        Behind the Screens is a platform that allows you to analyze the sentiment of YouTube comments. <br>
+                    To verify your email, please click this <a href="{}">link</a>. We hope you enjoy using our platform!
+                    </div>
+                    <div class="email-footer">
+                        If you didn't make this request, ignore this email. This email is automated, please do not reply.
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
+    """.format(link, link)
+    mail.send(msg)
+    log_audit_trail(f"User {current_user.username} requested email confirmation")
+    flash('Email confirmation link has been sent. Please check your email before the link expires.', category='success')
+    return redirect(url_for('views.settings'))
+
 @auth.route('/change-email', methods=['POST'])
 @login_required
 def change_email():
@@ -659,7 +724,7 @@ def analyze():
             log_audit_trail(f"Started analysis for video '{video_name}'")
 
             # THE FOLLOWING CODE BLOCK WILL ONLY BE COMMITTED WHEN THE ANALYSIS IS SUCCESSFUL
-            #  Adding the URL to the youtube_url table
+            #  Adding the URL to the youtube_url table, youtube_url table's id is get_url's id if successful
             new_youtube_url = YoutubeUrl(id=new_url.id, url=url, user_id=current_user.id, video_name=video_name, video_id=video_id)
             db.session.add(new_youtube_url)
 
