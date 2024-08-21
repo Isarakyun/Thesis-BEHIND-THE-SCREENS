@@ -47,7 +47,8 @@ def home():
 def main():
     user_id = current_user.id
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
-    return render_template("main.html", user=current_user, youtube_urls=youtube_urls)
+    count = db.session.query(SentimentCounter).filter_by(user_id=user_id).order_by(SentimentCounter.id.desc()).all()
+    return render_template("main.html", user=current_user, youtube_urls=youtube_urls, count=count)
 
 @views.route('/result/<int:youtube_url_id>')
 @login_required
