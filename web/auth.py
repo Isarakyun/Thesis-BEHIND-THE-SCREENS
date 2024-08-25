@@ -6,7 +6,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 from .models import User, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, AuditTrail, GetUrl
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import clean_text, word_cloud, get_summary, extract_comments, analyze_summary
+from .analysis import clean_text, word_cloud, get_summary, extract_comments
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
@@ -891,6 +891,7 @@ def analyze2():
         except Exception as e:
             flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
             return redirect(url_for('views.home'))
+        
         # Counting the sentiments
         if sentiment['label'] == 'Positive':
             positive_count += 1
@@ -905,18 +906,25 @@ def analyze2():
     most_common_words = word_count.most_common(5)
     frequent_words = []
     for word, count in most_common_words:
-        word_sentiment_label, _ = analyze_summary(word)
+        word_sentiment_scores = sia.polarity_scores(word)
+        compound_score = word_sentiment_scores['compound']
+        if compound_score >= 0.05:
+            word_sentiment_label = "Positive"
+        elif compound_score <= -0.05:
+            word_sentiment_label = "Negative"
+        else:
+            word_sentiment_label = "Neutral"
         frequent_words.append([word, count, word_sentiment_label])
 
     summary = get_summary(all_comments_text)
 
     # Generate Word Clouds
     unlabeled_words = word_tokenize(all_comments_text)
-    positive_words = [word for word in unlabeled_words if analyze_summary(word)[0] == 'Positive']
+    positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
     positive_text = ' '.join(positive_words)
     positive_img_str = word_cloud(positive_text, 'winter')
     
-    negative_words = [word for word in unlabeled_words if analyze_summary(word)[0] == 'Negative']
+    negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
     negative_text = ' '.join(negative_words)
     negative_img_str = word_cloud(negative_text, 'hot')
 
