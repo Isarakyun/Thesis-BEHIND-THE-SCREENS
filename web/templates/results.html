@@ -2,24 +2,15 @@
 
 {% block content %}
 <div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
-  <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
-      <i class="ri-menu-line cursor-pointer"></i>
-  </button>
-  <div>
-    <a href="{{ url_for('auth.home') }}" class="text-m text-black dark:text-white ml-4">
-        Behind the Screens
-    </a>
-</div>
-
-</div>
-
-<!-- Other content here -->
-
-<!-- Add this div to wrap the download button -->
-<div class="fixed bottom-4 right-4">
-  <button id="downloadButton" class="px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700" title="Download analysis">
-      <i class="ri-download-line"></i> <!-- Use an icon if needed -->
-  </button>
+    <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
+        <i class="ri-menu-line cursor-pointer"></i>
+    </button>
+    <div>
+        <span class="text-m text-black dark:text-white ml-4">Results</span>
+        {% if user.confirmed_email == False %}
+        <span class="text-m text-red-600 ml-4">Your email hasn't been verified yet. Go to your settings to confirm your email.</span>
+        {% endif %}
+    </div>       
 </div>
 
 <!-- SUMMARY -->

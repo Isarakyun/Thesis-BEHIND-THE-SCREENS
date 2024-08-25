@@ -6,7 +6,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 from .models import User, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, AuditTrail, GetUrl
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import clean_text, word_cloud, get_summary, extract_comments, analyze_summary
+from .analysis import clean_text, word_cloud, get_summary, extract_comments
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
@@ -19,18 +19,8 @@ import base64
 import logging
 import re
 
-
 auth = Blueprint('auth', __name__)
 
-# Google OAuth configuration
-# google_bp = make_google_blueprint(
-#     client_id=os.getenv('GOOGLE_OAUTH_CLIENT_ID'),
-#     client_secret=os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'),
-#     redirect_to='auth.google_login'
-# )
-# auth.register_blueprint(google_bp, url_prefix='/google')
-
-# Initialize extensions
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
 MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
@@ -839,7 +829,7 @@ def analyze():
                 )
                 db.session.add(wordcloud_image)
                 
-            successful_analysis = GetUrl.query.filter_by(url=url).first()
+            successful_analysis = GetUrl.query.filter_by(url=url).order_by(GetUrl.id.desc()).first()
             successful_analysis.attempt = "Success"
             db.session.commit()
             log_audit_trail(f"Completed analysis for video '{video_name}'")
@@ -888,11 +878,12 @@ def analyze2():
             sentiment = sentiment_pipeline([comment])[0]
             sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
             sentiments.append({'comment': comment, 'sentiment': sentiment['label']})
-        except RuntimeError as e: # RoBERTa can only handle a maximum of 512 tokens.
-            continue  # Skip this comment and continue with the next one
+        except RuntimeError as e:
+            continue 
         except Exception as e:
             flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
             return redirect(url_for('views.home'))
+        
         # Counting the sentiments
         if sentiment['label'] == 'Positive':
             positive_count += 1
@@ -907,18 +898,25 @@ def analyze2():
     most_common_words = word_count.most_common(5)
     frequent_words = []
     for word, count in most_common_words:
-        word_sentiment_label, _ = analyze_summary(word)
+        word_sentiment_scores = sia.polarity_scores(word)
+        compound_score = word_sentiment_scores['compound']
+        if compound_score >= 0.05:
+            word_sentiment_label = "Positive"
+        elif compound_score <= -0.05:
+            word_sentiment_label = "Negative"
+        else:
+            word_sentiment_label = "Neutral"
         frequent_words.append([word, count, word_sentiment_label])
 
     summary = get_summary(all_comments_text)
 
     # Generate Word Clouds
     unlabeled_words = word_tokenize(all_comments_text)
-    positive_words = [word for word in unlabeled_words if analyze_summary(word)[0] == 'Positive']
+    positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
     positive_text = ' '.join(positive_words)
     positive_img_str = word_cloud(positive_text, 'winter')
     
-    negative_words = [word for word in unlabeled_words if analyze_summary(word)[0] == 'Negative']
+    negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
     negative_text = ' '.join(negative_words)
     negative_img_str = word_cloud(negative_text, 'hot')
 
@@ -934,31 +932,3 @@ def analyze2():
     }
 
     return jsonify(response), 200
-
-
-# @auth.route('/google-login')
-# def google_login():
-#     print("In google_login route")
-#     if not google.authorized:
-#         print("User not authorized, redirecting to Google login")
-#         redirect_uri = url_for('google.login')
-#         print("Redirect URI: ", redirect_uri)
-#         return redirect(redirect_uri)
-    
-#     resp = google.get('/plus/v1/people/me')
-#     assert resp.ok, resp.text
-#     google_info = resp.json()
-#     email = google_info['emails'][0]['value']
-#     username = google_info['displayName']
-
-#     user = User.query.filter_by(email=email).first()
-#     if user is None:
-#         user = User(username=username, email=email, confirmed_email=True)
-#         db.session.add(user)
-#         db.session.commit()
-#     login_user(user)
-#     log_audit_trail(f"User {username} logged in with Google")
-#     return redirect(url_for('views.main'))
-
-# print("Google Client ID:", os.getenv('GOOGLE_OAUTH_CLIENT_ID'))
-# print("Google Client Secret:", os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'))

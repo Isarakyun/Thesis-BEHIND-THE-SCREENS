@@ -95,16 +95,16 @@ def get_summary(joined_comments):
     summary = ' '.join(summary_sentences)
     return summary
 
-def analyze_summary(text):
-    analysis = TextBlob(text)
-    sentiment_score = analysis.sentiment.polarity
-    if sentiment_score > 0.1:
-        sentiment = "Positive"
-    elif sentiment_score < -0.1:
-        sentiment = "Negative"
-    else:
-        sentiment = "Neutral"
-    return sentiment, sentiment_score
+# def analyze_summary(text):
+#     analysis = TextBlob(text)
+#     sentiment_score = analysis.sentiment.polarity
+#     if sentiment_score > 0.1:
+#         sentiment = "Positive"
+#     elif sentiment_score < -0.1:
+#         sentiment = "Negative"
+#     else:
+#         sentiment = "Neutral"
+#     return sentiment, sentiment_score
 
 def word_cloud(words, colormap):
     stopwords = set(STOPWORDS)
