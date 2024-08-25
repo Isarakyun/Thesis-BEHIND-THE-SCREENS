@@ -20,18 +20,15 @@
                     <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="flex-1 text-sm video-title truncate">
                         {{ youtube_url.video_name }}
                     </a>
-<!-- Trash Icon -->
-<button class="ml-4 text-white dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 hidden group-hover:block">
-    <i class="ri-delete-bin-line"></i>
-</button>
-
-
+                    <!-- Trash Icon -->
+                    <button class="ml-4 text-white dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 hidden group-hover:block trash-button" data-id="{{ youtube_url.id }}">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
                 </div>
             </li>
             {% endfor %}
         </ul>
     </div>
-    
 
     <!-- Account -->
     <div class="absolute bottom-3 w-full">
@@ -68,3 +65,68 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 hidden z-50">
+    <div class="bg-[#121212] p-6 rounded-lg shadow-lg max-w-sm w-full">
+        <h2 class="text-lg font-semibold text-white mb-4">Confirm delete?</h2>
+        <div class="flex justify-end">
+            <button id="cancelButton" class="mr-4 bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                Cancel
+            </button>
+            <button id="confirmButton" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get modal and buttons
+    const deleteModal = document.getElementById('deleteModal');
+    const trashButtons = document.querySelectorAll('.trash-button');
+    const cancelButton = document.getElementById('cancelButton');
+    const confirmButton = document.getElementById('confirmButton');
+
+    // Show modal when trash icon is clicked
+    trashButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            deleteModal.classList.remove('hidden');
+            deleteModal.setAttribute('data-id', button.dataset.id); // Set the ID of the item to be deleted
+        });
+    });
+
+    // Hide modal when cancel button is clicked
+    cancelButton.addEventListener('click', () => {
+        deleteModal.classList.add('hidden');
+    });
+
+    // Handle delete action when confirm button is clicked
+    confirmButton.addEventListener('click', () => {
+        const itemId = deleteModal.getAttribute('data-id');
+        
+        // Send a DELETE request to the server without CSRF token
+        fetch(`/delete-item/${itemId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Remove the item from the DOM
+                document.querySelector(`[data-id="${itemId}"]`).closest('li').remove();
+                deleteModal.classList.add('hidden');
+            } else {
+                // Handle errors here
+                alert('Failed to delete the item.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An unexpected error occurred.');
+        });
+    });
+</script>
+
