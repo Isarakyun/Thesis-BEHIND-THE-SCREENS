@@ -1,14 +1,22 @@
 {% extends "base.html" %} {% block title %}Results of {{ youtube_url.video_name }}{% endblock %}
 
 {% block content %}
-<div>
 <div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
-    <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
-        <i class="ri-menu-line cursor-pointer"></i>
-    </button>
-    <div>
-        <span class="text-m text-black dark:text-white ml-4">Results</span>
-    </div>       
+  <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
+      <i class="ri-menu-line cursor-pointer"></i>
+  </button>
+  <div>
+      <span class="text-m text-black dark:text-white ml-4">Results</span>
+  </div>
+</div>
+
+<!-- Other content here -->
+
+<!-- Add this div to wrap the download button -->
+<div class="fixed bottom-4 right-4">
+  <button id="downloadButton" class="px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700" title="Download analysis">
+      <i class="ri-download-line"></i> <!-- Use an icon if needed -->
+  </button>
 </div>
 
 <!-- SUMMARY -->
@@ -58,31 +66,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- Add Download Button -->
-<div class="flex justify-center mt-6">
-  <button id="downloadButton" class="px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700">
-      Download PDF
-  </button>
-</div>
-
 <script>
-  document.getElementById('downloadButton').addEventListener('click', function () {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('p', 'pt', 'a4');
-  
-      const content = document.querySelector('body'); // Consider making this more specific
-  
-      html2canvas(content).then(function (canvas) {
-          const imgData = canvas.toDataURL('image/png');
-          const imgWidth = doc.internal.pageSize.getWidth();
-          const imgHeight = canvas.height * imgWidth / canvas.width;
-  
-          doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-          doc.save('results.pdf');
-      }).catch(function (error) {
-          console.error('Error generating PDF:', error);
-      });
-  });
+document.getElementById('downloadButton').addEventListener('click', function () {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'pt', 'a4');
+
+    // Select the download button element
+    const downloadButton = document.getElementById('downloadButton');
+    // Hide the download button
+    downloadButton.style.display = 'none';
+
+    // Select the main content area
+    const content = document.getElementById('content');
+
+    html2canvas(content).then(function (canvas) {
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = doc.internal.pageSize.getWidth();
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+
+        // Add the image to the PDF
+        doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        doc.save('results.pdf');  // Save the PDF
+
+        // Show the download button again after saving the PDF
+        downloadButton.style.display = 'block';
+    }).catch(function (error) {
+        console.error('Error generating PDF:', error);
+        // Show the download button again if there's an error
+        downloadButton.style.display = 'block';
+    });
+});
 </script>
 
   
