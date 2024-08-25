@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash
 from flask_login import login_required, current_user
 from flask import session
 from . import db
@@ -13,16 +13,13 @@ import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 print(sys.path)  # Debug print to check the system path
 
-# Import the vader_model functions from the parent directory
-# from VADER_model import fetch_youtube_comments, analyze_youtube_comments
-
 views = Blueprint('views', __name__)
 
 def get_youtube_url_by_id(url_id):
     return db.session.query(YoutubeUrl).filter_by(id=url_id).first()
 
-@views.route('/api/sentiment/<int:url_id>')
-def get_sentiment_data(url_id):
+@views.route('/api/sentiment/<int:url_id>$<string:video_id>')
+def get_sentiment_data(url_id, video_id):
     sentiment = db.session.query(SentimentCounter).filter_by(url_id=url_id).first()
     if sentiment:
         data = {
@@ -45,13 +42,14 @@ def home():
 @views.route('/main')
 @login_required
 def main():
-    user_id = current_user.id
+    user_id = current_user.id 
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
-    return render_template("main.html", user=current_user, youtube_urls=youtube_urls)
+    analysis_checker = WordCloudImage.query.filter_by(user_id=user_id).order_by(WordCloudImage.id.desc()).all()
+    return render_template("main.html", user=current_user, youtube_urls=youtube_urls, analysis_checker=analysis_checker)
 
-@views.route('/result/<int:youtube_url_id>')
+@views.route('/result/<int:youtube_url_id>$<string:youtube_video_id>')
 @login_required
-def results(youtube_url_id):
+def results(youtube_url_id, youtube_video_id):
     user_id = current_user.id
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
     youtubeurl = get_youtube_url_by_id(youtube_url_id)
@@ -59,6 +57,7 @@ def results(youtube_url_id):
     count = db.session.query(SentimentCounter).filter_by(url_id=youtube_url_id).first()
     wordcloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
     comments = Comments.query.filter_by(user_id=user_id, url_id=youtube_url_id).all()
+    analysis_checker = WordCloudImage.query.filter_by(user_id=user_id).order_by(WordCloudImage.id.desc()).all()
 
     if summary:
         summary_text = summary.summary
@@ -79,7 +78,7 @@ def results(youtube_url_id):
     else:
         image_negative_data_base64 = None
 
-    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, count=count, frequent_words=frequent_words, comments=comments, image_positive_data=image_positive_data_base64, image_negative_data=image_negative_data_base64)
+    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, count=count, frequent_words=frequent_words, comments=comments, image_positive_data=image_positive_data_base64, image_negative_data=image_negative_data_base64, analysis_checker=analysis_checker)
 
 @views.route('/settings')
 @login_required
@@ -87,29 +86,13 @@ def settings():
     user_id = current_user.id
     username = current_user.username
     email = current_user.email
-    return render_template("user_settings.html", user=current_user, username=username, email=email)
+    confirmed_email = current_user.confirmed_email
+    return render_template("user_settings.html", user=current_user, username=username, email=email, user_id=user_id, confirmed_email=confirmed_email)
 
 @views.route('/admin')
 @login_required
 def admin():
     return render_template("admin.html", user=current_user)
-
-# @views.route('/analyze-youtube', methods=['POST'])
-# def analyze_youtube():
-#     youtube_url = request.form.get('youtube_url')
-#     if youtube_url:
-#         playlist_id = extract_playlist_id(youtube_url)
-#         if playlist_id:
-#             # Hardcoded YouTube API key - replace this with a secure method to store keys
-#             api_key = "AIzaSyDUyMia8oNCLvvKR3KEOBesQ6m_40U9b58"
-#             csv_file = 'comments_data.csv'
-#             output_csv_file = 'VADERs_sentiment_analysis_results.csv'
-
-#             fetch_youtube_comments(api_key, [playlist_id], csv_file)
-#             analyze_youtube_comments(csv_file, output_csv_file)
-            
-#             return redirect(url_for('views.home'))
-#     return redirect(url_for('views.home'))
 
 @views.route('/mail-sent')
 def mail_sent():
@@ -119,9 +102,13 @@ def mail_sent():
 def password_reset_success():
     return render_template("reset_password_success.html")
 
-@views.route('/useragreement')
+@views.route('/user-agreement')
 def user_agreement():
     return render_template('user_agreement.html', user=current_user)
+
+@views.route('/privacy-policy')
+def privacy_policy():
+    return render_template('privacy_policy.html', user=current_user)
 
 @views.route('/about-us')
 def about_us():
@@ -152,11 +139,13 @@ def results2():
                            positive_img_str2=positive_img_str2,
                            negative_img_str2=negative_img_str2)
 
-
+@views.app_errorhandler(404)
+def page_not_found(e):
+    return render_template('404NotFound.html', user=current_user), 404
 
 # This route is for testing pages
 @views.route('/test')
 def test():
     user = session.get('user') 
-    return render_template('test.html', user=user)
+    return render_template('404NotFound.html', user=user)
 

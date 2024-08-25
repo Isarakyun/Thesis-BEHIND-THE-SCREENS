@@ -3,17 +3,26 @@ from flask_login import UserMixin
 from sqlalchemy.sql import func
 
 class AuditTrail(db.Model):
+    __tablename__ = 'audit_trail'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     action = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
     user = db.relationship('User', backref='audit_trails')
     
+class GetUrl(db.Model):
+    __tablename__ = 'get_url'
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(150))
+    attempt = db.Column(db.String(150))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    created_at = db.Column(db.DateTime(timezone=True), default=func.now())
 
 class YoutubeUrl(db.Model):
     __tablename__ = 'youtube_url'
     id = db.Column(db.Integer, primary_key=True)
     video_name = db.Column(db.String(150))
+    video_id = db.Column(db.String(150))
     url = db.Column(db.String(150))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
@@ -71,8 +80,9 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True)
     confirmed_email = db.Column(db.Boolean, default=False)
     password = db.Column(db.String(1000))
-    profile_pic = db.Column(db.String(150), default='default.jpg')
+    # profile_pic = db.Column(db.String(150), default='default.jpg')
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
+    get_url = db.relationship('GetUrl')
     youtube_url = db.relationship('YoutubeUrl')
     comments = db.relationship('Comments')
     summarizedComments = db.relationship('SummarizedComments')
@@ -86,7 +96,7 @@ class User(db.Model, UserMixin):
             'username': self.username,
             'email': self.email,
             'confirmed_email': self.confirmed_email,
-            'profile_pic': self.profile_pic,
+            # 'profile_pic': self.profile_pic,
             'created_at': self.created_at,
         }
 

@@ -24,6 +24,12 @@
         <!-- <td class="px-2 py-2">{{ summary }}</td> -->
         <td class="px-2 py-2">
           {% if youtube_url.created_at and count.positive is not none and count.negative is not none and count.neutral is not none and frequent_words %}
+          {% set overall_sentiment = 'NEUTRAL' %}
+          {% if count.positive >= count.negative and count.positive >= count.neutral %}
+            {% set overall_sentiment = 'POSITIVE' %}
+          {% elif count.negative >= count.positive and count.negative >= count.neutral %}
+            {% set overall_sentiment = 'NEGATIVE' %}
+          {% endif %}
             As of {{ youtube_url.created_at|format_date }}, this video has received {{ count.positive }} positive comments, {{ count.negative }} negative comments, and {{ count.neutral }} neutral comments. The most frequently used words are: 
             {% for word in frequent_words %}
               {% if loop.last %}
@@ -38,7 +44,7 @@
               {% else %}
                 {{ word.count }},
               {% endif %}
-            {% endfor %} respectively.
+            {% endfor %} respectively. The overall sentiment is {{ overall_sentiment}}.
           {% else %}
             No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis.
           {% endif %}
@@ -83,12 +89,14 @@
 
   <!-- Dropdown for sentiment selection -->
 <div class="mt-5 pt-5 flex justify-end ml-[50px] mr-[50px] shadow-lg">
+  {% if youtube_url.created_at is not none and frequent_words %}
   <select id="sentiment-filter" class="mb-4 px-4 py-2 border border-red-600 dark:border-slate-700 rounded bg-slate-200 dark:bg-[#121212] text-black dark:text-white">
     <option value="all">All</option>
     <option value="Positive">Positive</option>
     <option value="Negative">Negative</option>
     <option value="Neutral">Neutral</option>
   </select>
+  {% endif %}
 </div>
 
 <!-- TABLE FOR COMMENTS -->

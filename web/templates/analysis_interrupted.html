@@ -6,7 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
     <link href="../static/css/styles.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <title>Email has been verified!</title>
+    <title>Invalid Link</title>
     <style>
          @media (prefers-color-scheme: dark) {
             body {
@@ -58,23 +58,6 @@
     </style>
 </head>
    <body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-        {% if category == 'error' %}
-        <div class="alert bg-red-500 text-black p-3 text-sm">
-            {{ message }}
-            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-        {% else %}
-        <div class="alert bg-blue-600 text-white p-3 text-sm">
-            {{ message }}
-            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-        {% endif %}
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
    <div class="flex h-screen">
     <!-- Left Pane -->
     <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-200 text-red-500">
@@ -86,10 +69,9 @@
     <!-- Right Pane -->
     <div class="w-full bg-slate-300 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
       <div class="max-w-md w-full p-6">
-        <h1 class="text-3xl font-semibold mb-6 text-red-500 text-center">Email Verified!</h1>
-        <h1 class="text-sm font-semibold mb-6 text-gray-500 text-center">Thank you for signing up. The email you entered has been verified. We look forward to you using our Services.</h1>
+        <h1 class="text-3xl font-semibold mb-6 text-red-500 text-center">Analysis Interrupted</h1>
         <div class="mt-4 text-sm text-gray-600 text-center">
-          <p>Feel free to use our services <button onclick="location.href='/main'" class="text-red-500 hover:cursor-pointer">here</button>.
+          <p>This might be due to server timeout, database timeout, server crash, or network issues. You can go back <button onclick="location.href='/main'" class="text-red-500 hover:cursor-pointer">here</button> to redo the analysis.
           </p>
         </div>
       </div>

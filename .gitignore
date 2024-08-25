@@ -1,2 +1,6 @@
 __pycache__/
 web/__pycache__/
+behindthescreensDB.sql
+config.cfg
+config.py
+app.log

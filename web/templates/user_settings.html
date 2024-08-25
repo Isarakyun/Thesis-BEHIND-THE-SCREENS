@@ -63,7 +63,7 @@
                         </div>
                     </div>
                     <div class="mt-4 text-center text-secondary">
-                        To manage or delete your account, please visit our <a href="#" class="text-blue-400 hover:underline">Account Management FAQ</a>.
+                        Your use of our services is also subject to our <a href="/privacy-policy" class="text-blue-400 hover:underline">Privacy Policy </a> and <a href="/user-agreement" class="text-blue-400 hover:underline">User Agreement</a>.
                     </div>
                 </div>
             </div>
@@ -112,6 +112,32 @@
     
                     <!-- Email Change -->
                     <div id="email-change" class="hidden p-4 rounded-lg mb-6">
+                    {% if confirmed_email == False %}
+                    <div class="mb-6">
+                        <p class="text-red-600">Your email hasn't been verified yet. Please confirm your email.</p>
+                    </div>
+                    <form method="POST" action="/resend-confirmation">
+                        <div>
+                            <label for="email" class="block mb-2 text-black dark:text-slate-200">Email</label>
+                            <div>
+                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        value="{{ email }}">
+                            </div>
+                        </div>
+                        <!-- Verify Button -->
+                        <div class="w-full mt-6 flex justify-end">
+                            <div class="bg-blue-600 text-center text-white rounded">
+                                <button type="submit" class="px-4 py-2 rounded-lg">Verify Email</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="mb-6">
+                        <p class="text-black dark:text-slate-400">You can change your email here. Please enter a valid email.</p>
+                    </div>
                     <form method="POST" action="/change-email">
                         <div class="mb-4 hidden">
                             <label for="old-email" class="block mb-2 text-black dark:text-slate-200">Current Email</label>
@@ -141,37 +167,14 @@
                             </div>
                         </div>
                     </form>
+                    {% endif %}
                     </div>
-    
-                    <!-- Email: Confirm Password -->
-                    <!-- <div id="email-password-confirm" class="p-4 rounded-lg mb-6 hidden">
-                        <div class="mb-6">
-                            <p class="text-black dark:text-slate-400">Before you can change your email, please confirm your password.</p>
-                        </div>
-                        <form method="POST" action="/">
-                        <div>
-                            <label for="email-password" class="block mb-1 text-black dark:text-slate-200">Confirm Your Password</label>
-                            <div class="mb-4 relative">
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="email-password"
-                                        name="email-password"
-                                        type="password">
-                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-email-password" onclick="togglePasswordVisibility()"></i>
-                                <div class="mt-2 text-sm text-blue-500">
-                                    <a href="/forgot">Forgot Password?</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-full mt-6 flex justify-end">
-                            <div class="bg-blue-600 text-center text-white rounded">
-                                <button type="submit" class="px-4 py-2 rounded-lg">Confirm</button>
-                            </div>
-                        </div>
-                    </form>
-                    </div> -->
-    
+
                     <!-- Password Change -->
                     <div id="password-change" class="p-4 rounded-lg mb-6 hidden">
+                        <div class="mb-6">
+                            <p class="text-black dark:text-slate-400">You can change your password here.</p>
+                        </div>
                     <form method="POST" action="/change-password">
                         <div>
                             <label for="password" class="block mb-1 text-black dark:text-slate-200">Current Password</label>
