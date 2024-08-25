@@ -20,10 +20,12 @@
                     <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="flex-1 text-sm video-title truncate">
                         {{ youtube_url.video_name }}
                     </a>
-                    <!-- Trash Icon -->
-                    <button class="ml-4 text-red-600 hover:text-red-800 flex-shrink-0 hidden group-hover:block">
-                        <i class="ri-delete-bin-line"></i>
-                    </button>
+<!-- Trash Icon -->
+<button class="ml-4 text-white dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 hidden group-hover:block">
+    <i class="ri-delete-bin-line"></i>
+</button>
+
+
                 </div>
             </li>
             {% endfor %}
