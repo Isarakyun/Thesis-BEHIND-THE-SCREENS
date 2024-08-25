@@ -715,7 +715,8 @@ def analyze():
                 video_name = yt.title
                 video_id = yt.video_id
             except Exception as e:
-                flash(f'Failed to extract video name: {str(e)}', category='error')
+                flash(f'"{url}" is not a YouTube video. Please enter a valid URL.', category='error')
+                # flash(f'Failed to extract video name: {str(e)}', category='error')
                 return redirect(url_for('views.main'))
             attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
             new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt)
@@ -724,7 +725,7 @@ def analyze():
             log_audit_trail(f"Started analysis for video '{video_name}'")
 
             # THE FOLLOWING CODE BLOCK WILL ONLY BE COMMITTED WHEN THE ANALYSIS IS SUCCESSFUL
-            #  Adding the URL to the youtube_url table, youtube_url table's id is get_url's id if successful
+            # Adding the URL to the youtube_url table, youtube_url table's id is get_url's id if successful
             new_youtube_url = YoutubeUrl(id=new_url.id, url=url, user_id=current_user.id, video_name=video_name, video_id=video_id)
             db.session.add(new_youtube_url)
 
@@ -867,17 +868,33 @@ def analyze2():
     # Extract comments
     filtered_comments = extract_comments(youtube_url)
 
+    # Sentiment Analysis
+    label_mapping = {
+        "LABEL_0": "Negative",
+        "LABEL_1": "Neutral",
+        "LABEL_2": "Positive"
+    }
+
+    # Sentiment Analysis for each comment
+    sentiments = []
     positive_count = 0
     negative_count = 0
     neutral_count = 0
 
-    comments_data = []
     for comment in filtered_comments:
-        sentiment_label, sentiment_score = analyze_summary(comment)
-        comments_data.append({'comment': comment, 'sentiment': sentiment_label})
-        if sentiment_label == 'Positive':
+        try:
+            sentiment = sentiment_pipeline([comment])[0]
+            sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
+            sentiments.append({'comment': comment, 'sentiment': sentiment['label']})
+        except RuntimeError as e: # RoBERTa can only handle a maximum of 512 tokens.
+            continue  # Skip this comment and continue with the next one
+        except Exception as e:
+            flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
+            return redirect(url_for('views.home'))
+        # Counting the sentiments
+        if sentiment['label'] == 'Positive':
             positive_count += 1
-        elif sentiment_label == 'Negative':
+        elif sentiment['label'] == 'Negative':
             negative_count += 1
         else:
             neutral_count += 1
@@ -908,7 +925,7 @@ def analyze2():
         'positive_count2': positive_count,
         'negative_count2': negative_count,
         'neutral_count2': neutral_count,
-        'comments2': comments_data,
+        'comments2': sentiments,
         'frequent_words2': frequent_words,
         'positive_img_str2': positive_img_str,
         'negative_img_str2': negative_img_str,
