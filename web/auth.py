@@ -851,6 +851,8 @@ def analyze():
             return redirect(url_for('views.main'))
     return render_template("analysis_interrupted.html", user=current_user)
 
+
+
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():
     data = request.get_json()
