@@ -15,14 +15,6 @@
   </div>       
 </div>
 
-
-<!-- Add this div to wrap the download button -->
-<div class="fixed bottom-4 right-4">
-  <button id="downloadButton" class="px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700" title="Download analysis">
-      <i class="ri-download-line"></i> <!-- Use an icon if needed -->
-  </button>
-</div>
-
 <!-- SUMMARY -->
 <div class="mt-5 pt-5 flex justify-center overflow-hidden">
   <table id="summary" class="w-full text-center ml-[50px] mr-[50px] mt-4">
@@ -65,45 +57,7 @@
     </tbody>
   </table>
 </div>    
-
-<!-- Include jsPDF and html2canvas Libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-<script>
-document.getElementById('downloadButton').addEventListener('click', function () {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'pt', 'a4');
-
-    // Select the download button element
-    const downloadButton = document.getElementById('downloadButton');
-    // Hide the download button
-    downloadButton.style.display = 'none';
-
-    // Select the main content area
-    const content = document.getElementById('content');
-
-    html2canvas(content).then(function (canvas) {
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = doc.internal.pageSize.getWidth();
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-
-        // Add the image to the PDF
-        doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        doc.save('results.pdf');  // Save the PDF
-
-        // Show the download button again after saving the PDF
-        downloadButton.style.display = 'block';
-    }).catch(function (error) {
-        console.error('Error generating PDF:', error);
-        // Show the download button again if there's an error
-        downloadButton.style.display = 'block';
-    });
-});
-</script>
-
   
-
   <!-- Dropdown for sentiment selection -->
 <div class="mt-5 pt-5 flex justify-end ml-[50px] mr-[50px] shadow-lg">
   {% if youtube_url.created_at is not none and frequent_words %}
