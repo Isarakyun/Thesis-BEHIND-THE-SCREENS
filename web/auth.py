@@ -715,7 +715,8 @@ def analyze():
                 video_name = yt.title
                 video_id = yt.video_id
             except Exception as e:
-                flash(f'Failed to extract video name: {str(e)}', category='error')
+                flash(f'"{url}" is not a YouTube video. Please enter a valid URL.', category='error')
+                # flash(f'Failed to extract video name: {str(e)}', category='error')
                 return redirect(url_for('views.main'))
             attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
             new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt)

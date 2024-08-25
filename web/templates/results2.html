@@ -87,7 +87,7 @@
 
                 if (currentPage > 1) {
                     const prevButton = document.createElement('button');
-                    prevButton.textContent = '<<';
+                    prevButton.textContent = '←';
                     prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
                     prevButton.addEventListener('click', () => {
                         if (currentPage > 1) {
@@ -141,7 +141,7 @@
 
                 if (currentPage < totalPages) {
                     const nextButton = document.createElement('button');
-                    nextButton.textContent = '>>';
+                    nextButton.textContent = '→';
                     nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
                     nextButton.addEventListener('click', () => {
                         if (currentPage < totalPages) {
