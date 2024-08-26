@@ -24,7 +24,7 @@ CREATE TABLE get_url (
     attempt VARCHAR(150) NOT NULL,
     user_id INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE youtube_url (
@@ -34,7 +34,7 @@ CREATE TABLE youtube_url (
     video_id VARCHAR(150) NOT NULL,
     user_id INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE comments (
@@ -43,8 +43,8 @@ CREATE TABLE comments (
     sentiment VARCHAR(20) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (url_id) REFERENCES youtube_url(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (url_id) REFERENCES youtube_url(id) ON DELETE CASCADE
 );
 
 CREATE TABLE summarized_comments (
@@ -53,8 +53,8 @@ CREATE TABLE summarized_comments (
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (url_id) REFERENCES youtube_url(id),
-    FOREIGN KEY (user_id) REFERENCES user(id)
+    FOREIGN KEY (url_id) REFERENCES youtube_url(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE frequent_words (
@@ -64,8 +64,8 @@ CREATE TABLE frequent_words (
     sentiment VARCHAR(20) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (url_id) REFERENCES youtube_url(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (url_id) REFERENCES youtube_url(id) ON DELETE CASCADE
 );
 
 CREATE TABLE sentiment_counter (
@@ -75,8 +75,8 @@ CREATE TABLE sentiment_counter (
     neutral INT NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (url_id) REFERENCES youtube_url(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (url_id) REFERENCES youtube_url(id) ON DELETE CASCADE
 );
 
 CREATE TABLE word_cloud (
@@ -85,8 +85,8 @@ CREATE TABLE word_cloud (
     image_negative_data LONGBLOB,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (url_id) REFERENCES youtube_url(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (url_id) REFERENCES youtube_url(id) ON DELETE CASCADE
 );
 
 -- USER AUDIT TRAIL
@@ -95,7 +95,7 @@ CREATE TABLE user_log (
     action VARCHAR(500) NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 -- ADMIN AUDIT TRAIL
@@ -104,5 +104,5 @@ CREATE TABLE admin_log (
     action VARCHAR(500) NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     admin_id INT NOT NULL,
-    FOREIGN KEY (admin_id) REFERENCES admin(id)
+    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE CASCADE
 );

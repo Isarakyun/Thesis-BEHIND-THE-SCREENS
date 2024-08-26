@@ -135,15 +135,19 @@ def edit_user():
 @admin_bp.route('/delete-user/<int:user_id>', methods=['POST'])
 @admin_required
 def delete_user(user_id):
-    # user_id = request.json.get('id')
-    user_id = request.form.get('id')
     email = request.form.get('email')
 
+    if not email:
+        return jsonify({'error': 'Email is missing or invalid'}), 400
+
     user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
     try:
         print(f"Received request to delete user with ID: {user_id}")
         if user:
-            # send mail user's email to inform them that their account has been deleted by the admin
+            # Send an email to the user informing them of the deletion
             msg = Message('Force Account Deletion', sender='behindthescreens.thesis@gmail.com', recipients=[email])
             msg.html = """
                 <html>
@@ -198,21 +202,25 @@ def delete_user(user_id):
                 </body>
                 </html>
             """.format()
-            mail.send(msg)
+            mail.send(msg)  # Correct indentation here
+
+            # Delete related records
             db.session.query(WordCloudImage).filter_by(user_id=user_id).delete()
             db.session.query(SummarizedComments).filter_by(user_id=user_id).delete()
             db.session.query(SentimentCounter).filter_by(user_id=user_id).delete()
             db.session.query(FrequentWords).filter_by(user_id=user_id).delete()
             db.session.query(Comments).filter_by(user_id=user_id).delete()
             db.session.query(YoutubeUrl).filter_by(user_id=user_id).delete()
+
+            # Finally, delete the user
             db.session.delete(user)
             log_audit_trail(f"Deleted user {user.username}")
             db.session.commit()
+
             flash('User deleted successfully!', 'success')
             return jsonify({'message': 'User deleted successfully'}), 200
-        else:
-            flash('User not found.', 'error')
     except Exception as e:
+        db.session.rollback()
         print(f"Error deleting user: {e}")
         return jsonify({'error': str(e)}), 500
 
