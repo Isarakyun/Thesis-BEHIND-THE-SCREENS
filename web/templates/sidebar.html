@@ -1,68 +1,132 @@
-
 <div class="fixed left-0 top-0 w-64 h-full bg-slate-200 dark:bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform" id="sidebar">
     <div>
-        <a class="flex items-center pb-4 border-b border-gray-900 dark:border-b-white">
+        <a class="flex items-center pb-4 border-b border-gray-900 dark:border-white">
             <span class="text-red-600 text-sm font-bold dark:text-white ml-2">Previous Sessions</span>
         </a>
     </div>
     <div class="absolute right-0 top-0 mt-4 mr-6 text-left">
-        <a href="/main" id="addButton" class="inline-flex justify-center" >
+        <a href="/main" id="addButton" class="inline-flex justify-center">
             <i class="ri-add-fill text-black dark:text-white"></i>
         </a>
     </div>
 
     <!-- Side Nav -->
     <div class="overflow-y-auto custom-scrollbar" style="height: calc(105% - 120px);">
-        {% for youtube_url in youtube_urls %}
         <ul class="mt-4">
-            {% if youtube_urls.id == analysis_checker.url_id %}
+            {% for youtube_url in youtube_urls %}
             <li class="mb-5 group">
                 <div class="text-red-600 dark:text-gray-400 text-xs mb-2 ml-4">{{ youtube_url.created_at|format_date }}</div>
-                <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="flex items-center py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <span class="text-sm video-title">{{ youtube_url.video_name }}</span>
-                </a>
+                <div class="flex items-center justify-between py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md">
+                    <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="flex-1 text-sm video-title truncate">
+                        {{ youtube_url.video_name }}
+                    </a>
+                    <!-- Trash Icon -->
+                    <button class="ml-4 text-white dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 hidden group-hover:block trash-button" data-id="{{ youtube_url.id }}">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
             </li>
-            {% endif %}
+            {% endfor %}
         </ul>
-        {% endfor %}
     </div>
 
-   <!-- Account -->
+    <!-- Account -->
     <div class="absolute bottom-3 w-full">
         <div class="flex flex-col pt-2 juice:py-2 border-x-gray-800 dark:border-white/20 ml-2">
-        <span class="flex w-full flex-row flex-wrap-reverse justify-between">
-            <div class="flex items-center gap-2">
-                <!-- <span class="flex h-7 w-7 items-center justify-center rounded-full border border-token-border-light">
-                    <img src="#" width="24" height="24" alt="Profile Picture" class="icon-sm shrink-0"/>
-                </span> -->
-                <div class="flex flex-col text-gray-900 dark:text-white">
-                    <div class="flex items-center">
-                        <a>{{ user.username }}</a>
-                        {% if user.confirmed_email == False %}
-                        <i class="fas fa-exclamation-circle text-red-600 ml-2" title="Unverified Account"></i>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="absolute right-0 top-0 mt-2 mr-8 text-left">
-                    <div>
-                        <button id="dropdownButton" class="inline-flex justify-center" >
-                            <i class="ri-more-fill text-black dark:text-white"></i>
-                        </button>
-                    </div>
-                    
-                    <div id="dropdownMenu" class="bottom-10 absolute left-3 mt-2 w-56 rounded-md shadow-lg dark:bg-[#1c1b1b] bg-white ring-1 dark:ring-white ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
-                        <div class="py-0" role="none">
-                            <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Account settings</a>
-                            <a href="/privacy-policy" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Privacy Policy</a>
-                            <a href="/user-agreement" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">User Agreement</a>
-                            <a href="/logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Log Out</a>
+            <span class="flex w-full flex-row flex-wrap-reverse justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="flex flex-col text-gray-900 dark:text-white">
+                        <div class="flex items-center">
+                            <a>{{ user.username }}</a>
+                            {% if user.confirmed_email == False %}
+                            <i class="fas fa-exclamation-circle text-red-600 ml-2" title="Unverified Account"></i>
+                            {% endif %}
                         </div>
                     </div>
-                </div> 
-            </div>
-        </span>
+
+                    <div class="absolute right-0 top-0 mt-2 mr-8 text-left">
+                        <div>
+                            <button id="dropdownButton" class="inline-flex justify-center">
+                                <i class="ri-more-fill text-black dark:text-white"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="dropdownMenu" class="bottom-10 absolute left-3 mt-2 w-56 rounded-md shadow-lg dark:bg-[#1c1b1b] bg-white ring-1 dark:ring-white ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
+                            <div class="py-0" role="none">
+                                <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Account settings</a>
+                                <a href="/privacy-policy" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Privacy Policy</a>
+                                <a href="/user-agreement" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">User Agreement</a>
+                                <a href="/logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Log Out</a>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </span>
         </div>
+    </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 hidden z-50">
+    <div class="bg-[#121212] p-6 rounded-lg shadow-lg max-w-sm w-full">
+        <h2 class="text-lg font-semibold text-white mb-4">Confirm delete?</h2>
+        <div class="flex justify-end">
+            <button id="cancelButton" class="mr-4 bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                Cancel
+            </button>
+            <button id="confirmButton" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                Delete
+            </button>
+        </div>
+    </div>
 </div>
+
+<script>
+    // Get modal and buttons
+    const deleteModal = document.getElementById('deleteModal');
+    const trashButtons = document.querySelectorAll('.trash-button');
+    const cancelButton = document.getElementById('cancelButton');
+    const confirmButton = document.getElementById('confirmButton');
+
+    // Show modal when trash icon is clicked
+    trashButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            deleteModal.classList.remove('hidden');
+            deleteModal.setAttribute('data-id', button.dataset.id); // Set the ID of the item to be deleted
+        });
+    });
+
+    // Hide modal when cancel button is clicked
+    cancelButton.addEventListener('click', () => {
+        deleteModal.classList.add('hidden');
+    });
+
+    // Handle delete action when confirm button is clicked
+    confirmButton.addEventListener('click', () => {
+        const itemId = deleteModal.getAttribute('data-id');
+        
+        // Send a DELETE request to the server without CSRF token
+        fetch(`/delete-item/${itemId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Remove the item from the DOM
+                document.querySelector(`[data-id="${itemId}"]`).closest('li').remove();
+                deleteModal.classList.add('hidden');
+            } else {
+                // Handle errors here
+                alert('Failed to delete the item.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An unexpected error occurred.');
+        });
+    });
+</script>
+

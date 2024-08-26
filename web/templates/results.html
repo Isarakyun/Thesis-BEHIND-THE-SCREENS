@@ -1,17 +1,18 @@
 {% extends "base.html" %} {% block title %}Results of {{ youtube_url.video_name }}{% endblock %}
 
 {% block content %}
-<div>
 <div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
-    <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
-        <i class="ri-menu-line cursor-pointer"></i>
-    </button>
-    <div>
-        <span class="text-m text-black dark:text-white ml-4">Results</span>
-        {% if user.confirmed_email == False %}
-        <span class="text-m text-red-600 ml-4">Your email hasn't been verified yet. Go to your settings to confirm your email.</span>
-        {% endif %}
-    </div>       
+  <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
+      <i class="ri-menu-line cursor-pointer"></i>
+  </button>
+  <div>
+      <a href="{{ url_for('auth.home') }}" class="text-m text-black dark:text-white ml-4">
+          Behind the Screens
+      </a>
+      {% if user.confirmed_email == False %}
+      <span class="text-m text-red-600 ml-4">Your email hasn't been verified yet. Go to your settings to confirm your email.</span>
+      {% endif %}
+  </div>       
 </div>
 
 <!-- SUMMARY -->
@@ -56,7 +57,7 @@
     </tbody>
   </table>
 </div>    
-
+  
   <!-- Dropdown for sentiment selection -->
 <div class="mt-5 pt-5 flex justify-end ml-[50px] mr-[50px] shadow-lg">
   {% if youtube_url.created_at is not none and frequent_words %}

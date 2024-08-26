@@ -7,7 +7,7 @@
         <i class="ri-menu-line cursor-pointer"></i>
     </button>
     <div>
-        <span class="text-m text-black dark:text-white ml-4">Analyze</span>
+        <a href="{{ url_for('auth.home') }}" class="text-m text-black dark:text-white ml-4">Behind the Screens</a>
         {% if user.confirmed_email == False %}
         <span class="text-m text-red-600 ml-4">Your email hasn't been verified yet. Go to your settings to confirm your email.</span>
         {% endif %}

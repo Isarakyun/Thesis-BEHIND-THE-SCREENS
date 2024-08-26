@@ -18,6 +18,7 @@ from collections import Counter
 import base64
 import logging
 import re
+from flask_wtf import CSRFProtect
 
 auth = Blueprint('auth', __name__)
 
@@ -840,6 +841,33 @@ def analyze():
             flash(f'An unexpected error occurred: {str(e)}', category='error')
             return redirect(url_for('views.main'))
     return render_template("analysis_interrupted.html", user=current_user)
+
+@auth.route('/delete-item/<int:item_id>', methods=['DELETE'])
+@login_required
+def delete_item(item_id):
+    # Check if the item exists and belongs to the current user
+    youtube_url = YoutubeUrl.query.filter_by(id=item_id, user_id=current_user.id).first()
+    
+    if youtube_url:
+        try:
+            # Delete related entries in other tables
+            db.session.query(Comments).filter_by(url_id=youtube_url.id).delete()
+            db.session.query(SummarizedComments).filter_by(url_id=youtube_url.id).delete()
+            db.session.query(FrequentWords).filter_by(url_id=youtube_url.id).delete()
+            db.session.query(SentimentCounter).filter_by(url_id=youtube_url.id).delete()
+            db.session.query(WordCloudImage).filter_by(url_id=youtube_url.id).delete()
+            db.session.delete(youtube_url)
+            db.session.commit()
+            
+            log_audit_trail(f"User {current_user.username} deleted video analysis with ID {item_id}")
+            return jsonify({'message': 'Item deleted successfully'}), 200
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f'Error deleting item: {str(e)}')
+            return jsonify({'error': 'Failed to delete item'}), 500
+    else:
+        return jsonify({'error': 'Item not found or unauthorized'}), 404
+
 
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():
