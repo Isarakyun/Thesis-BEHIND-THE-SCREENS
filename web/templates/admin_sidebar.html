@@ -1,0 +1,26 @@
+<div class="fixed left-0 top-0 w-64 h-full bg-slate-200 dark:bg-[#121212] p-4 z-20 transition-transform duration-300 ease-in-out translateX(-256px)" id="sidebar" aria-hidden="true">
+    <div class="flex items-center justify-center pb-2">
+        <a href="{{ url_for('views.home') }}"><img src="{{ url_for('static', filename='BTS-logo-with-name.png') }}" alt="BTS Logo" class="w-56 h-auto"></a>
+    </div>
+    <div class="divider"></div>
+    <nav class="mt-4">
+        <a href="{{ url_for('admin.dashboard') }}" class="flex items-center py-3 px-4 text-black dark:text-white no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
+            <i class="ri-dashboard-line mr-4"></i> Dashboard
+        </a>
+        <a href="{{ url_for('admin.users') }}" class="flex items-center py-3 px-4 text-black dark:text-white no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
+            <i class="ri-user-line mr-4"></i> Users
+        </a>
+        <a href="{{ url_for('admin.summary_history') }}" class="flex items-center py-3 px-4 text-black dark:text-white no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
+            <i class="ri-history-line mr-4"></i> User Analyses
+        </a>
+        <a href="{{ url_for('admin.user_audit') }}" class="flex items-center py-3 px-4 text-black dark:text-white no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
+            <i class="ri-file-list-line mr-4"></i> User Logs
+        </a>
+        <a href="{{ url_for('admin.admin_audit') }}" class="flex items-center py-3 px-4 text-black dark:text-white no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
+            <i class="ri-shield-user-line mr-4"></i> Admin Logs
+        </a>
+        <a href="/logout" class="flex items-center py-3 px-4 text-red-500 no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
+            <i class="ri-logout-box-line mr-4"></i> Logout
+        </a>
+    </nav>
+</div>

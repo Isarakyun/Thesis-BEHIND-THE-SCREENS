@@ -1,4 +1,4 @@
-{% extends "admin_base.html" %} {% block title %}All Analyses{% endblock %}
+{% extends "admin_base.html" %} {% block title %}Admin Logs{% endblock %}
 
 {% block content %}
 <div class="py-2 px-4 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
@@ -6,28 +6,26 @@
         <i class="ri-menu-line cursor-pointer"></i>
     </button>
     <div>
-        <a href="{{ url_for('admin.summary_history') }}" class="text-m text-black dark:text-white ml-4">Analysis History</a>
+        <a href="{{ url_for('admin.admin_audit') }}" class="text-m text-black dark:text-white ml-4">Admin Audit Trail</a>
     </div>  
 </div>
 <div class="pt-8">
-    <div class="p-4">  
+    <div class="py-4 px-8">
         <div class="overflow-x-auto rounded-3xl">
-            <table class="min-w-full text-black dark:text-white rounded-3xl mt-4" id="analyses">
+            <table class="min-w-full text-black dark:text-white rounded-3xl mt-4" id="audit-trail">
                 <thead>
                     <tr class="w-full bg-slate-300 dark:bg-gray-700 rounded-3xl">
-                        <th class="py-3 px-6 text-center rounded-tl-3xl">Date</th>
-                        <th class="py-3 px-6 text-center">URL</th>
-                        <th class="py-3 px-6 text-center">Title</th>
-                        <th class="py-3 px-6 text-center rounded-tr-3xl">User</th>
+                        <th class="py-3 px-6 text-center rounded-tl-3xl"></th>
+                        <th class="py-3 px-6 text-center">Action</th>
+                        <th class="py-3 px-6 text-center rounded-tr-3xl">Timestamp</th>
                     </tr>
                 </thead>
                 <tbody class="bg-slate-200 dark:bg-gray-800">
-                    {% for summary in summaries %}
+                    {% for audit in audit_trails %}
                     <tr class="border-b border-slate-100 dark:border-gray-700">
-                        <td class="py-4 px-6 text-center">{{ summary.created_at|format_date }}</td>
-                        <td class="py-4 px-6 text-center">{{ summary.video_url }}</td>
-                        <td class="py-4 px-6 text-center">{{ summary.video_name }}</td>
-                        <td class="py-4 px-6 text-center">{{ summary.username }}</td>
+                        <td class="py-4 px-6 text-center">{{ audit.username }}</td>
+                        <td class="py-4 px-6 text-center">{{ audit.action }}</td>
+                        <td class="py-4 px-6 text-center">{{ audit.timestamp }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -39,8 +37,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const rowsPerPage = 7;
-      const table = document.getElementById('analyses');
+      const rowsPerPage = 8;
+      const table = document.getElementById('audit-trail');
       const tbody = table.querySelector('tbody');
       const rows = Array.from(tbody.querySelectorAll('tr'));
       const paginationControls = document.getElementById('all-pagination-controls');

@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import User, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, AuditTrail, GetUrl
+from .models import User, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .analysis import clean_text, word_cloud, get_summary, extract_comments
@@ -33,10 +33,17 @@ sia = SentimentIntensityAnalyzer()
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
 
 # Audit Trail Logger
-def log_audit_trail(action):
+def user_log(action):
     if current_user.is_authenticated:
         user_id = current_user.id
-        audit_trail = AuditTrail(user_id=user_id, action=action)
+        audit_trail = UserLog(user_id=user_id, action=action)
+        db.session.add(audit_trail)
+        db.session.commit()
+
+def admin_log(action):
+    if current_user.is_authenticated:
+        admin_id = current_user.id
+        audit_trail = AdminLog(admin_id=admin_id, action=action)
         db.session.add(audit_trail)
         db.session.commit()
 
@@ -46,28 +53,29 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        print(f"Attempting login with email: {email}")
+        # print(f"Attempting login with email: {email}")
 
-        # Check if the user is an admin
-        admin = Admin.query.filter_by(email=email).first()
-        if admin:
-            print(f"Admin user found: {admin.email}")
-            if admin.password == password:  # Compare plaintext passwords
+        # ADMIN LOGIN
+        admin = Admin.query.filter_by(username=email).first()
+        if admin:            
+            if check_password_hash(admin.password, password):
                 # print("Admin password correct")
-                login_user(admin)
-                log_audit_trail("Logged in")
+                login_user(admin, remember=True)
+                admin_log(f"Behind the Screens {admin.username} Logged in")
                 return redirect(url_for('admin.dashboard'))
+
             else:
                 # print("Admin password incorrect")
                 flash('Incorrect password, try again.', category='error')
 
+        # USER LOGIN
         user = User.query.filter_by(email=email).first()
         if user:
             # print(f"User found: {user.email}")
             if check_password_hash(user.password, password):
                 # print("User password correct")
                 login_user(user, remember=True)
-                log_audit_trail("Logged in")
+                user_log(f"{user.username} Logged in")
                 return redirect(url_for('views.main'))
             else:
                 # print("User password incorrect")
@@ -80,14 +88,14 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
-    log_audit_trail("Logged out")  # Simplify the logout action message
-    logout_user()
-    flash('Logged out successfully!', 'success')
+    if current_user.id == 0:
+        admin_log(f"Behind the Screens {current_user.username} Logged out")
+        logout_user()
+    else:
+        user_log(f"{current_user.username} Logged out")  # Simplify the logout action message
+        logout_user()
+        flash('Logged out successfully!', 'success')
     return redirect(url_for('auth.login'))
-
-@auth.route('/')
-def home():
-    return render_template("home.html")
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
@@ -108,13 +116,13 @@ def sign_up():
             flash('Email must be valid.', category='error')
         elif password != confirmpassword:
             flash('Passwords don\'t match.', category='error')
-        elif len(password) < 8:
-            flash('Password must be at least 8 characters.', category='error')
+        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
+            flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
         else:
             new_user = User(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
-            log_audit_trail(f"User {username} signed up")
+            user_log(f"User {username} has signed up")
 
             token = s.dumps(email, salt='email-confirm')
             msg = Message('Email Confirmation', sender='behindthescreens.thesis@gmail.com', recipients=[email])
@@ -189,7 +197,7 @@ def confirm_email(token):
     user = User.query.filter_by(email=email).first()
     user.confirmed_email = True
     db.session.commit()
-    log_audit_trail(f"User {user.username} confirmed email")
+    user_log(f"User {user.username} has confirmed their email")
 
     return render_template("email_verified.html")
 
@@ -256,7 +264,7 @@ def forgot_password():
             </html>
         """.format(link, link)
         mail.send(msg)
-        log_audit_trail(f"User {user.username} requested password reset")
+        user_log(f"User {user.username} requested to reset their password")
         return redirect(url_for('views.mail_sent'))
     else:
         flash('Email does not exist.', category='error')
@@ -272,8 +280,8 @@ def reset_password(token):
             user = User.query.filter_by(email=email).first()
             if password != confirmpassword:
                 flash('Passwords don\'t match.', category='error')
-            elif len(password) < 8:
-                flash('Password must be at least 8 characters.', category='error')
+            elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
+                flash('Password must be at least 8 characters long and contain both letters and numbers.', category='error')
             else:
                 user.password=generate_password_hash(password, method='sha256')
                 db.session.commit()
@@ -336,7 +344,7 @@ def reset_password(token):
                     </html>
                 """.format(link, link)
                 mail.send(msg)
-                log_audit_trail(f"User {user.username} reset password")
+                user_log(f"User {user.username} has changed their password")
                 return redirect(url_for('views.password_reset_success'))
     except  SignatureExpired:
         return render_template("expired_url.html")
@@ -359,7 +367,7 @@ def change_password():
                 else:
                     current_user.password = generate_password_hash(new_password, method='sha256')
                     db.session.commit()
-                    log_audit_trail(f"User {current_user.username} changed password")
+                    user_log(f"User {current_user.username} has changed their password")
                     flash('Password changed successfully!', category='success')
                     return redirect(url_for('views.settings'))
             else:
@@ -381,7 +389,7 @@ def change_username():
         else:
             current_user.username = new_username
             db.session.commit()
-            log_audit_trail(f"User '{old_username}' changed username to '{new_username}'")
+            user_log(f"User '{old_username}' changed username to '{new_username}'")
             flash('Username changed successfully!', category='success')
             return redirect(url_for('views.settings'))
     return render_template("user_settings.html")
@@ -447,7 +455,7 @@ def resend_confirmation():
         </html>
     """.format(link, link)
     mail.send(msg)
-    log_audit_trail(f"User {current_user.username} requested email confirmation")
+    user_log(f"User {current_user.username} requested an email confirmation")
     flash('Email confirmation link has been sent. Please check your email before the link expires.', category='success')
     return redirect(url_for('views.settings'))
 
@@ -468,7 +476,7 @@ def change_email():
             current_user.confirmed_email = False
             current_user.email = new_email
             db.session.commit()
-            log_audit_trail(f"User '{old_email}' changed email to '{new_email}'")
+            user_log(f"User '{old_email}' changed email to '{new_email}'")
             flash('Please check your email to verify the changes.', category='success')
 
             # send mail to the new email for email confirmation/verification
@@ -601,7 +609,7 @@ def change_email_confirmation(token):
         return render_template("invalid_url.html")
     current_user.confirmed_email = True
     db.session.commit()
-    log_audit_trail(f"User {current_user.username} confirmed change of email to {email}")
+    user_log(f"User {current_user.username} confirmed change of email to {email}")
     return render_template("change_email_success.html")
 
 @auth.route('/delete-account', methods=['POST'])
@@ -670,6 +678,7 @@ def delete_account():
                 """.format()
                 mail.send(msg)
 
+                user_log(f"User {current_user.username} deleted their account")
                 # Delete related rows from other tables
                 db.session.query(WordCloudImage).filter_by(user_id=current_user.id).delete()
                 db.session.query(SentimentCounter).filter_by(user_id=current_user.id).delete()
@@ -680,7 +689,6 @@ def delete_account():
                 # Delete the user
                 db.session.delete(current_user)
                 db.session.commit()
-                log_audit_trail(f"User {current_user.username} deleted account")
                 return redirect(url_for('auth.home'))
             else:
                 flash('Passwords do not match.', category='error')
@@ -713,7 +721,7 @@ def analyze():
             new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt)
             db.session.add(new_url)
             db.session.commit()
-            log_audit_trail(f"Started analysis for video '{video_name}'")
+            user_log(f"Started analysis for video '{video_name}'")
 
             # THE FOLLOWING CODE BLOCK WILL ONLY BE COMMITTED WHEN THE ANALYSIS IS SUCCESSFUL
             # Adding the URL to the youtube_url table, youtube_url table's id is get_url's id if successful
@@ -833,7 +841,7 @@ def analyze():
             successful_analysis = GetUrl.query.filter_by(url=url).order_by(GetUrl.id.desc()).first()
             successful_analysis.attempt = "Success"
             db.session.commit()
-            log_audit_trail(f"Completed analysis for video '{video_name}'")
+            user_log(f"Completed analysis for video '{video_name}'")
 
             return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id, youtube_video_id=new_youtube_url.video_id))
         except Exception as e:
@@ -844,7 +852,7 @@ def analyze():
 
 @auth.route('/delete-item/<int:item_id>', methods=['DELETE'])
 @login_required
-def delete_item(item_id):
+def delete_analysis(item_id):
     # Check if the item exists and belongs to the current user
     youtube_url = YoutubeUrl.query.filter_by(id=item_id, user_id=current_user.id).first()
     
@@ -859,15 +867,14 @@ def delete_item(item_id):
             db.session.delete(youtube_url)
             db.session.commit()
             
-            log_audit_trail(f"User {current_user.username} deleted video analysis with ID {item_id}")
-            return jsonify({'message': 'Item deleted successfully'}), 200
+            user_log(f"User {current_user.username} deleted video analysis with ID {item_id}")
+            return jsonify({'message': 'Previous analysis deleted successfully'}), 200
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f'Error deleting item: {str(e)}')
-            return jsonify({'error': 'Failed to delete item'}), 500
+            current_app.logger.error(f'Error deleting Previous Analysis: {str(e)}')
+            return jsonify({'error': 'Failed to delete Previous Analysis'}), 500
     else:
-        return jsonify({'error': 'Item not found or unauthorized'}), 404
-
+        return jsonify({'error': 'Analysis not found or unauthorized'}), 404
 
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():

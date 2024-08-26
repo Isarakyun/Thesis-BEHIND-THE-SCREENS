@@ -89,11 +89,6 @@ def settings():
     confirmed_email = current_user.confirmed_email
     return render_template("user_settings.html", user=current_user, username=username, email=email, user_id=user_id, confirmed_email=confirmed_email)
 
-@views.route('/admin')
-@login_required
-def admin():
-    return render_template("admin.html", user=current_user)
-
 @views.route('/mail-sent')
 def mail_sent():
     return render_template("mail_sent.html")

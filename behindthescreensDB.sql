@@ -13,8 +13,8 @@ CREATE TABLE user (
 );
 
 CREATE TABLE admin (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(150) NOT NULL UNIQUE,
+    id INT PRIMARY KEY,
+    username VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(1000) NOT NULL
 );
 
@@ -89,15 +89,20 @@ CREATE TABLE word_cloud (
     FOREIGN KEY (url_id) REFERENCES youtube_url(id)
 );
 
-CREATE TABLE audit_trail (
+-- USER AUDIT TRAIL
+CREATE TABLE user_log (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    -- username VARCHAR(150) NOT NULL,
     action VARCHAR(500) NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
-
--- Insert admin user with plaintext password
-INSERT INTO admin (email, password) VALUES ('admin', '1234');
+-- ADMIN AUDIT TRAIL
+CREATE TABLE admin_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    action VARCHAR(500) NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    admin_id INT NOT NULL,
+    FOREIGN KEY (admin_id) REFERENCES admin(id)
+);

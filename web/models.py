@@ -2,13 +2,21 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
-class AuditTrail(db.Model):
-    __tablename__ = 'audit_trail'
+class UserLog(db.Model):
+    __tablename__ = 'user_log'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     action = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
-    user = db.relationship('User', backref='audit_trails')
+    user = db.relationship('User', backref='user_log')
+
+class AdminLog(db.Model):
+    __tablename__ = 'admin_log'
+    id = db.Column(db.Integer, primary_key=True)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'), nullable=False)
+    action = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+    admin = db.relationship('Admin', backref='admin_log')
     
 class GetUrl(db.Model):
     __tablename__ = 'get_url'
@@ -103,8 +111,8 @@ class User(db.Model, UserMixin):
 class Admin(db.Model, UserMixin):
     __tablename__ = 'admin'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(1000), nullable=False)
 
     @property
     def is_active(self):

@@ -4,3 +4,4 @@ behindthescreensDB.sql
 config.cfg
 config.py
 app.log
+.env
