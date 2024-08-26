@@ -678,7 +678,6 @@ def delete_account():
                 """.format()
                 mail.send(msg)
 
-                user_log(f"User {current_user.username} deleted their account")
                 # Delete related rows from other tables
                 db.session.query(WordCloudImage).filter_by(user_id=current_user.id).delete()
                 db.session.query(SentimentCounter).filter_by(user_id=current_user.id).delete()
@@ -689,6 +688,7 @@ def delete_account():
                 # Delete the user
                 db.session.delete(current_user)
                 db.session.commit()
+                user_log(f"User {current_user.username} deleted their account")
                 return redirect(url_for('auth.home'))
             else:
                 flash('Passwords do not match.', category='error')
