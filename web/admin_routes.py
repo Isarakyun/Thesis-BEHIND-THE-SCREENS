@@ -25,7 +25,7 @@ def admin_required(view):
 
 # Audit Trail Logger
 def log_audit_trail(action):
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and current_user.username == 'admin':
         admin_id = current_user.id
         audit_trail = AdminLog(admin_id=admin_id, action=action)
         db.session.add(audit_trail)
@@ -96,33 +96,6 @@ def users():
     users = User.query.all()
     users_dict = [user.to_dict() for user in users]
     return render_template('admin_users.html', users=users_dict)
-
-# @admin_bp.route('/add-user', methods=['POST'])
-# @admin_required
-# def add_user():
-#     username = request.form.get('username')
-#     email = request.form.get('email')
-#     password = request.form.get('password')
-#     profile_pic = request.form.get('profile_pic')
-#     confirmed_email = bool(int(request.form.get('confirmed_email')))
-
-#     existing_user = User.query.filter_by(email=email).first()
-#     if existing_user:
-#         flash('Email address already exists.', 'error')
-#         return redirect(url_for('admin.users'))
-
-#     new_user = User(
-#         username=username,
-#         email=email,
-#         password=generate_password_hash(password, method='sha256'),
-#         profile_pic=profile_pic,
-#         confirmed_email=confirmed_email
-#     )
-#     db.session.add(new_user)
-#     db.session.commit()
-#     log_audit_trail(f"Admin added {username}'s account")
-#     flash('User added successfully!', 'success')
-#     return redirect(url_for('admin.users'))
 
 @admin_bp.route('/edit-user', methods=['POST'])
 @admin_required
