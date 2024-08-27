@@ -38,6 +38,7 @@
 
     <!-- User Table -->
     <div class="bg-slate-200 dark:bg-gray-800 rounded-3xl shadow-lg mt-6">
+        {% if users %}
         <div class="overflow-x-auto rounded-3xl">
             <h2 class="text-2xl font-bold text-black dark:text-white text-center mt-4">Users</h2>
             <table class="min-w-full text-black dark:text-white rounded-3xl mt-4">
@@ -61,10 +62,14 @@
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <div class="text-center text-black dark:text-white p-4 mt-4">No users found.</div>
+        {% endif %}
     </div>
 
     <!-- Audit Trail Table -->
     <div class="bg-slate-200 dark:bg-gray-800 rounded-3xl shadow-lg mt-6">
+        {% if audit_trails %}
         <div class="overflow-x-auto rounded-3xl">
             <h2 class="text-2xl font-bold text-black dark:text-white text-center mt-4">User Logs</h2>
             <table class="min-w-full text-black dark:text-white rounded-3xl mt-4">
@@ -88,10 +93,14 @@
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <div class="text-center text-black dark:text-white p-4 mt-4">No user logs found.</div>
+        {% endif %}
     </div>
 
-    <!-- Summary History Table -->    
-    <div class="bg-slate-200 dark:bg-gray-800 rounded-3xl shadow-lg mt-6">
+    <!-- Summary History Table --> 
+    <div class="bg-slate-200 dark:bg-gray-800 rounded-3xl shadow-lg mt-6">  
+        {% if analysis_history %} 
         <div class="overflow-x-auto rounded-3xl">
             <h2 class="text-2xl font-bold text-black dark:text-white text-center mt-4">Recent User Analyses</h2>
             <table class="min-w-full text-black dark:text-white rounded-3xl mt-4">
@@ -115,6 +124,9 @@
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <div class="text-center text-black dark:text-white p-4 mt-4">No recent analyses found.</div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

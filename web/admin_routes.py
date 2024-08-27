@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
-from .models import User, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, SummarizedComments, WordCloudImage
+from .models import User, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, SummarizedComments, WordCloudImage, GetUrl
 from . import db
 import re
 
@@ -50,10 +50,10 @@ def user_audit():
     audits = UserLog.query.order_by(UserLog.timestamp.desc()).all()
     audit_trails = []
     for audit in audits:
-        user = User.query.get(audit.user_id)
+        # user = User.query.get(audit.user_id)
         audit_trails.append({
             'user_id': audit.user_id,
-            'username': user.username,
+            'user': audit.user,
             'action': audit.action,
             'timestamp': audit.timestamp
         })
@@ -137,10 +137,13 @@ def edit_user():
 def delete_user(user_id):
     email = request.form.get('email')
 
+    # getting the id from the user_id sent from the form since user_id is not in User, it should be id
+    id = user_id 
+
     if not email:
         return jsonify({'error': 'Email is missing or invalid'}), 400
 
-    user = User.query.get(user_id)
+    user = User.query.get(id)
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
@@ -202,7 +205,9 @@ def delete_user(user_id):
                 </body>
                 </html>
             """.format()
-            mail.send(msg)  # Correct indentation here
+            mail.send(msg)
+
+            log_audit_trail(f"Deleted User ID: {user.id} | User: {user.username}")
 
             # Delete related records
             db.session.query(WordCloudImage).filter_by(user_id=user_id).delete()
@@ -211,10 +216,10 @@ def delete_user(user_id):
             db.session.query(FrequentWords).filter_by(user_id=user_id).delete()
             db.session.query(Comments).filter_by(user_id=user_id).delete()
             db.session.query(YoutubeUrl).filter_by(user_id=user_id).delete()
+            db.session.query(GetUrl).filter_by(user_id=user_id).delete()
 
             # Finally, delete the user
             db.session.delete(user)
-            log_audit_trail(f"Deleted user {user.username}")
             db.session.commit()
 
             flash('User deleted successfully!', 'success')

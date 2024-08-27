@@ -12,6 +12,7 @@
 <div class="pt-8">
     <div class="py-4 px-8">
         <div class="overflow-x-auto rounded-3xl">
+            {% if audit_trails %}
             <table class="min-w-full text-black dark:text-white rounded-3xl mt-4" id="audit-trail">
                 <thead>
                     <tr class="w-full bg-slate-300 dark:bg-gray-700 rounded-3xl">
@@ -30,6 +31,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <div class="text-center text-gray-500 dark:text-gray-200 mt-4">No admin logs found.</div>
+            {% endif %}
         </div>
         <div id="all-pagination-controls" class="flex justify-center mt-4 mb-4"></div>
     </div>

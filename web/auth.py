@@ -32,11 +32,22 @@ stop_words = set(stopwords.words('english'))
 sia = SentimentIntensityAnalyzer()
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
 
-# Audit Trail Logger
+"""
+Audit Trail Logger:
+- new_user_log(user_id, username, action) -> for new users
+- user_log(action) -> the user should be logged in
+- admin_log(action) -> the admin should be logged in
+"""
+def new_user_log(user_id, username, action):
+    audit_trail = UserLog(user_id=user_id, user=username, action=action)
+    db.session.add(audit_trail)
+    db.session.commit()
+
 def user_log(action):
     if current_user.is_authenticated:
         user_id = current_user.id
-        audit_trail = UserLog(user_id=user_id, action=action)
+        user = current_user.username
+        audit_trail = UserLog(user_id=user_id, user=user, action=action)
         db.session.add(audit_trail)
         db.session.commit()
 
@@ -75,7 +86,7 @@ def login():
             if check_password_hash(user.password, password):
                 # print("User password correct")
                 login_user(user, remember=True)
-                user_log(f"{user.username} Logged in")
+                user_log(f"User ID: {user.id} | {user.username} Logged in")
                 return redirect(url_for('views.main'))
             else:
                 # print("User password incorrect")
@@ -92,7 +103,7 @@ def logout():
         admin_log(f"Behind the Screens {current_user.username} Logged out")
         logout_user()
     else:
-        user_log(f"{current_user.username} Logged out")  # Simplify the logout action message
+        user_log(f"User ID: {current_user.id} | {current_user.username} Logged out")  # Simplify the logout action message
         logout_user()
         flash('Logged out successfully!', 'success')
     return redirect(url_for('auth.login'))
@@ -122,7 +133,8 @@ def sign_up():
             new_user = User(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
-            user_log(f"User {username} has signed up")
+
+            new_user_log(new_user.id, new_user.username, f"User ID: {new_user.id} | {new_user.username} has signed up")
 
             token = s.dumps(email, salt='email-confirm')
             msg = Message('Email Confirmation', sender='behindthescreens.thesis@gmail.com', recipients=[email])
@@ -197,7 +209,7 @@ def confirm_email(token):
     user = User.query.filter_by(email=email).first()
     user.confirmed_email = True
     db.session.commit()
-    user_log(f"User {user.username} has confirmed their email")
+    new_user_log(user.id, user.username, f"User ID: {user.id} | User {user.username} has confirmed their email")
 
     return render_template("email_verified.html")
 
@@ -264,7 +276,7 @@ def forgot_password():
             </html>
         """.format(link, link)
         mail.send(msg)
-        user_log(f"User {user.username} requested to reset their password")
+        user_log(f"User ID: {user.id} | {user.username} requested to reset their password")
         return redirect(url_for('views.mail_sent'))
     else:
         flash('Email does not exist.', category='error')
@@ -288,7 +300,7 @@ def reset_password(token):
                 
                 token = s.dumps(email, salt='email-confirm')
                 msg = Message('Password Changed', sender='behindthescreens.thesis@gmail.com', recipients=[email])
-                link = url_for('auth.home', _external=True)
+                link = url_for('views.home', _external=True)
                 msg.html = """
                     <html>
                     <head>
@@ -344,7 +356,7 @@ def reset_password(token):
                     </html>
                 """.format(link, link)
                 mail.send(msg)
-                user_log(f"User {user.username} has changed their password")
+                user_log(f"User ID: {user.id} | {user.username} has changed their password")
                 return redirect(url_for('views.password_reset_success'))
     except  SignatureExpired:
         return render_template("expired_url.html")
@@ -367,7 +379,7 @@ def change_password():
                 else:
                     current_user.password = generate_password_hash(new_password, method='sha256')
                     db.session.commit()
-                    user_log(f"User {current_user.username} has changed their password")
+                    user_log(f"User ID: {current_user.id} | {current_user.username} has changed their password")
                     flash('Password changed successfully!', category='success')
                     return redirect(url_for('views.settings'))
             else:
@@ -389,7 +401,7 @@ def change_username():
         else:
             current_user.username = new_username
             db.session.commit()
-            user_log(f"User '{old_username}' changed username to '{new_username}'")
+            user_log(f"User ID: {current_user.id} | User '{old_username}' changed username to '{new_username}'")
             flash('Username changed successfully!', category='success')
             return redirect(url_for('views.settings'))
     return render_template("user_settings.html")
@@ -455,7 +467,7 @@ def resend_confirmation():
         </html>
     """.format(link, link)
     mail.send(msg)
-    user_log(f"User {current_user.username} requested an email confirmation")
+    user_log(f"User ID: {current_user.id} | {current_user.username} requested an email confirmation")
     flash('Email confirmation link has been sent. Please check your email before the link expires.', category='success')
     return redirect(url_for('views.settings'))
 
@@ -476,7 +488,7 @@ def change_email():
             current_user.confirmed_email = False
             current_user.email = new_email
             db.session.commit()
-            user_log(f"User '{old_email}' changed email to '{new_email}'")
+            user_log(f"User ID: {current_user.id} | '{old_email}' changed email to '{new_email}'")
             flash('Please check your email to verify the changes.', category='success')
 
             # send mail to the new email for email confirmation/verification
@@ -609,7 +621,7 @@ def change_email_confirmation(token):
         return render_template("invalid_url.html")
     current_user.confirmed_email = True
     db.session.commit()
-    user_log(f"User {current_user.username} confirmed change of email to {email}")
+    user_log(f"User ID: {current_user.id} | {current_user.username} confirmed change of email to {email}")
     return render_template("change_email_success.html")
 
 @auth.route('/delete-account', methods=['POST'])
@@ -678,6 +690,9 @@ def delete_account():
                 """.format()
                 mail.send(msg)
 
+                # log the action first before deleting the account
+                user_log(f"User ID: {current_user.id} | {current_user.username} deleted their account")
+
                 # Delete related rows from other tables
                 db.session.query(WordCloudImage).filter_by(user_id=current_user.id).delete()
                 db.session.query(SentimentCounter).filter_by(user_id=current_user.id).delete()
@@ -685,11 +700,11 @@ def delete_account():
                 db.session.query(SummarizedComments).filter_by(user_id=current_user.id).delete()
                 db.session.query(Comments).filter_by(user_id=current_user.id).delete()
                 db.session.query(YoutubeUrl).filter_by(user_id=current_user.id).delete()
+                db.session.query(GetUrl).filter_by(user_id=current_user.id).delete()
                 # Delete the user
                 db.session.delete(current_user)
                 db.session.commit()
-                user_log(f"User {current_user.username} deleted their account")
-                return redirect(url_for('auth.home'))
+                return redirect(url_for('views.home'))
             else:
                 flash('Passwords do not match.', category='error')
         else:
@@ -721,7 +736,7 @@ def analyze():
             new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt)
             db.session.add(new_url)
             db.session.commit()
-            user_log(f"Started analysis for video '{video_name}'")
+            user_log(f"User ID: {current_user.id} | requested analysis for video '{video_name}'")
 
             # THE FOLLOWING CODE BLOCK WILL ONLY BE COMMITTED WHEN THE ANALYSIS IS SUCCESSFUL
             # Adding the URL to the youtube_url table, youtube_url table's id is get_url's id if successful
@@ -841,7 +856,7 @@ def analyze():
             successful_analysis = GetUrl.query.filter_by(url=url).order_by(GetUrl.id.desc()).first()
             successful_analysis.attempt = "Success"
             db.session.commit()
-            user_log(f"Completed analysis for video '{video_name}'")
+            user_log(f"User ID: {current_user.id} | Completed analysis for video '{video_name}'")
 
             return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id, youtube_video_id=new_youtube_url.video_id))
         except Exception as e:
@@ -867,8 +882,15 @@ def delete_analysis(item_id):
             db.session.delete(youtube_url)
             db.session.commit()
             
-            user_log(f"User {current_user.username} deleted video analysis with ID {item_id}")
+            user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {item_id}")
             return jsonify({'message': 'Previous analysis deleted successfully'}), 200
+            # return redirect(url_for('views.main'))
+            # response = {
+            #     'message': 'Previous analysis deleted successfully',
+            #     'redirect_url': url_for('views.main')
+            # }
+            # return jsonify(response)
+        
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f'Error deleting Previous Analysis: {str(e)}')

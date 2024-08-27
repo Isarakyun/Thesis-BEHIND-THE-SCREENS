@@ -5,10 +5,10 @@ from sqlalchemy.sql import func
 class UserLog(db.Model):
     __tablename__ = 'user_log'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, nullable=False) # manually set through the route, not through the form
+    user = db.Column(db.String(150), nullable=False) # manually set through the route, not through the form
     action = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
-    user = db.relationship('User', backref='user_log')
 
 class AdminLog(db.Model):
     __tablename__ = 'admin_log'
@@ -88,7 +88,6 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True)
     confirmed_email = db.Column(db.Boolean, default=False)
     password = db.Column(db.String(1000))
-    # profile_pic = db.Column(db.String(150), default='default.jpg')
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     get_url = db.relationship('GetUrl')
     youtube_url = db.relationship('YoutubeUrl')
@@ -104,7 +103,6 @@ class User(db.Model, UserMixin):
             'username': self.username,
             'email': self.email,
             'confirmed_email': self.confirmed_email,
-            # 'profile_pic': self.profile_pic,
             'created_at': self.created_at,
         }
 
