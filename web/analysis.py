@@ -37,6 +37,7 @@ try:
 except LookupError:
     import nltk
     nltk.download('stopwords')
+    nltk.download('vader_lexicon')
     
 def clean_text(text):
     # Remove special characters

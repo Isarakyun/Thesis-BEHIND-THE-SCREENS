@@ -28,6 +28,7 @@ try:
 except LookupError:
     import nltk
     nltk.download('stopwords')
+    nltk.download('vader_lexicon')
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
 MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
