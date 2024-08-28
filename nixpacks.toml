@@ -1,3 +1,5 @@
-[phases]
-setup = "chmod +x ./node_modules/.bin/postcss"
-build = "npm run build"
+[phases.setup]
+cmds = ["chmod +x ./node_modules/.bin/postcss"]
+
+[phases.build]
+cmds = ["npm run build"]
