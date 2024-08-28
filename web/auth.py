@@ -10,7 +10,6 @@ from .analysis import clean_text, word_cloud, get_summary, extract_comments
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
-import nltk
 from nltk.tokenize import word_tokenize
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
@@ -24,8 +23,9 @@ from flask_wtf import CSRFProtect
 auth = Blueprint('auth', __name__)
 
 try:
-    stopwords.words('english')
+    stop_words = set(stopwords.words('english'))
 except LookupError:
+    import nltk
     nltk.download('stopwords')
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
@@ -33,7 +33,6 @@ MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
 sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
-stop_words = set(stopwords.words('english'))
 sia = SentimentIntensityAnalyzer()
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
 

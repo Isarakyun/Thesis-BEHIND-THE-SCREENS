@@ -2,7 +2,6 @@ from flask import redirect, url_for
 from wordcloud import WordCloud, STOPWORDS
 from io import BytesIO
 import base64
-import nltk
 from nltk.probability import FreqDist
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -11,11 +10,6 @@ from youtube_comment_downloader import YoutubeCommentDownloader
 import re
 from nltk.stem import WordNetLemmatizer
 
-try:
-    stopwords.words('english')
-except LookupError:
-    nltk.download('stopwords')
-    
 def extract_comments(youtube_url):
     try:
         video_id = youtube_url.split('v=')[1]
@@ -38,7 +32,12 @@ def extract_comments(youtube_url):
         return redirect(url_for('views.main'))
 
 lemmatizer = WordNetLemmatizer()
-stop_words = set(stopwords.words('english'))
+try:
+    stop_words = set(stopwords.words('english'))
+except LookupError:
+    import nltk
+    nltk.download('stopwords')
+    
 def clean_text(text):
     # Remove special characters
     text = re.sub(r'\W', ' ', text)
