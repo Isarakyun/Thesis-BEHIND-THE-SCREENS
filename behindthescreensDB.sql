@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS behindthescreens;
 CREATE DATABASE behindthescreens;
 USE behindthescreens;
 
-CREATE TABLE user (
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(150) NOT NULL,
     password VARCHAR(1000) NOT NULL,

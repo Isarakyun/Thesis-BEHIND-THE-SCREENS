@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import User, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl
+from .models import Users, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .analysis import clean_text, word_cloud, get_summary, extract_comments
@@ -84,7 +84,7 @@ def login():
                 flash('Incorrect password, try again.', category='error')
 
         # USER LOGIN
-        user = User.query.filter_by(email=email).first()
+        user = Users.query.filter_by(email=email).first()
         if user:
             # print(f"User found: {user.email}")
             if check_password_hash(user.password, password):
@@ -120,8 +120,8 @@ def sign_up():
         password = request.form.get('password')
         confirmpassword = request.form.get('confirmpassword')
 
-        existing_email = User.query.filter_by(email=email).first()
-        existing_username = User.query.filter_by(username=username).first()
+        existing_email = Users.query.filter_by(email=email).first()
+        existing_username = Users.query.filter_by(username=username).first()
 
         if existing_email:
             flash('Email already exists.', category='error')
@@ -134,7 +134,7 @@ def sign_up():
         elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
             flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
         else:
-            new_user = User(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'))
+            new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
 
@@ -210,7 +210,7 @@ def confirm_email(token):
         return render_template("expired_url.html")
     except BadTimeSignature:
         return render_template("invalid_url.html")
-    user = User.query.filter_by(email=email).first()
+    user = Users.query.filter_by(email=email).first()
     user.confirmed_email = True
     db.session.commit()
     new_user_log(user.id, user.username, f"User ID: {user.id} | User {user.username} has confirmed their email")
@@ -222,7 +222,7 @@ def forgot_password():
     if request.method == 'GET':
         return render_template("forgot_password.html")
     email = request.form.get('email')
-    user = User.query.filter_by(email=email).first()
+    user = Users.query.filter_by(email=email).first()
     if user:
         token = s.dumps(email, salt='email-confirm')
         msg = Message('Reset Password', sender='behindthescreens.thesis@gmail.com', recipients=[email])
@@ -293,7 +293,7 @@ def reset_password(token):
         if request.method == 'POST':
             password = request.form.get('password')
             confirmpassword = request.form.get('confirmpassword')
-            user = User.query.filter_by(email=email).first()
+            user = Users.query.filter_by(email=email).first()
             if password != confirmpassword:
                 flash('Passwords don\'t match.', category='error')
             elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
@@ -398,7 +398,7 @@ def change_username():
     if request.method == 'POST':
         old_username = request.form.get('old-username')
         new_username = request.form.get('username')
-        existing_username = User.query.filter_by(username=new_username).first()
+        existing_username = Users.query.filter_by(username=new_username).first()
         if existing_username:
             flash('Username already exists.', category='error')
             return redirect(url_for('views.settings'))
@@ -481,7 +481,7 @@ def change_email():
     if request.method == 'POST':
         old_email = request.form.get('old-email')
         new_email = request.form.get('email')
-        existing_email = User.query.filter_by(email=new_email).first()
+        existing_email = Users.query.filter_by(email=new_email).first()
         if existing_email:
             flash('Email already exists.', category='error')
             return redirect(url_for('views.settings'))

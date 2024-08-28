@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
-from .models import User, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, SummarizedComments, WordCloudImage, GetUrl
+from .models import Users, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, SummarizedComments, WordCloudImage, GetUrl
 from . import db
 import re
 
@@ -34,11 +34,11 @@ def log_audit_trail(action):
 @admin_bp.route('/dashboard')
 @admin_required
 def dashboard():
-    user_count = User.query.count()
+    user_count = Users.query.count()
     comment_count = Comments.query.count()
     url_count = YoutubeUrl.query.count()
 
-    users = User.query.order_by(User.created_at.desc()).limit(3).all()
+    users = Users.query.order_by(Users.created_at.desc()).limit(3).all()
     audit_trails = UserLog.query.order_by(UserLog.timestamp.desc()).limit(5).all()
     analysis_history = YoutubeUrl.query.order_by(YoutubeUrl.created_at.desc()).limit(5).all()
     
@@ -81,7 +81,7 @@ def summary_history():
     analysis_details = []
     for analysis in analyses:
         video = YoutubeUrl.query.get(analysis.id)
-        user = User.query.get(analysis.user_id)
+        user = Users.query.get(analysis.user_id)
         analysis_details.append({
             'created_at': video.created_at,
             'video_url': video.url,
@@ -93,7 +93,7 @@ def summary_history():
 @admin_bp.route('/users')
 @admin_required
 def users():
-    users = User.query.all()
+    users = Users.query.all()
     users_dict = [user.to_dict() for user in users]
     return render_template('admin_users.html', users=users_dict)
 
@@ -105,10 +105,10 @@ def edit_user():
     email = request.form.get('email')
     password = request.form.get('password')  # Optional field for password
 
-    existing_email = User.query.filter_by(email=email).first()
-    existing_username = User.query.filter_by(username=username).first()
+    existing_email = Users.query.filter_by(email=email).first()
+    existing_username = Users.query.filter_by(username=username).first()
 
-    user = User.query.get(user_id)
+    user = Users.query.get(user_id)
 
     if existing_email and existing_email.id != user.id:
         flash('Email address already exists.', 'error')
@@ -143,7 +143,7 @@ def delete_user(user_id):
     if not email:
         return jsonify({'error': 'Email is missing or invalid'}), 400
 
-    user = User.query.get(id)
+    user = Users.query.get(id)
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
