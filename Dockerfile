@@ -22,5 +22,5 @@ EXPOSE 5000
 ENV FLASK_APP=main.py
 
 # Run the application using Gunicorn
-# CMD ["gunicorn", "--bind", "0.0.0.0:5000", "web:app"]
-CMD ["python", "main.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "web:app"]
+# CMD ["python", "main.py"]
