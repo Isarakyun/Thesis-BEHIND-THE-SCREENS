@@ -1,10 +1,7 @@
 [phases.setup]
 cmds = [
-  "apt-get update && apt-get install -y python3 python3-pip",
   "npm install",
-  "chmod +x ./node_modules/.bin/postcss",
-  "pip install -r requirements.txt",
-  "python download_nltk_data.py"
+  "chmod +x ./node_modules/.bin/postcss"
 ]
 
 [phases.build]
