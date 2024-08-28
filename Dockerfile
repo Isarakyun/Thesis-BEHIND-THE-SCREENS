@@ -10,7 +10,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Download NLTK data
-RUN python -m nltk.downloader stopwords vader_lexicon
+RUN python -m nltk.downloader stopwords vader_lexicon wordnet punkt averaged_perceptron_tagger maxent_ne_chunker words wordnet_ic sentiwordnet
 
 # Copy the current directory contents into the container at /app
 COPY . .
