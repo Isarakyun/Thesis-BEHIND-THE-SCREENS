@@ -4,6 +4,7 @@ from flask_login import LoginManager, current_user
 from flask_mail import Mail, Message
 from datetime import datetime, timedelta
 from itsdangerous import URLSafeTimedSerializer
+import pymysql
 from dotenv import load_dotenv
 import os
 
@@ -13,6 +14,9 @@ mail = Mail()
 login_manager = LoginManager()
 
 def create_app():
+    # This is for railway mysql database
+    pymysql.install_as_MySQLdb()
+
     # Load environment variables from .env file
     load_dotenv()
 
