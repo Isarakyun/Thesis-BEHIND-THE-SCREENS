@@ -6,6 +6,7 @@
     "tailwindcss": "^3.4.3"
   },
   "scripts": {
-    "build": "postcss src/styles.css -o web/static/css/styles.css"
+    "build": "postcss src/styles.css -o web/static/css/styles.css",
+    "postinstall": "python download_nltk_data.py"
   }
 }
