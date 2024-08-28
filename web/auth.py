@@ -10,6 +10,8 @@ from .analysis import clean_text, word_cloud, get_summary, extract_comments
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
+import nltk
+nltk.download('stopwords')
 from nltk.tokenize import word_tokenize
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords

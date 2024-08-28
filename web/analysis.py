@@ -2,6 +2,8 @@ from flask import redirect, url_for
 from wordcloud import WordCloud, STOPWORDS
 from io import BytesIO
 import base64
+import nltk
+nltk.download('stopwords')
 from nltk.probability import FreqDist
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
