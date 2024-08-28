@@ -1,5 +1,7 @@
 __pycache__/
 web/__pycache__/
+node_modules/
+dump/
 behindthescreensDB.sql
 config.cfg
 config.py
