@@ -55,7 +55,7 @@ def user_audit():
         # user = User.query.get(audit.user_id)
         audit_trails.append({
             'user_id': audit.user_id,
-            'user': audit.user,
+            'users': audit.users,
             'action': audit.action,
             'timestamp': audit.timestamp
         })

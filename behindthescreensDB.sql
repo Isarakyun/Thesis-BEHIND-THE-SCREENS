@@ -91,7 +91,7 @@ CREATE TABLE word_cloud (
 -- USER AUDIT TRAIL
 CREATE TABLE user_log (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user VARCHAR(150) NOT NULL, -- username of the user, will get from the user table
+    users VARCHAR(150) NOT NULL, -- username of the user, will get from the user table
     action VARCHAR(500) NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     user_id INT NOT NULL -- NOT FOREIGN KEY, but it will still get the user_id from the user table

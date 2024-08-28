@@ -45,16 +45,16 @@ Audit Trail Logger:
 """
 def new_user_log(user_id, username, action):
     timestamp = datetime.now()
-    audit_trail = UserLog(user_id=user_id, user=username, action=action, timestamp=timestamp)
+    audit_trail = UserLog(user_id=user_id, users=username, action=action, timestamp=timestamp)
     db.session.add(audit_trail)
     db.session.commit()
 
 def user_log(action):
     if current_user.is_authenticated:
         user_id = current_user.id
-        user = current_user.username
+        users = current_user.username
         timestamp = datetime.now()
-        audit_trail = UserLog(user_id=user_id, user=user, action=action, timestamp=timestamp)
+        audit_trail = UserLog(user_id=user_id, users=users, action=action, timestamp=timestamp)
         db.session.add(audit_trail)
         db.session.commit()
 
