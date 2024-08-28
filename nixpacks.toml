@@ -1,7 +1,8 @@
 [phases.setup]
 cmds = [
   "npm install",
-  "chmod +x ./node_modules/.bin/postcss"
+  "chmod +x ./node_modules/.bin/postcss",
+  "python3 download_nltk_data.py",
 ]
 
 [phases.build]
