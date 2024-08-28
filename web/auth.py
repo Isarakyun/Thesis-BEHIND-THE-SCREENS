@@ -6,7 +6,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 from .models import Users, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import clean_text, word_cloud, get_summary, extract_comments
+from .analysis import clean_text, word_cloud, get_summary, extract_comments, word_cloud_blob
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
@@ -16,10 +16,10 @@ from nltk.corpus import stopwords
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from collections import Counter
 from datetime import datetime
-import base64
 import logging
 import re
 from flask_wtf import CSRFProtect
+import os
 
 auth = Blueprint('auth', __name__)
 
@@ -133,6 +133,8 @@ def sign_up():
             flash('Email already exists.', category='error')
         elif existing_username:
             flash('Username already exists.', category='error')
+        elif username == 'admin':
+            flash('Username cannot be "admin".', category='error')
         elif not re.match(valid_email, email):
             flash('Email must be valid.', category='error')
         elif password != confirmpassword:
@@ -711,6 +713,15 @@ def delete_account():
                 db.session.query(Comments).filter_by(user_id=current_user.id).delete()
                 db.session.query(YoutubeUrl).filter_by(user_id=current_user.id).delete()
                 db.session.query(GetUrl).filter_by(user_id=current_user.id).delete()
+
+                # Delete images from the web/static/wordcloud directory
+                wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+                for filename in os.listdir(wordcloud_dir):
+                    if filename.startswith(f"{current_user.id}_"):
+                        file_path = os.path.join(wordcloud_dir, filename)
+                        if os.path.isfile(file_path):
+                            os.remove(file_path)
+
                 # Delete the user
                 db.session.delete(current_user)
                 db.session.commit()
@@ -844,17 +855,20 @@ def analyze():
             # Generate the positive word cloud
             positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
             positive_text = ' '.join(positive_words)
-            positive_img_str = word_cloud(positive_text, 'winter')
+            positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
             
             # Generate the negative word cloud
             negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
             negative_text = ' '.join(negative_words)
-            negative_img_str = word_cloud(negative_text, 'hot')
+            negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
 
             if positive_img_str and negative_img_str:
                 # Decode the base64 strings back to binary data
-                positive_img_data = base64.b64decode(positive_img_str)
-                negative_img_data = base64.b64decode(negative_img_str)
+                # positive_img_data = base64.b64decode(positive_img_str)
+                # negative_img_data = base64.b64decode(negative_img_str)
+
+                positive_img_data = positive_img_str
+                negative_img_data = negative_img_str
                 
                 wordcloud_image = WordCloudImage(
                     user_id=current_user.id,
@@ -890,6 +904,15 @@ def delete_analysis(item_id):
             db.session.query(FrequentWords).filter_by(url_id=youtube_url.id).delete()
             db.session.query(SentimentCounter).filter_by(url_id=youtube_url.id).delete()
             db.session.query(WordCloudImage).filter_by(url_id=youtube_url.id).delete()
+
+            # Delete images from the web/static/wordcloud directory
+            wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+            for filename in os.listdir(wordcloud_dir):
+                if filename.startswith(f"{current_user.id}_{youtube_url.id}_"):
+                    file_path = os.path.join(wordcloud_dir, filename)
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+
             db.session.delete(youtube_url)
             db.session.commit()
             
@@ -980,11 +1003,11 @@ def analyze2():
     unlabeled_words = word_tokenize(all_comments_text)
     positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
     positive_text = ' '.join(positive_words)
-    positive_img_str = word_cloud(positive_text, 'winter')
+    positive_img_str = word_cloud_blob(positive_text, 'winter')
     
     negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
     negative_text = ' '.join(negative_words)
-    negative_img_str = word_cloud(negative_text, 'hot')
+    negative_img_str = word_cloud_blob(negative_text, 'hot')
 
     response = {
         'video_name2': video_name,

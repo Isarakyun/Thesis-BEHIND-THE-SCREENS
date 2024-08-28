@@ -76,8 +76,10 @@ class SentimentCounter(db.Model):
 class WordCloudImage(db.Model):
     __tablename__ = 'word_cloud'
     id = db.Column(db.Integer, primary_key=True)
-    image_positive_data = db.Column(db.LargeBinary)
-    image_negative_data = db.Column(db.LargeBinary)
+    # image_positive_data = db.Column(db.LargeBinary)
+    # image_negative_data = db.Column(db.LargeBinary)
+    image_positive_data = db.Column(db.String(1000))
+    image_negative_data = db.Column(db.String(1000))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
 

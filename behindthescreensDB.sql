@@ -80,8 +80,10 @@ CREATE TABLE sentiment_counter (
 
 CREATE TABLE word_cloud (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    image_positive_data LONGBLOB,
-    image_negative_data LONGBLOB,
+    -- image_positive_data LONGBLOB,
+    -- image_negative_data LONGBLOB,
+    image_positive_data VARCHAR(1000),
+    image_negative_data VARCHAR(1000),
     url_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
