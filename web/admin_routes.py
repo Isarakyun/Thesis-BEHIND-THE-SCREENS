@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from .models import Users, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, SummarizedComments, WordCloudImage, GetUrl
+from datetime import datetime
 from . import db
 import re
 
@@ -27,7 +28,8 @@ def admin_required(view):
 def log_audit_trail(action):
     if current_user.is_authenticated and current_user.username == 'admin':
         admin_id = current_user.id
-        audit_trail = AdminLog(admin_id=admin_id, action=action)
+        timestamp = datetime.now()
+        audit_trail = AdminLog(admin_id=admin_id, action=action, timestamp=timestamp)
         db.session.add(audit_trail)
         db.session.commit()
 

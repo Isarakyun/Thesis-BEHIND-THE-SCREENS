@@ -15,6 +15,7 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from collections import Counter
+from datetime import datetime
 import base64
 import logging
 import re
@@ -43,7 +44,8 @@ Audit Trail Logger:
 - admin_log(action) -> the admin should be logged in
 """
 def new_user_log(user_id, username, action):
-    audit_trail = UserLog(user_id=user_id, user=username, action=action)
+    timestamp = datetime.now()
+    audit_trail = UserLog(user_id=user_id, user=username, action=action, timestamp=timestamp)
     db.session.add(audit_trail)
     db.session.commit()
 
@@ -51,14 +53,16 @@ def user_log(action):
     if current_user.is_authenticated:
         user_id = current_user.id
         user = current_user.username
-        audit_trail = UserLog(user_id=user_id, user=user, action=action)
+        timestamp = datetime.now()
+        audit_trail = UserLog(user_id=user_id, user=user, action=action, timestamp=timestamp)
         db.session.add(audit_trail)
         db.session.commit()
 
 def admin_log(action):
     if current_user.is_authenticated:
         admin_id = current_user.id
-        audit_trail = AdminLog(admin_id=admin_id, action=action)
+        timestamp = datetime.now()
+        audit_trail = AdminLog(admin_id=admin_id, action=action, timestamp=timestamp)
         db.session.add(audit_trail)
         db.session.commit()
 
@@ -119,6 +123,7 @@ def sign_up():
         email = request.form.get('email')
         password = request.form.get('password')
         confirmpassword = request.form.get('confirmpassword')
+        created_at = datetime.now()
 
         existing_email = Users.query.filter_by(email=email).first()
         existing_username = Users.query.filter_by(username=username).first()
@@ -134,7 +139,7 @@ def sign_up():
         elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
             flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
         else:
-            new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'))
+            new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'), created_at=created_at)
             db.session.add(new_user)
             db.session.commit()
 
@@ -737,14 +742,15 @@ def analyze():
                 # flash(f'Failed to extract video name: {str(e)}', category='error')
                 return redirect(url_for('views.main'))
             attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
-            new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt)
+            created_at = datetime.now()
+            new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt, created_at=created_at)
             db.session.add(new_url)
             db.session.commit()
             user_log(f"User ID: {current_user.id} | requested analysis for video '{video_name}'")
 
             # THE FOLLOWING CODE BLOCK WILL ONLY BE COMMITTED WHEN THE ANALYSIS IS SUCCESSFUL
             # Adding the URL to the youtube_url table, youtube_url table's id is get_url's id if successful
-            new_youtube_url = YoutubeUrl(id=new_url.id, url=url, user_id=current_user.id, video_name=video_name, video_id=video_id)
+            new_youtube_url = YoutubeUrl(id=new_url.id, url=url, user_id=current_user.id, video_name=video_name, video_id=video_id, created_at=created_at)
             db.session.add(new_youtube_url)
 
             # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED

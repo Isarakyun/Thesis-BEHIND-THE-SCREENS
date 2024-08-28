@@ -25,10 +25,10 @@ def create_app():
     # Apply configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'commentsanalysisbehindthescreens')
     # local mysql database
-    # app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}'
     # railway mysql database
     # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', app.config['SQLALCHEMY_DATABASE_URI'])
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}')
+    # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}')
 
     db.init_app(app)
 
@@ -45,13 +45,13 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
-    from .models import User, Admin, YoutubeUrl, Comments
+    from .models import Users, Admin, YoutubeUrl, Comments
 
     @login_manager.user_loader
     def load_user(user_id):
         if user_id.startswith('admin_'):
             return Admin.query.get(int(user_id.split('_')[1]))
-        return User.query.get(int(user_id))
+        return Users.query.get(int(user_id))
 
     def format_date(value):
         today = datetime.today().date()

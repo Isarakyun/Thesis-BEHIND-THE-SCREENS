@@ -51,7 +51,7 @@ CREATE TABLE summarized_comments (
     summary VARCHAR(50000) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    -- created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (url_id) REFERENCES youtube_url(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
