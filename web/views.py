@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from flask import session
 from . import db
 from sqlalchemy.orm import joinedload, aliased
-from .models import User, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
+from .models import Users, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
 import sys
 import os
 import base64
