@@ -11,7 +11,6 @@ from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
 import nltk
-nltk.download('stopwords')
 from nltk.tokenize import word_tokenize
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
@@ -24,6 +23,10 @@ from flask_wtf import CSRFProtect
 
 auth = Blueprint('auth', __name__)
 
+try:
+    stopwords.words('english')
+except LookupError:
+    nltk.download('stopwords')
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
 MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'

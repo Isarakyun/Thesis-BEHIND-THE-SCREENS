@@ -3,7 +3,6 @@ from wordcloud import WordCloud, STOPWORDS
 from io import BytesIO
 import base64
 import nltk
-nltk.download('stopwords')
 from nltk.probability import FreqDist
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -12,6 +11,11 @@ from youtube_comment_downloader import YoutubeCommentDownloader
 import re
 from nltk.stem import WordNetLemmatizer
 
+try:
+    stopwords.words('english')
+except LookupError:
+    nltk.download('stopwords')
+    
 def extract_comments(youtube_url):
     try:
         video_id = youtube_url.split('v=')[1]
