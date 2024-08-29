@@ -136,13 +136,62 @@ def results2():
                            positive_img_str2=positive_img_str2,
                            negative_img_str2=negative_img_str2)
 
+# ERROR HANDLING PAGES
 @views.app_errorhandler(404)
 def page_not_found(e):
     return render_template('404NotFound.html', user=current_user), 404
 
+@views.app_errorhandler(500)
+def internal_server_error(e):
+    return render_template('500InternalServerError.html', user=current_user), 500
+
+@views.app_errorhandler(403)
+def forbidden(e):
+    return render_template('403Forbidden.html', user=current_user), 403
+
+@views.app_errorhandler(405)
+def method_not_allowed(e):
+    return render_template('405MethodNotAllowed.html', user=current_user), 405
+
+@views.app_errorhandler(408)
+def request_timeout(e):
+    return render_template('408RequestTimeout.html', user=current_user), 408
+
+@views.app_errorhandler(429)
+def too_many_requests(e):
+    return render_template('429TooManyRequests.html', user=current_user), 429
+
+@views.app_errorhandler(400)
+def bad_request(e):
+    return render_template('400BadRequest.html', user=current_user), 400
+
+@views.app_errorhandler(401)
+def unauthorized(e):
+    return render_template('401Unauthorized.html', user=current_user), 401
+
+@views.app_errorhandler(501)
+def not_implemented(e):
+    return render_template('501NotImplemented.html', user=current_user), 501
+
+@views.app_errorhandler(502)
+def bad_gateway(e):
+    return render_template('502BadGateway.html', user=current_user), 502
+
+@views.app_errorhandler(503)
+def service_unavailable(e):
+    return render_template('503ServiceUnavailable.html', user=current_user), 503
+
+@views.app_errorhandler(504)
+def gateway_timeout(e):
+    return render_template('504GatewayTimeout.html', user=current_user), 504
+
+@views.app_errorhandler(505)
+def http_version_not_supported(e):
+    return render_template('505HTTPVersionNotSupported.html', user=current_user), 505
+
 # This route is for testing pages
-@views.route('/test')
-def test():
-    user = session.get('user') 
-    return render_template('404NotFound.html', user=user)
+# @views.route('/test')
+# def test():
+#     user = session.get('user') 
+#     return render_template('404NotFound.html', user=user)
 

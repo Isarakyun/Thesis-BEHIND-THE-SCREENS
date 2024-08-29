@@ -117,11 +117,11 @@ def word_cloud(words, colormap, user_id, url_id, video_id, sentiment):
         os.makedirs(directory)
     file_name = f"{user_id}_{url_id}_{video_id}{sentiment}.png"
     file_path = os.path.join(directory, file_name)
-    to_view = f"./../static/wordcloud/{file_name}"
+    # to_view = f"./../static/wordcloud/{file_name}"
     
     # Save the image to the specified file path
     img.save(file_path, format="PNG")
-    return to_view
+    return file_name
 
 # def analyze_summary(text):
 #     analysis = TextBlob(text)

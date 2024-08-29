@@ -1,0 +1,1 @@
+# This is where the word cloud images are saved when the users requested a sentiment analysis

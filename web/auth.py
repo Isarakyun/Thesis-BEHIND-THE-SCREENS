@@ -69,6 +69,9 @@ def admin_log(action):
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.main'))
+    
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -108,7 +111,7 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
-    if current_user.id == 0:
+    if current_user.username == 'admin':
         admin_log(f"Behind the Screens {current_user.username} Logged out")
         logout_user()
     else:
@@ -119,6 +122,9 @@ def logout():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.main'))
+    
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
