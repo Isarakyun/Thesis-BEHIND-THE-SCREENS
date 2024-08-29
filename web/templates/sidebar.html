@@ -1,4 +1,4 @@
-<div class="fixed left-0 top-0 w-64 h-full bg-slate-200 dark:bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0" id="sidebar">
+<div class="fixed left-0 top-0 w-64 h-screen bg-slate-200 dark:bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0" id="sidebar">
     <div>
         <a class="flex items-center pb-4 border-b border-gray-900 dark:border-white">
             <span class="text-red-600 text-sm font-bold dark:text-white ml-2">Previous Sessions</span>
@@ -11,7 +11,7 @@
     </div>
 
     <!-- Side Nav -->
-    <div class="overflow-y-auto custom-scrollbar" style="height: calc(100% - 120px);">
+    <div class="flex-grow overflow-y-auto custom-scrollbar">
         <ul class="mt-4">
             {% for youtube_url in youtube_urls %}
             <li class="mb-5 group">
@@ -20,7 +20,6 @@
                     <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="flex-1 text-sm video-title truncate">
                         {{ youtube_url.video_name }}
                     </a>
-                    <!-- Trash Icon: Always visible on mobile and hidden on hover for desktop -->
                     <button class="ml-4 text-white dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 block group-hover:hidden sm:block trash-button" data-id="{{ youtube_url.id }}">
                         <i class="ri-delete-bin-line"></i>
                     </button>
@@ -65,6 +64,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-slate-400 dark:bg-slate-800 bg-opacity-90 hidden z-50">
