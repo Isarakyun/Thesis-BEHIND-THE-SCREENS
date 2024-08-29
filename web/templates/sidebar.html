@@ -29,40 +29,42 @@
         </ul>
     </div>
 
-    <!-- Account -->
-    <div class="absolute bottom-3 w-full">
-        <div class="flex flex-col pt-2 juice:py-2 border-x-gray-800 dark:border-white/20 ml-2">
-            <span class="flex w-full flex-row flex-wrap-reverse justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="flex flex-col text-gray-900 dark:text-white">
-                        <div class="flex items-center">
-                            <a>{{ user.username }}</a>
-                            {% if user.confirmed_email == False %}
-                            <i class="fas fa-exclamation-circle text-red-600 ml-2" title="Unverified Account"></i>
-                            {% endif %}
+  <!-- Account -->
+  <div class="absolute bottom-3 w-full">
+    <div class="flex flex-col pt-2 juice:py-2 border-x-gray-800 dark:border-white/20 ml-2">
+        <span class="flex w-full flex-row flex-wrap-reverse justify-between">
+            <div class="flex items-center gap-2">
+                <div class="flex flex-col text-gray-900 dark:text-white">
+                    <div class="flex items-center">
+                        <a>{{ user.username }}</a>
+                        {% if user.confirmed_email == False %}
+                        <i class="fas fa-exclamation-circle text-red-600 ml-2" title="Unverified Account"></i>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="absolute right-0 top-0 mt-2 mr-8 text-left">
+                    <div>
+                        <button id="dropdownButton" class="inline-flex justify-center">
+                            <i class="ri-more-fill text-black dark:text-white"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="dropdownMenu" class="bottom-10 absolute left-3 mt-2 w-56 rounded-md shadow-lg dark:bg-[#1c1b1b] bg-white ring-1 dark:ring-white ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
+                        <div class="py-0" role="none">
+                            <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Account settings</a>
+                            <a href="/privacy-policy" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Privacy Policy</a>
+                            <a href="/user-agreement" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">User Agreement</a>
+                            <a href="/logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Log Out</a>
                         </div>
                     </div>
-
-                    <div class="relative right-0 top-0 mt-2 text-left">
-                        <div>
-                            <button id="dropdownButton" class="inline-flex justify-center">
-                                <i class="ri-more-fill text-black dark:text-white"></i>
-                            </button>
-                        </div>
-                        
-                        <div id="dropdownMenu" class="absolute bottom-10 left-3 mt-2 w-56 rounded-md shadow-lg dark:bg-[#1c1b1b] bg-white ring-1 dark:ring-white ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
-                            <div class="py-0" role="none">
-                                <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Account settings</a>
-                                <a href="/privacy-policy" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Privacy Policy</a>
-                                <a href="/user-agreement" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">User Agreement</a>
-                                <a href="/logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Log Out</a>
-                            </div>
-                        </div>
-                    </div> 
-                </div>
-            </span>
-        </div>
+                </div> 
+            </div>
+        </span>
     </div>
+</div>
+
+
 </div>
 
 <!-- Delete Confirmation Modal -->
