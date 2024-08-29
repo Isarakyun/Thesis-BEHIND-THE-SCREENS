@@ -652,6 +652,9 @@ video {
 .ml-\[50px\] {
   margin-left: 50px;
 }
+.mr-2 {
+  margin-right: 0.5rem;
+}
 .mr-3 {
   margin-right: 0.75rem;
 }
@@ -666,6 +669,9 @@ video {
 }
 .mr-\[50px\] {
   margin-right: 50px;
+}
+.mr-auto {
+  margin-right: auto;
 }
 .mt-1 {
   margin-top: 0.25rem;
@@ -780,9 +786,6 @@ video {
 }
 .max-w-4xl {
   max-width: 56rem;
-}
-.max-w-5xl {
-  max-width: 64rem;
 }
 .max-w-6xl {
   max-width: 72rem;
@@ -1579,10 +1582,6 @@ video {
 
   .sm\:block {
     display: block;
-  }
-
-  .sm\:inline-block {
-    display: inline-block;
   }
 
   .sm\:flex {
