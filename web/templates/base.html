@@ -20,7 +20,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        /* Add this CSS if needed to ensure proper visibility and alignment */
         .header-button-container {
             display: flex;
             justify-content: flex-end;
@@ -28,81 +27,53 @@
             margin-left: auto;
             margin-right: 20px; /* Adjust this value as needed to fit within the header */
         }
-        .video-title {
-            max-width: 180px;  /* Adjust this value as needed */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
     </style>
 </head>
 <body>
     {% if user is defined %}
         {% include 'sidebar.html' %}
     {% endif %}
-    <main class="w-full md:w-[calc(100%-256px)] md:ml-64 bg-slate-100 dark:bg-[#181818] min-h-screen transition-width duration-300 ease-in-out" id="content">
+    <main id="content" class="transition-all duration-300 ease-in-out bg-slate-100 dark:bg-[#181818] min-h-screen ml-0 md:ml-64">
         {% block content %}{% endblock %}
     </main>
 
-    <script>
-        module.exports = {
-            theme: {
-                extend: {
-                    placeholderColor: {
-                        'gray': '#404040',
-                    }
-                }
-            },
-            variants: {
-                extend: {
-                    placeholderColor: ['responsive', 'dark', 'focus', 'hover', 'active'],
-                }
-            },
-            plugins: [],
-        }
-    </script>
-    
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             const menuToggleButton = document.getElementById('menuToggleButton');
             const sidebar = document.getElementById('sidebar');
             const content = document.getElementById('content');
 
-            // Ensure the sidebar is shown on desktop view
             const showSidebarOnDesktop = () => {
                 const isMobile = window.matchMedia("(max-width: 767px)").matches;
                 if (!isMobile) {
                     sidebar.classList.remove('-translate-x-full');
-                    content.classList.add('md:ml-64');
+                    content.classList.remove('ml-0');
+                    content.classList.add('ml-64');
+                } else {
+                    content.classList.remove('ml-64');
+                    content.classList.add('ml-0');
                 }
             };
 
-            // Call this function on load to set correct state
             showSidebarOnDesktop();
 
-            // Listen for window resize events
             window.addEventListener('resize', showSidebarOnDesktop);
 
-            // Menu toggle for mobile view
             menuToggleButton.addEventListener('click', () => {
-                const isMobile = window.matchMedia("(max-width: 767px)").matches;
-                if (isMobile) {
-                    sidebar.classList.toggle('-translate-x-full');
-                    content.classList.toggle('w-full');
-                    content.classList.toggle('ml-64');
-                }
+                sidebar.classList.toggle('-translate-x-full');
+                content.classList.toggle('ml-64');
             });
         });
     </script>
 
     <script>
         document.getElementById('dropdownButton').addEventListener('click', function() {
-            var dropdownMenu = document.getElementById('dropdownMenu');
+            const dropdownMenu = document.getElementById('dropdownMenu');
             dropdownMenu.classList.toggle('hidden');
         });
-        
+
         window.addEventListener('click', function(e) {
-            var dropdownMenu = document.getElementById('dropdownMenu');
+            const dropdownMenu = document.getElementById('dropdownMenu');
             if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
                 dropdownMenu.classList.add('hidden');
             }
