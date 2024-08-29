@@ -1,4 +1,4 @@
-<div class="fixed left-0 top-0 w-64 h-full bg-slate-200 dark:bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform -translate-x-full md:transform-none" id="sidebar">
+<div class="fixed left-0 top-0 w-64 h-full bg-slate-200 dark:bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0" id="sidebar">
     <div>
         <a class="flex items-center pb-4 border-b border-gray-900 dark:border-white">
             <span class="text-red-600 text-sm font-bold dark:text-white ml-2">Previous Sessions</span>
@@ -20,8 +20,8 @@
                     <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="flex-1 text-sm video-title truncate">
                         {{ youtube_url.video_name }}
                     </a>
-                    <!-- Trash Icon -->
-                    <button class="ml-4 text-white dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 hidden group-hover:block trash-button" data-id="{{ youtube_url.id }}">
+                    <!-- Trash Icon: Always visible on mobile and hidden on hover for desktop -->
+                    <button class="ml-4 text-white dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 block group-hover:hidden sm:block trash-button" data-id="{{ youtube_url.id }}">
                         <i class="ri-delete-bin-line"></i>
                     </button>
                 </div>
@@ -68,23 +68,26 @@
 
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-slate-400 dark:bg-slate-800 bg-opacity-90 hidden z-50">
-    <div class="bg-slate-200 dark:bg-[#121212] p-6 rounded-lg shadow-lg max-w-sm w-full">
+    <div class="modal-content bg-slate-200 dark:bg-[#121212] p-4 sm:p-6 rounded-lg shadow-lg max-w-sm w-full">
         <h2 class="text-lg font-semibold text-black dark:text-white mb-2">Delete this analysis?</h2>
         <p class="text-sm text-red-500 mb-4">You can't redo this action.</p>
-        <div class="flex justify-end">
-            <button id="cancelButton" class="mr-4 bg-slate-300 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded-md hover:bg-slate-400 dark:hover:bg-gray-600">
+        <div class="flex flex-col gap-2 sm:flex-row sm:gap-4 justify-end">
+            <button id="cancelButton" class="button bg-slate-300 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded-md hover:bg-slate-400 dark:hover:bg-gray-600 w-full sm:w-auto">
                 Cancel
             </button>
-            <button id="confirmButton" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+            <button id="confirmButton" class="button bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 w-full sm:w-auto">
                 Delete
             </button>
         </div>
     </div>
 </div>
 
+
+
+
 <script>
-    // Get modal and buttons
-    const deleteModal = document.getElementById('deleteModal');
+  // Get modal and buttons
+  const deleteModal = document.getElementById('deleteModal');
     const trashButtons = document.querySelectorAll('.trash-button');
     const cancelButton = document.getElementById('cancelButton');
     const confirmButton = document.getElementById('confirmButton');
