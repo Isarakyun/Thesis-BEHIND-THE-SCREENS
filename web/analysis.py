@@ -9,6 +9,7 @@ from textblob import TextBlob
 from youtube_comment_downloader import YoutubeCommentDownloader
 import re
 from nltk.stem import WordNetLemmatizer
+import os
 
 def extract_comments(youtube_url):
     try:
@@ -32,7 +33,13 @@ def extract_comments(youtube_url):
         return redirect(url_for('views.main'))
 
 lemmatizer = WordNetLemmatizer()
-stop_words = set(stopwords.words('english'))
+try:
+    stop_words = set(stopwords.words('english'))
+except LookupError:
+    import nltk
+    nltk.download('stopwords')
+    nltk.download('vader_lexicon')
+    
 def clean_text(text):
     # Remove special characters
     text = re.sub(r'\W', ' ', text)
@@ -95,6 +102,27 @@ def get_summary(joined_comments):
     summary = ' '.join(summary_sentences)
     return summary
 
+def word_cloud(words, colormap, user_id, url_id, video_id, sentiment):
+    stopwords = set(STOPWORDS)
+    if not words:
+        return None
+    
+    wordcloud = WordCloud(max_font_size=100, max_words=50, width=800, height=400, background_color='white', stopwords=stopwords, colormap=colormap).generate(words)
+    
+    img = wordcloud.to_image()
+    
+    # Define the directory and file name
+    directory = 'web\static\wordcloud'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    file_name = f"{user_id}_{url_id}_{video_id}{sentiment}.png"
+    file_path = os.path.join(directory, file_name)
+    # to_view = f"./../static/wordcloud/{file_name}"
+    
+    # Save the image to the specified file path
+    img.save(file_path, format="PNG")
+    return file_name
+
 # def analyze_summary(text):
 #     analysis = TextBlob(text)
 #     sentiment_score = analysis.sentiment.polarity
@@ -106,7 +134,7 @@ def get_summary(joined_comments):
 #         sentiment = "Neutral"
 #     return sentiment, sentiment_score
 
-def word_cloud(words, colormap):
+def word_cloud_blob(words, colormap):
     stopwords = set(STOPWORDS)
     if not words:
         return None

@@ -6,7 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <title>404 NOT FOUND</title>
+    <title>429 TOO MANY REQUESTS</title>
     <style>
          @media (prefers-color-scheme: dark) {
             body {
@@ -69,9 +69,10 @@
     <!-- Right Pane -->
     <div class="w-full bg-slate-300 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
       <div class="max-w-md w-full p-6">
-        <h1 class="text-4xl font-semibold mb-6 text-red-500 text-center">404 NOT FOUND</h1>
+        <h1 class="text-4xl font-semibold mb-6 text-red-500 text-center">429 TOO MANY REQUESTS</h1>
         <div class="mt-4 text-sm text-gray-600 text-center">
-          <p>This page does not exist. Go back to <button onclick="location.href='/'" class="text-red-500 hover:cursor-pointer">homepage</button>.
+            <!-- Luca Kaneshiro to Mysta Rias: CALM YO ASS MYSTA, CALM YO ASS!! -->
+          <p>Too many requests, please chill out. Go back to <button onclick="location.href='/'" class="text-red-500 hover:cursor-pointer">homepage</button>.
           </p>
         </div>
       </div>

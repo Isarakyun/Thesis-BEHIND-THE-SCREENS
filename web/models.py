@@ -6,7 +6,7 @@ class UserLog(db.Model):
     __tablename__ = 'user_log'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False) # manually set through the route, not through the form
-    user = db.Column(db.String(150), nullable=False) # manually set through the route, not through the form
+    users = db.Column(db.String(150), nullable=False) # manually set through the route, not through the form
     action = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
 
@@ -23,7 +23,7 @@ class GetUrl(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(150))
     attempt = db.Column(db.String(150))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
 
 class YoutubeUrl(db.Model):
@@ -32,7 +32,7 @@ class YoutubeUrl(db.Model):
     video_name = db.Column(db.String(150))
     video_id = db.Column(db.String(150))
     url = db.Column(db.String(150))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     comments = db.relationship('Comments')
     summarizedComments = db.relationship('SummarizedComments')
@@ -45,14 +45,14 @@ class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     comment = db.Column(db.String(50000))
     sentiment = db.Column(db.String(20))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
 
 class SummarizedComments(db.Model):
     __tablename__ = 'summarized_comments'
     id = db.Column(db.Integer, primary_key=True)
     summary = db.Column(db.String(50000))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
 
 class FrequentWords(db.Model):
@@ -62,7 +62,7 @@ class FrequentWords(db.Model):
     count = db.Column(db.Integer)
     sentiment = db.Column(db.String(150))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class SentimentCounter(db.Model):
     __tablename__ = 'sentiment_counter'
@@ -71,18 +71,20 @@ class SentimentCounter(db.Model):
     negative = db.Column(db.Integer)
     neutral = db.Column(db.Integer)
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class WordCloudImage(db.Model):
     __tablename__ = 'word_cloud'
     id = db.Column(db.Integer, primary_key=True)
-    image_positive_data = db.Column(db.LargeBinary)
-    image_negative_data = db.Column(db.LargeBinary)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    # image_positive_data = db.Column(db.LargeBinary)
+    # image_negative_data = db.Column(db.LargeBinary)
+    image_positive_data = db.Column(db.String(1000))
+    image_negative_data = db.Column(db.String(1000))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
 
-class User(db.Model, UserMixin):
-    __tablename__ = 'user'
+class Users(db.Model, UserMixin):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)
     email = db.Column(db.String(150), unique=True)

@@ -3,10 +3,10 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import User, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl
+from .models import Users, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import clean_text, word_cloud, get_summary, extract_comments
+from .analysis import clean_text, word_cloud, get_summary, extract_comments, word_cloud_blob
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
@@ -15,20 +15,26 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from collections import Counter
-import base64
+from datetime import datetime
 import logging
 import re
 from flask_wtf import CSRFProtect
+import os
 
 auth = Blueprint('auth', __name__)
 
+try:
+    stop_words = set(stopwords.words('english'))
+except LookupError:
+    import nltk
+    nltk.download('stopwords')
+    nltk.download('vader_lexicon')
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
 MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
 sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
-stop_words = set(stopwords.words('english'))
 sia = SentimentIntensityAnalyzer()
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
 
@@ -39,27 +45,33 @@ Audit Trail Logger:
 - admin_log(action) -> the admin should be logged in
 """
 def new_user_log(user_id, username, action):
-    audit_trail = UserLog(user_id=user_id, user=username, action=action)
+    timestamp = datetime.now()
+    audit_trail = UserLog(user_id=user_id, users=username, action=action, timestamp=timestamp)
     db.session.add(audit_trail)
     db.session.commit()
 
 def user_log(action):
     if current_user.is_authenticated:
         user_id = current_user.id
-        user = current_user.username
-        audit_trail = UserLog(user_id=user_id, user=user, action=action)
+        users = current_user.username
+        timestamp = datetime.now()
+        audit_trail = UserLog(user_id=user_id, users=users, action=action, timestamp=timestamp)
         db.session.add(audit_trail)
         db.session.commit()
 
 def admin_log(action):
     if current_user.is_authenticated:
         admin_id = current_user.id
-        audit_trail = AdminLog(admin_id=admin_id, action=action)
+        timestamp = datetime.now()
+        audit_trail = AdminLog(admin_id=admin_id, action=action, timestamp=timestamp)
         db.session.add(audit_trail)
         db.session.commit()
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.main'))
+    
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -80,7 +92,7 @@ def login():
                 flash('Incorrect password, try again.', category='error')
 
         # USER LOGIN
-        user = User.query.filter_by(email=email).first()
+        user = Users.query.filter_by(email=email).first()
         if user:
             # print(f"User found: {user.email}")
             if check_password_hash(user.password, password):
@@ -99,7 +111,7 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
-    if current_user.id == 0:
+    if current_user.username == 'admin':
         admin_log(f"Behind the Screens {current_user.username} Logged out")
         logout_user()
     else:
@@ -110,19 +122,25 @@ def logout():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.main'))
+    
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
         confirmpassword = request.form.get('confirmpassword')
+        created_at = datetime.now()
 
-        existing_email = User.query.filter_by(email=email).first()
-        existing_username = User.query.filter_by(username=username).first()
+        existing_email = Users.query.filter_by(email=email).first()
+        existing_username = Users.query.filter_by(username=username).first()
 
         if existing_email:
             flash('Email already exists.', category='error')
         elif existing_username:
             flash('Username already exists.', category='error')
+        elif username == 'admin':
+            flash('Username cannot be "admin".', category='error')
         elif not re.match(valid_email, email):
             flash('Email must be valid.', category='error')
         elif password != confirmpassword:
@@ -130,7 +148,7 @@ def sign_up():
         elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
             flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
         else:
-            new_user = User(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'))
+            new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'), created_at=created_at)
             db.session.add(new_user)
             db.session.commit()
 
@@ -206,7 +224,7 @@ def confirm_email(token):
         return render_template("expired_url.html")
     except BadTimeSignature:
         return render_template("invalid_url.html")
-    user = User.query.filter_by(email=email).first()
+    user = Users.query.filter_by(email=email).first()
     user.confirmed_email = True
     db.session.commit()
     new_user_log(user.id, user.username, f"User ID: {user.id} | User {user.username} has confirmed their email")
@@ -218,7 +236,7 @@ def forgot_password():
     if request.method == 'GET':
         return render_template("forgot_password.html")
     email = request.form.get('email')
-    user = User.query.filter_by(email=email).first()
+    user = Users.query.filter_by(email=email).first()
     if user:
         token = s.dumps(email, salt='email-confirm')
         msg = Message('Reset Password', sender='behindthescreens.thesis@gmail.com', recipients=[email])
@@ -289,7 +307,7 @@ def reset_password(token):
         if request.method == 'POST':
             password = request.form.get('password')
             confirmpassword = request.form.get('confirmpassword')
-            user = User.query.filter_by(email=email).first()
+            user = Users.query.filter_by(email=email).first()
             if password != confirmpassword:
                 flash('Passwords don\'t match.', category='error')
             elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
@@ -394,7 +412,7 @@ def change_username():
     if request.method == 'POST':
         old_username = request.form.get('old-username')
         new_username = request.form.get('username')
-        existing_username = User.query.filter_by(username=new_username).first()
+        existing_username = Users.query.filter_by(username=new_username).first()
         if existing_username:
             flash('Username already exists.', category='error')
             return redirect(url_for('views.settings'))
@@ -477,7 +495,7 @@ def change_email():
     if request.method == 'POST':
         old_email = request.form.get('old-email')
         new_email = request.form.get('email')
-        existing_email = User.query.filter_by(email=new_email).first()
+        existing_email = Users.query.filter_by(email=new_email).first()
         if existing_email:
             flash('Email already exists.', category='error')
             return redirect(url_for('views.settings'))
@@ -701,6 +719,15 @@ def delete_account():
                 db.session.query(Comments).filter_by(user_id=current_user.id).delete()
                 db.session.query(YoutubeUrl).filter_by(user_id=current_user.id).delete()
                 db.session.query(GetUrl).filter_by(user_id=current_user.id).delete()
+
+                # Delete images from the web/static/wordcloud directory
+                wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+                for filename in os.listdir(wordcloud_dir):
+                    if filename.startswith(f"{current_user.id}_"):
+                        file_path = os.path.join(wordcloud_dir, filename)
+                        if os.path.isfile(file_path):
+                            os.remove(file_path)
+
                 # Delete the user
                 db.session.delete(current_user)
                 db.session.commit()
@@ -733,14 +760,15 @@ def analyze():
                 # flash(f'Failed to extract video name: {str(e)}', category='error')
                 return redirect(url_for('views.main'))
             attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
-            new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt)
+            created_at = datetime.now()
+            new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt, created_at=created_at)
             db.session.add(new_url)
             db.session.commit()
             user_log(f"User ID: {current_user.id} | requested analysis for video '{video_name}'")
 
             # THE FOLLOWING CODE BLOCK WILL ONLY BE COMMITTED WHEN THE ANALYSIS IS SUCCESSFUL
             # Adding the URL to the youtube_url table, youtube_url table's id is get_url's id if successful
-            new_youtube_url = YoutubeUrl(id=new_url.id, url=url, user_id=current_user.id, video_name=video_name, video_id=video_id)
+            new_youtube_url = YoutubeUrl(id=new_url.id, url=url, user_id=current_user.id, video_name=video_name, video_id=video_id, created_at=created_at)
             db.session.add(new_youtube_url)
 
             # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
@@ -833,17 +861,20 @@ def analyze():
             # Generate the positive word cloud
             positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
             positive_text = ' '.join(positive_words)
-            positive_img_str = word_cloud(positive_text, 'winter')
+            positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
             
             # Generate the negative word cloud
             negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
             negative_text = ' '.join(negative_words)
-            negative_img_str = word_cloud(negative_text, 'hot')
+            negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
 
             if positive_img_str and negative_img_str:
                 # Decode the base64 strings back to binary data
-                positive_img_data = base64.b64decode(positive_img_str)
-                negative_img_data = base64.b64decode(negative_img_str)
+                # positive_img_data = base64.b64decode(positive_img_str)
+                # negative_img_data = base64.b64decode(negative_img_str)
+
+                positive_img_data = positive_img_str
+                negative_img_data = negative_img_str
                 
                 wordcloud_image = WordCloudImage(
                     user_id=current_user.id,
@@ -879,6 +910,15 @@ def delete_analysis(item_id):
             db.session.query(FrequentWords).filter_by(url_id=youtube_url.id).delete()
             db.session.query(SentimentCounter).filter_by(url_id=youtube_url.id).delete()
             db.session.query(WordCloudImage).filter_by(url_id=youtube_url.id).delete()
+
+            # Delete images from the web/static/wordcloud directory
+            wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+            for filename in os.listdir(wordcloud_dir):
+                if filename.startswith(f"{current_user.id}_{youtube_url.id}_"):
+                    file_path = os.path.join(wordcloud_dir, filename)
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+
             db.session.delete(youtube_url)
             db.session.commit()
             
@@ -969,11 +1009,11 @@ def analyze2():
     unlabeled_words = word_tokenize(all_comments_text)
     positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
     positive_text = ' '.join(positive_words)
-    positive_img_str = word_cloud(positive_text, 'winter')
+    positive_img_str = word_cloud_blob(positive_text, 'winter')
     
     negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
     negative_text = ' '.join(negative_words)
-    negative_img_str = word_cloud(negative_text, 'hot')
+    negative_img_str = word_cloud_blob(negative_text, 'hot')
 
     response = {
         'video_name2': video_name,
