@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-scrollbar.css') }}">
+    <link href="../../static/css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/custom-scrollbar.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>{% block title %}Behind the Screens{% endblock %}</title> 
@@ -20,7 +20,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        /* Add this CSS if needed to ensure proper visibility and alignment */
         .header-button-container {
             display: flex;
             justify-content: flex-end;
@@ -28,11 +27,55 @@
             margin-left: auto;
             margin-right: 20px; /* Adjust this value as needed to fit within the header */
         }
-        .video-title {
-            max-width: 180px;  /* Adjust this value as needed */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+
+        /* Modal CSS */
+        #deleteModal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        #deleteModal.hidden {
+            display: none; /* Ensure it's hidden by default */
+        }
+
+        #deleteModal .modal-content {
+            background: #121212;
+            padding: 1rem; /* Adjust padding as needed */
+            border-radius: 8px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%; /* Adjust width for mobile screens */
+            max-width: 400px; /* Maximum width for larger screens */
+        }
+
+        #deleteModal h2 {
+            font-size: 1.25rem; /* Adjust as necessary */
+        }
+
+        #deleteModal p {
+            font-size: 1rem; /* Adjust as necessary */
+        }
+
+        #deleteModal .button {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 640px) {
+            #deleteModal .modal-content {
+                width: 90%; /* Full width on small screens */
+                padding: 1rem; /* Maintain padding */
+            }
+
+            #deleteModal .button {
+                width: 100%; /* Full width buttons on mobile */
+                margin-top: 0.5rem; /* Spacing between buttons */
+            }
         }
     </style>
 </head>
@@ -40,46 +83,47 @@
     {% if user is defined %}
         {% include 'sidebar.html' %}
     {% endif %}
-    <main class="w-[calc(100%-256px)] ml-64 bg-slate-100 dark:bg-[#181818] min-h-screen transition-width duration-300 ease-in-out" id="content">
+    <main id="content" class="transition-all duration-300 ease-in-out bg-slate-100 dark:bg-[#181818] min-h-screen ml-0 md:ml-64">
         {% block content %}{% endblock %}
     </main>
 
     <script>
-        module.exports = {
-            theme: {
-                extend: {
-                    placeholderColor: {
-                        'gray': '#404040',
-                    }
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const menuToggleButton = document.getElementById('menuToggleButton');
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            const showSidebarOnDesktop = () => {
+                const isMobile = window.matchMedia("(max-width: 767px)").matches;
+                if (!isMobile) {
+                    sidebar.classList.remove('-translate-x-full');
+                    content.classList.remove('ml-0');
+                    content.classList.add('ml-64');
+                } else {
+                    content.classList.remove('ml-64');
+                    content.classList.add('ml-0');
                 }
-            },
-            variants: {
-                extend: {
-                    placeholderColor: ['responsive', 'dark', 'focus', 'hover', 'active'],
-                }
-            },
-            plugins: [],
-        }
-    </script>
-    <script>
-        const menuToggleButton = document.getElementById('menuToggleButton');
-        const sidebar = document.getElementById('sidebar');
-        const content = document.getElementById('content');
-        menuToggleButton.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            content.classList.toggle('w-full');
-            content.classList.toggle('ml-64');
+            };
+
+            showSidebarOnDesktop();
+
+            window.addEventListener('resize', showSidebarOnDesktop);
+
+            menuToggleButton.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                content.classList.toggle('ml-64');
+            });
         });
     </script>
 
     <script>
         document.getElementById('dropdownButton').addEventListener('click', function() {
-            var dropdownMenu = document.getElementById('dropdownMenu');
+            const dropdownMenu = document.getElementById('dropdownMenu');
             dropdownMenu.classList.toggle('hidden');
         });
-        
+
         window.addEventListener('click', function(e) {
-            var dropdownMenu = document.getElementById('dropdownMenu');
+            const dropdownMenu = document.getElementById('dropdownMenu');
             if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
                 dropdownMenu.classList.add('hidden');
             }

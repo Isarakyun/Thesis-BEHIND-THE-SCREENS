@@ -75,32 +75,55 @@
     </style>
 </head>
 <body class="min-h-screen bg-slate-50 dark:bg-[#121212] dark:text-white">
-  <header class="text-white bg-red-800 sticky top-0 z-20">
-    <section class="max-w-6xl mx-auto p-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold">
-            <a href="/#hero"> 🖥️ BEHIND THE SCREENS </a>
-        </h1>
-        <nav class="hidden sm:flex space-x-8 text-m" aria-label="main">
-            <a href="/#services" class="hover:opacity-90">Services</a>
-            <a href="/#analyze" class="hover:opacity-90">Analyze</a>
-            <a href="/#features" class="hover:opacity-90">Features</a>
-            <a href="/#contact" class="hover:opacity-90">Contact Us</a>
-        </nav>
-        <div class="flex items-center space-x-4">
-            {% if user.is_authenticated %}
-            <a href="/" id="home" class="hover:opacity-90 text-m">Home</a>
-            <a href="/main" id="home" class="hover:opacity-90 text-m">Analysis</a>
-            <a href="/logout" id="logout" class="hover:opacity-90 text-m">Logout</a>
-            {% else %}
-            <a href="/login" id="login" class="hover:opacity-90 text-m">Log In</a>
-            <a href="/sign-up" id="signUp" class="hover:opacity-90 text-m">Sign Up</a>
-            {% endif %}
-            <button id="mobile-open-button" class="text-3xl sm:hidden focus:outline-none">
-                &#9776;
-            </button>
-        </div>
-    </section>
-</header>
+    <header class="text-white bg-red-800 sticky top-0 z-20">
+        <section class="max-w-6xl mx-auto p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">
+                <a href="/#hero"> 🖥️ BEHIND THE SCREENS </a>
+            </h1>
+            <nav class="hidden md:flex space-x-8 text-m" aria-label="main">
+                <a href="/#services" class="hover:opacity-90">Services</a>
+                <a href="/#analyze" class="hover:opacity-90">Analyze</a>
+                <a href="/#features" class="hover:opacity-90">Features</a>
+                <a href="/#contact" class="hover:opacity-90">Contact Us</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <nav class="hidden md:flex space-x-4">
+                    {% if user.is_authenticated %}
+                    <a href="/" id="home" class="hover:opacity-90 text-m">Home</a>
+                    <a href="/main" id="home" class="hover:opacity-90 text-m">Analysis</a>
+                    <a href="/logout" id="logout" class="hover:opacity-90 text-m">Logout</a>
+                    {% else %}
+                    <a href="/login" id="login" class="hover:opacity-90 text-m">Log In</a>
+                    <a href="/sign-up" id="signUp" class="hover:opacity-90 text-m">Sign Up</a>
+                    {% endif %}
+                </nav>
+                <button id="hamburger-button" class="text-3xl sm:hidden cursor-pointer">
+                    &#9776;
+                </button>
+            </div>
+        </section>
+    
+        <!-- Mobile Menu -->
+        <section id="mobile-menu" class="top-68 justify-center absolute hidden w-full origin-top animate-open-menu flex-col bg-black text-5xl h-screen overflow-y-auto">
+            <nav class="flex flex-col items-center py-8 space-y-6" aria-label="mobile">
+                {% if user.is_authenticated %}
+                <a href="/logout" class="w-full py-6 text-center hover:opacity-90">Log Out</a>
+                <a href="/" class="w-full py-6 text-center hover:opacity-90">Home</a>
+                <a href="/main" class="w-full py-6 text-center hover:opacity-90">Analysis</a> <!-- Added Analysis link -->
+                {% else %}
+                <a href="/login" class="w-full py-6 text-center hover:opacity-90">Log In</a>
+                <a href="/sign-up" class="w-full py-6 text-center hover:opacity-90">Sign Up</a>
+                {% endif %}
+                <a href="/#services" class="w-full py-6 text-center hover:opacity-90">Services</a>
+                <a href="/#features" class="w-full py-6 text-center hover:opacity-90">Features</a>
+                <a href="/#contact" class="w-full py-6 text-center hover:opacity-90">Contact Us</a>
+                <a href="/#footer" class="w-full py-6 text-center hover:opacity-90">Footer</a>
+            </nav>
+        </section>
+    </header>
+    
+    
+    
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -119,7 +142,8 @@
         {% endfor %}
     {% endif %}
     {% endwith %}
-    <main class="max-w-4xl mx-auto"><section id="hero" class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
+    <main class="max-w-4xl mx-auto">
+    <section id="hero" class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mb-12 scroll-mt-40 h-screen">
         <article class="sm:w-1/2">
             <h2 class="max-w-md text-4xl font-bold text-center sm:text-5xl sm:text-left text-slate-900 dark:text-white">
                 
@@ -165,7 +189,7 @@
     <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
     
-    <section id="analyze" class="p-6 my-12 scroll-mt-20 widescreen:section-min-height tallscreen:section-min-height text-center">
+    <section id="analyze" class="flex flex-col justify-center p-6 scroll-mt-10 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
       <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Analyze Your YouTube Video</h2>
       <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube video you want to analyze below:</p>
     
@@ -199,74 +223,86 @@
           </div>
       </div>
     
-      <!-- Results Section -->
-      <div id="results-section" class="hidden mt-5">
-          <!-- Results will be injected here -->
-          <div>
-            <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
+<!-- Results Section -->
+<div id="results-section" class="hidden mt-5">
+    <!-- Results will be injected here -->
+    <div>
+        <table id="summary" class="table-auto text-center w-full mt-4">
+            <thead class="text-white rounded">
+                <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                    <th class="px-4 py-1 w-1/2">Summary</th>
+                </tr>
+            </thead>
+            <tbody class="text-center text-gray-900 dark:text-white text-sm">
                 <!-- Content will be injected by JavaScript -->
-            </table>
-          </div>
-    
-          <!-- TABLE FOR COMMENTS -->
-          <div class="mt-5 pt-5 flex justify-center">
-              <table id="labeled-comments" class="table-auto ml-[50px] mr-[50px] mt-4">
-                  <thead class="text-white">
-                      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                          <th class="px-4 py-1">Comments</th>
-                          <th class="px-2 py-1">Sentiments</th>
-                      </tr>
-                  </thead>
-                  <tbody class="text-center text-gray-900 dark:text-white text-sm">
-                      <!-- Content will be injected by JavaScript -->
-                  </tbody>
-              </table>
-          </div>
-          <div id="pagination-controls" class="flex justify-center mt-4"></div>
-    
-    <!-- Flex Container for Word Count and Pie Chart -->
-    <div class="flex justify-center mb-5 space-x-5 items-center">
-      <!-- Word Count Table -->
-      <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
-        <table id="frequent-words" class="table-auto text-center text-sm w-full">
-          <thead class="text-white">
-            <tr class="bg-red-600 dark:bg-slate-700">
-              <th class="px-2 py-1">Word</th>
-              <th class="px-2 py-1">Count</th>
-              <th class="px-2 py-1">Sentiment</th>
-            </tr>
-          </thead>
-          <tbody class="text-gray-900 dark:text-white">
-            <!-- Content will be injected by JavaScript -->
-          </tbody>
+            </tbody>
         </table>
-      </div>
-
-      <!-- Pie Chart -->
-      <div class="mt-[20px] ml-4 mr-[50px]">
-        <canvas id="pieChart" width="350px" height="350px"></canvas>
-      </div>
     </div>
-    
-          <!-- Word Cloud -->
-          <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
-              <a class="text-white font-bold ml-2">Word Cloud</a>
-          </div>
-          <div class="pb-8">
-              <div class="flex justify-center">
-                  <!-- POSITIVE WORD CLOUD -->
-                  <div class="mt-[20px] ml-[50px] mr-4">
-                      <img id="positive-word-cloud" class="w-full rounded" src="">
-                      <p class="text-black dark:text-white text-center mt-2">Positive</p>
-                  </div>
-                  <!-- NEGATIVE WORD CLOUD -->
-                  <div class="mt-[20px] ml-4 mr-[50px]">
-                      <img id="negative-word-cloud" class="w-full rounded" src="">
-                      <p class="text-black dark:text-white text-center mt-2">Negative</p>
-                  </div>
-              </div>
-          </div>
-      </div>
+</div>
+
+<!-- TABLE FOR COMMENTS -->
+<div class="mt-5 pt-5 flex justify-center">
+    <table id="labeled-comments" class="table-auto w-full">
+        <thead class="text-white rounded">
+            <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                <th class="px-4 py-1 w-1/2">Comments</th>
+                <th class="px-2 py-1 w-1/2">Sentiments</th>
+            </tr>
+        </thead>
+        <tbody class="text-center text-gray-900 dark:text-white text-sm">
+            <!-- Content will be injected by JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<div id="pagination-controls" class="flex justify-center mt-4"></div>
+
+<!-- Flex Container for Word Count -->
+<div class="flex justify-center mb-5 items-center">
+  <!-- Word Count Table -->
+  <div class="mt-[20px] w-full">
+    <table id="frequent-words" class="table-auto text-center text-sm w-full">
+      <thead class="text-white rounded">
+        <tr class="bg-red-600 dark:bg-slate-700">
+          <th class="px-2 py-1 w-1/3">Word</th>
+          <th class="px-2 py-1 w-1/3">Count</th>
+          <th class="px-2 py-1 w-1/3">Sentiment</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-900 dark:text-white">
+        <!-- Content will be injected by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Pie Chart -->
+<div class="mt-[20px] ml-4 mr-[50px]">
+    <canvas id="pieChart" width="350px" height="350px"></canvas>
+</div>
+
+<!-- Word Cloud Header -->
+<div class="rounded mt-4 bg-red-600 dark:bg-slate-700 p-1 w-full">
+    <a class="text-white font-bold ml-2">Word Cloud</a>
+</div>
+
+<!-- Word Cloud Images -->
+<div class="pb-8">
+    <div class="flex justify-center">
+        <!-- POSITIVE WORD CLOUD -->
+        <div class="mt-[20px] w-1/2 px-4">
+            <img id="positive-word-cloud" class="w-full rounded" src="">
+            <p class="text-black dark:text-white text-center mt-2">Positive</p>
+        </div>
+        <!-- NEGATIVE WORD CLOUD -->
+        <div class="mt-[20px] w-1/2 px-4">
+            <img id="negative-word-cloud" class="w-full rounded" src="">
+            <p class="text-black dark:text-white text-center mt-2">Negative</p>
+        </div>
+    </div>
+</div>
+
+
     
       <script>
         document.getElementById('analysis-form2').addEventListener('submit', function(event) {
@@ -456,7 +492,7 @@
       </script>
     </section>
     
-    
+    <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
        <section id="features" class="p-6 my-12 scroll-mt-20 widescreen:section-min-height tallscreen:section-min-height">
         <div class="text-center mb-12">
@@ -548,7 +584,7 @@
     <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
     <section id="contact" class="p-6 my-12 scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height">
-        <h2 class="text-m font-bold text-center sm:text-5xl mb-6 text-slate-900 dark:text-white">
+        <h2 class="text-4xl font-bold text-center sm:text-5xl mb-6 text-slate-900 dark:text-white">
             Contact Us
         </h2>
         <ul class="list-none mx-auto my-12 flex flex-col sm:flex-row items-center gap-8">
@@ -637,6 +673,22 @@ function fetchAndDisplayResults(url) {
 
   </script>
   
-    
+  <script>
+    const initApp = () => {
+        const hamburgerBtn = document.getElementById('hamburger-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        const toggleMenu = () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+            hamburgerBtn.classList.toggle('toggle-btn');
+        };
+
+        hamburgerBtn.addEventListener('click', toggleMenu);
+        mobileMenu.addEventListener('click', toggleMenu);
+    };
+
+    document.addEventListener('DOMContentLoaded', initApp);
+</script>
 </body>
 </html>

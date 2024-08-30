@@ -1,19 +1,23 @@
 {% extends "base.html" %} {% block title %}Results of {{ youtube_url.video_name }}{% endblock %}
 
 {% block content %}
-<div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
-  <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
+<div class="py-2 px-4 sm:px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full z-50">
+  <button type="button" class="text-lg text-black dark:text-white mr-4 sm:mr-6" id="menuToggleButton">
       <i class="ri-menu-line cursor-pointer"></i>
   </button>
-  <div>
-      <a href="{{ url_for('views.home') }}" class="text-m text-black dark:text-white ml-4">
+  <div class="flex-1 flex items-center space-x-4">
+      <a href="{{ url_for('views.home') }}" class="text-base sm:text-m text-black dark:text-white">
           Behind the Screens
       </a>
       {% if user.confirmed_email == False %}
-      <span class="text-m text-red-600 ml-4">Your email hasn't been verified yet. Go to your settings to confirm your email.</span>
+      <span class="text-sm sm:text-m text-red-600">
+          Your email hasn't been verified yet. Go to your settings to confirm your email.
+      </span>
       {% endif %}
-  </div>       
+  </div>
 </div>
+
+
 
 <!-- SUMMARY -->
 <div class="mt-5 pt-5 flex justify-center overflow-hidden">
@@ -680,34 +684,41 @@
 {% if frequent_words %}
 <div class="flex justify-center mb-5 space-x-5 items-center">
   <!-- Table for Word Count -->
-  <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
-    <table id="frequent-words" class="table-auto text-center text-sm w-full">
+  <div class="flex justify-center mt-[20px] ml-[50px] mr-4 w-full">
+    <table id="frequent-words" class="w-full">
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700">
-          <th class="px-2 py-1">Word</th>
-          <th class="px-2 py-1">Count</th>
-          <th class="px-2 py-1">Sentiment</th>
+        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+          <th class="px-4 py-2 w-1/3">Word</th> <!-- Each column takes 1/3 of the width -->
+          <th class="px-4 py-2 w-1/3">Count</th>
+          <th class="px-4 py-2 w-1/3">Sentiment</th>
         </tr>
       </thead>
-      <tbody class="text-gray-900 dark:text-white">
+      <tbody class="text-center text-gray-900 dark:text-white text-sm">
         {% for word in frequent_words %}
         <tr>
-          <td class="px-2 py-1">{{ word.word }}</td>
-          <td class="px-2 py-1">{{ word.count }}</td>
-          <td class="py-1">{{ word.sentiment }}</td>
+          <td class="px-4 py-3">{{ word.word }}</td>
+          <td class="px-4 py-3">{{ word.count }}</td>
+          <td class="px-4 py-3">{{ word.sentiment }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+</div>
+
+
+
+
 
   <!-- did i mention i love fictional characters -->
+  <!-- even if you did not, it's obvious xd -->
+</div>
 <!-- Pie Chart -->
 <div class="mt-[20px] ml-4 mr-[50px]">
   <canvas id="pieChart" width="350px" height="350px"></canvas>
 </div>
 {% endif %}
-</div>
+
   <script>
     async function fetchSentimentData(urlId) {
       const response = await fetch(`/api/sentiment/${urlId}`);
