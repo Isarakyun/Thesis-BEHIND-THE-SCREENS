@@ -6,13 +6,14 @@
     <button type="button" class="text-lg text-black dark:text-white mr-2" id="menuToggleButton">
         <i class="ri-menu-line cursor-pointer"></i>
     </button>
-    <a class="text-m text-black dark:text-white ml-2 mr-auto">Analysis</a>
+    <a class="text-m text-black dark:text-white ml-2 mr-4">Analysis</a>
     <div>
         {% if user.confirmed_email == False %}
-        <span class="text-m text-red-600 ml-4 block">Your email hasn't been verified yet.<br>Go to your settings to confirm your email.</span>
+        <span class="text-m text-red-600 block">Your email hasn't been verified yet. Go to your settings to confirm your email.</span>
         {% endif %}
-    </div>  
+    </div>
 </div>
+
 
 <!-- Logo -->
 <div class="flex justify-center">
