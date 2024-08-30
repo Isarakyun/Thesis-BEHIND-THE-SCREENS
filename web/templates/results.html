@@ -1,21 +1,22 @@
 {% extends "base.html" %} {% block title %}Results of {{ youtube_url.video_name }}{% endblock %}
 
 {% block content %}
-<div class="py-2 px-4 sm:px-6 bg-slate-200 dark:bg-[#121212] flex flex-wrap items-center fixed top-0 w-full justify-between z-50">
+<div class="py-2 px-4 sm:px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full z-50">
   <button type="button" class="text-lg text-black dark:text-white mr-4 sm:mr-6" id="menuToggleButton">
       <i class="ri-menu-line cursor-pointer"></i>
   </button>
-  <div class="flex-1 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-      <a href="{{ url_for('views.home') }}" class="text-base sm:text-m text-black dark:text-white ml-0 sm:ml-4">
+  <div class="flex-1 flex items-center space-x-4">
+      <a href="{{ url_for('views.home') }}" class="text-base sm:text-m text-black dark:text-white">
           Behind the Screens
       </a>
       {% if user.confirmed_email == False %}
-      <span class="text-sm sm:text-m text-red-600 mt-2 sm:mt-0 ml-0 sm:ml-4">
+      <span class="text-sm sm:text-m text-red-600">
           Your email hasn't been verified yet. Go to your settings to confirm your email.
       </span>
       {% endif %}
-  </div>       
+  </div>
 </div>
+
 
 
 <!-- SUMMARY -->
