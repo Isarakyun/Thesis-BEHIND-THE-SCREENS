@@ -45,7 +45,23 @@ body {
     border-radius: 0.5rem;
 }
 
-/* Override flex direction on small screens */
+/* Button Styles */
+button {
+    background-color: transparent; /* Transparent background */
+    color: white; /* Text color */
+    border: none; /* Remove all borders */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px 20px; /* Button padding */
+    cursor: pointer; /* Pointer cursor */
+    box-shadow: none; /* Remove any box-shadow */
+    outline: none; /* Remove outline */
+}
+
+/* Remove the hover effect */
+
+
+
+/* Responsive Styles */
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
@@ -80,33 +96,6 @@ body {
         font-size: 1.25rem; /* Adjusted for mobile */
     }
 
-    button {
-        width: 100%; /* Ensure buttons are full-width on mobile */
-        padding: 12px;
-        margin-top: 10px;
-        background-color: #4A5568; /* Original button color for mobile */
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background-color: #2D3748; /* Original hover color for mobile */
-    }
-
-    form input[type="text"],
-    form input[type="email"],
-    form input[type="password"] {
-        width: 100%; /* Full width inputs */
-        padding: 12px;
-        margin: 5px 0;
-        background-color: #2D3748; /* Original input background for mobile */
-        border: none;
-        color: white;
-        border-radius: 4px;
-    }
-
     .alert {
         width: 95%; /* Adjust alert width for mobile */
         margin: 10px auto;
@@ -118,16 +107,6 @@ body {
 
 /* Restore original button and input colors for PC */
 @media (min-width: 769px) {
-    button {
-        background-color: #1E1E1E; /* Original button color for PC */
-        color: white;
-        border: 1px solid #E2E8F0; /* Border to match the original design */
-    }
-
-    button:hover {
-        background-color: #2D3748; /* Hover color for PC */
-    }
-
     form input[type="text"],
     form input[type="email"],
     form input[type="password"] {
@@ -136,7 +115,7 @@ body {
     }
 }
 
-    </style>
+            </style>
     
 </head>
 <body class="dark:bg-[#121212]">
