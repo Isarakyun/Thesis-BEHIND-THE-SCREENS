@@ -80,17 +80,6 @@ body {
         font-size: 1.25rem; /* Adjusted for mobile */
     }
 
-    .toggle-menu {
-        display: block;
-        padding: 10px;
-        background-color: #3182CE; /* This can be adjusted to your preferred color */
-        color: #FFFFFF;
-        text-align: center;
-        cursor: pointer;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-
     button {
         width: 100%; /* Ensure buttons are full-width on mobile */
         padding: 12px;
@@ -168,9 +157,6 @@ body {
             {% endfor %}
         {% endif %}
     {% endwith %}
-
-    <!-- Toggle Menu for Mobile -->
-    <div class="toggle-menu" onclick="toggleMenu()">☰ Menu</div>
 
     <div class="container">
         <!-- Left Column -->
@@ -401,45 +387,6 @@ body {
         </div>
     </div>
     <script>
-        function toggleMenu() {
-            var leftColumn = document.querySelector('.left-column');
-            var rightColumn = document.querySelector('.right-column');
-    
-            // Toggle visibility on mobile
-            if (leftColumn.classList.contains('active')) {
-                leftColumn.classList.remove('active');
-                leftColumn.classList.add('inactive');
-                rightColumn.classList.remove('inactive');
-                rightColumn.classList.add('active');
-            } else {
-                leftColumn.classList.remove('inactive');
-                leftColumn.classList.add('active');
-                rightColumn.classList.remove('active');
-                rightColumn.classList.add('inactive');
-            }
-        }
-    
-        function showRightColumn(sectionId) {
-            var leftColumn = document.querySelector('.left-column');
-            var rightColumn = document.querySelector('.right-column');
-    
-            // Hide all sections
-            document.querySelectorAll('.right-column > div').forEach(function(section) {
-                section.classList.add('hidden');
-            });
-    
-            // Show selected section
-            document.getElementById(sectionId).classList.remove('hidden');
-    
-            // Switch columns visibility on mobile
-            leftColumn.classList.remove('active');
-            leftColumn.classList.add('inactive');
-            rightColumn.classList.remove('inactive');
-            rightColumn.classList.add('active');
-        }
-    </script>
-    
-    <script>
         function togglePasswordVisibility() {
             var passwordField = document.getElementById("password");
             var newPasswordField = document.getElementById("newpassword");
@@ -487,11 +434,6 @@ body {
                 toggleConfirmDeleteAccountPassword.classList.remove("fa-eye-slash");
                 toggleConfirmDeleteAccountPassword.classList.add("fa-eye");
             }
-        }
-
-        function toggleMenu() {
-            var leftColumn = document.querySelector('.left-column');
-            leftColumn.classList.toggle('active');
         }
 
         function toggleUsernameSettings() {
