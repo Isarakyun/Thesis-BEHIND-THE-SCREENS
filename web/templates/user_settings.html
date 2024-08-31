@@ -7,8 +7,146 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Account Settings</title>
+    <style>
+/* Base Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Dark background */
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: center; /* Center the container horizontally */
+    padding: 20px;
+    flex-wrap: wrap; /* Added to allow wrapping on small screens */
+    max-width: 1200px; /* Set a maximum width for the container */
+    margin: 0 auto; /* Center the container within the viewport */
+}
+
+.left-column,
+.right-column {
+    flex: 1;
+    margin: 10px;
+    padding: 20px;
+    background-color: #1E1E1E; /* Dark background for content areas */
+    border-radius: 8px;
+    color: #E2E8F0; /* Text color */
+    min-width: 300px; /* Ensure the columns have a reasonable minimum width */
+}
+
+.text-xl {
+    font-size: 1.25rem;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+/* Button Styles */
+button {
+    background-color: transparent; /* Transparent background */
+    color: white; /* Text color */
+    border: none; /* Remove all borders */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px 20px; /* Button padding */
+    cursor: pointer; /* Pointer cursor */
+    box-shadow: none; /* Remove any box-shadow */
+    outline: none; /* Remove outline */
+}
+
+/* Focus Styles */
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus {
+    outline: none; /* Remove the default focus outline */
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow to the focused input */
+    border-color: #007bff; /* Change border color to match the shadow */
+}
+
+/* Light Mode */
+body.light {
+    background-color: #f8f9fa; /* Light background */
+}
+
+body.light .left-column,
+body.light .right-column {
+    background-color: #ffffff; /* Light background for content areas */
+    color: #212529; /* Dark text color for light mode */
+}
+
+body.light button {
+    color: #212529; /* Dark text color for light mode */
+}
+
+body.light form input[type="text"]:focus,
+body.light form input[type="email"]:focus,
+body.light form input[type="password"]:focus {
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow in light mode */
+    border-color: #007bff; /* Change border color to match the shadow */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .left-column,
+    .right-column {
+        width: 100%;
+        margin: 5px 0;
+        padding: 15px;
+    }
+
+    .text-xl {
+        font-size: 1rem; /* Adjusted for mobile */
+    }
+
+    .text-2xl {
+        font-size: 1.25rem; /* Adjusted for mobile */
+    }
+
+    .alert {
+        width: 95%; /* Adjust alert width for mobile */
+        margin: 10px auto;
+        padding: 10px;
+        border-radius: 4px;
+        text-align: center;
+    }
+}
+
+/* Restore original button and input colors for PC */
+@media (min-width: 769px) {
+    form input[type="text"],
+    form input[type="email"],
+    form input[type="password"] {
+        background-color: #2D3748; /* Input background for PC */
+        border: 1px solid #E2E8F0; /* Border to match the original design */
+    }
+
+    body.light form input[type="text"],
+    body.light form input[type="email"],
+    body.light form input[type="password"] {
+        background-color: #ffffff; /* Light mode input background */
+        border: 1px solid #ced4da; /* Border color for light mode */
+        color: #212529; /* Text color for light mode */
+    }
+}
+
+        </style>
+        
+        
+        
+    
 </head>
-<body class="bg-slate-200 dark:bg-[#121212]">
+<body class="dark:bg-[#121212]">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -26,79 +164,78 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-    <div class="flex justify-center items-center min-h-full ">
-        <div class="w-full max-w-4xl mx-auto p-6 rounded-lg shadow-md flex gap-8" style="width: 70%; height: 70%;">
-            <!-- Left Column -->
-            <div class="w-2/5">
-                <div class="flex">
-                    <div class="text-xl text-black dark:text-white">
-                        <a href="/main" class="px-3 py-2 hover:bg-gray-800 rounded-full"><i class="ri-arrow-left-line"></i></a>
-                    </div>
-                    <h1 class="ml-2 text-2xl font-bold mb-6 text-black dark:text-white">Account Settings</h1>
+
+    <div class="container">
+        <!-- Left Column -->
+        <div class="left-column">
+            <div class="flex">
+                <div class="text-xl">
+                    <a href="/main" class="px-3 py-2 hover:bg-gray-800 dark:hover:bg-slate-300 rounded-full"><i class="ri-arrow-left-line"></i></a>
                 </div>
-                <hr>
-                <div class="w-full text-black dark:text-slate-200">
-                    <div id="username-button" class="mt-2 relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer" onclick="toggleUsernameSettings()">
-                        <div class="ml-4">
-                            <button class="pt-3 pb-3">Username</button>
-                            <i class="ri-arrow-right-line absolute right-3 top-3"></i>
-                        </div>
+                <h1 class="ml-2 text-2xl font-bold mb-6">Account Settings</h1>
+            </div>
+            <hr>
+            <div class="w-full">
+                <div id="username-button" class="mt-2 relative hover:bg-slate-700 dark:hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleUsernameSettings()">
+                    <div class="ml-4">
+                        <button class="pt-3 pb-3">Username</button>
+                        <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
-                    <div id="email-button" class="relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer" onclick="toggleEmailSettings()">
-                        <div class="ml-4">
-                            <button class="pt-3 pb-3">Email</button>
-                            <i class="ri-arrow-right-line absolute right-3 top-3"></i>
-                        </div>
+                </div>
+                <div id="email-button" class="relative hover:bg-slate-700 dark:hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleEmailSettings()">
+                    <div class="ml-4">
+                        <button class="pt-3 pb-3">Email</button>
+                        <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
-                    <div id="password-button" class="relative hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer" onclick="togglePasswordSettings()">
-                        <div class="ml-4">
-                            <button class="pt-3 pb-3">Password</button>
-                            <i class="ri-arrow-right-line absolute right-3 top-3"></i>
-                        </div>
+                </div>
+                <div id="password-button" class="relative hover:bg-slate-700 dark:hover:bg-slate-300 rounded-md cursor-pointer" onclick="togglePasswordSettings()">
+                    <div class="ml-4">
+                        <button class="pt-3 pb-3">Password</button>
+                        <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
-                    <div id="delete-button" class="relative text-red-500 hover:bg-slate-300 dark:hover:bg-gray-700 rounded-md cursor-pointer" onclick="toggleDeleteAccount()">
-                        <div class="ml-4">
-                            <button class="pt-3 pb-3">Delete Account</button>
-                            <i class="ri-arrow-right-line absolute right-3 top-3"></i>
-                        </div>
+                </div>
+                <div id="delete-button" class="relative text-red-600 hover:bg-slate-700 dark:hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleDeleteAccount()">
+                    <div class="ml-4">
+                        <button class="pt-3 pb-3">Delete Account</button>
+                        <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
-                    <div class="mt-4 text-center text-secondary">
-                        Your use of our services is also subject to our <a href="/privacy-policy" class="text-blue-400 hover:underline">Privacy Policy </a> and <a href="/user-agreement" class="text-blue-400 hover:underline">User Agreement</a>.
-                    </div>
+                </div>
+                <div class="mt-4 text-center text-secondary">
+                    Your use of our services is also subject to our <a href="/privacy-policy" class="text-blue-400 hover:underline">Privacy Policy </a> and <a href="/user-agreement" class="text-blue-400 hover:underline">User Agreement</a>.
                 </div>
             </div>
-            
-            <!-- Right Column -->
-            <div class="w-3/5">
-    
-                <div>
-                    <h2 class="text-xl font-semibold mb-4 text-black dark:text-white">Account Information</h2>
-                    <!-- Description -->
-                    <div id="description" class="mb-6">
-                        <p class="text-black dark:text-slate-400">View or change your account information. Click on the options on the left to get started.</p>
-                    </div>
-                    <!-- Username Change -->
-                    <div id="username-change" class="hidden p-4 rounded-lg mb-6">
+        </div>
+
+        <!-- Right Column -->
+        <div class="right-column">
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Account Information</h2>
+                <!-- Description -->
+                <div id="description" class="mb-6">
+                    <p>View or change your account information. Click on the options on the left to get started.</p>
+                </div>
+                <!-- Username Change -->
+                <div id="username-change" class="hidden p-4 rounded-lg mb-6">
                     <form method="POST" action="/change-username">
                         <div class="mb-4 hidden">
-                            <label for="old-username" class="block mb-2 text-black dark:text-slate-200">Current Username</label>
+                            <label for="old-username" class="block mb-2">Current Username</label>
                             <div>
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="old-username"
-                                        name="old-username"
-                                        type="text"
-                                        value="{{ username }}"
-                                        readonly>
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="old-username"
+                                       name="old-username"
+                                       type="text"
+                                       value="{{ username }}"
+                                       readonly>
                             </div>
                         </div>
                         <div>
-                            <label for="username" class="block mb-2 text-black dark:text-slate-200">Username</label>
+                            <label for="username" class="block mb-2">Username</label>
                             <div>
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="username"
-                                        name="username"
-                                        type="text"
-                                        value="{{ username }}">
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="username"
+                                       name="username"
+                                       type="text"
+                                       value="{{ username }}">
                             </div>
                         </div>
                         <!-- Save Button -->
@@ -108,23 +245,23 @@
                             </div>
                         </div>
                     </form>
-                    </div>
-    
-                    <!-- Email Change -->
-                    <div id="email-change" class="hidden p-4 rounded-lg mb-6">
+                </div>
+
+                <!-- Email Change -->
+                <div id="email-change" class="hidden p-4 rounded-lg mb-6">
                     {% if confirmed_email == False %}
                     <div class="mb-6">
                         <p class="text-red-600">Your email hasn't been verified yet. Please confirm your email.</p>
                     </div>
                     <form method="POST" action="/resend-confirmation">
                         <div>
-                            <label for="email" class="block mb-2 text-black dark:text-slate-200">Email</label>
+                            <label for="email" class="block mb-2">Email</label>
                             <div>
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        value="{{ email }}">
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="email"
+                                       name="email"
+                                       type="email"
+                                       value="{{ email }}">
                             </div>
                         </div>
                         <!-- Verify Button -->
@@ -136,28 +273,28 @@
                     </form>
                     {% else %}
                     <div class="mb-6">
-                        <p class="text-black dark:text-slate-400">You can change your email here. Please enter a valid email.</p>
+                        <p>You can change your email here. Please enter a valid email.</p>
                     </div>
                     <form method="POST" action="/change-email">
                         <div class="mb-4 hidden">
-                            <label for="old-email" class="block mb-2 text-black dark:text-slate-200">Current Email</label>
+                            <label for="old-email" class="block mb-2">Current Email</label>
                             <div>
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="old-email"
-                                        name="old-email"
-                                        type="email"
-                                        value="{{ email }}"
-                                        readonly>
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="old-email"
+                                       name="old-email"
+                                       type="email"
+                                       value="{{ email }}"
+                                       readonly>
                             </div>
                         </div>
                         <div>
-                            <label for="email" class="block mb-2 text-black dark:text-slate-200">Email</label>
+                            <label for="email" class="block mb-2">Email</label>
                             <div>
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        value="{{ email }}">
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="email"
+                                       name="email"
+                                       type="email"
+                                       value="{{ email }}">
                             </div>
                         </div>
                         <!-- Save Button -->
@@ -168,22 +305,22 @@
                         </div>
                     </form>
                     {% endif %}
-                    </div>
+                </div>
 
-                    <!-- Password Change -->
-                    <div id="password-change" class="p-4 rounded-lg mb-6 hidden">
-                        <div class="mb-6">
-                            <p class="text-black dark:text-slate-400">You can change your password here.</p>
-                        </div>
+                <!-- Password Change -->
+                <div id="password-change" class="p-4 rounded-lg mb-6 hidden">
+                    <div class="mb-6">
+                        <p>You can change your password here.</p>
+                    </div>
                     <form method="POST" action="/change-password">
                         <div>
-                            <label for="password" class="block mb-1 text-black dark:text-slate-200">Current Password</label>
+                            <label for="password" class="block mb-1">Current Password</label>
                             <div class="mb-4 relative">
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="password"
-                                        name="password"
-                                        type="password">
-                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-password" onclick="togglePasswordVisibility()"></i>
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="password"
+                                       name="password"
+                                       type="password">
+                                <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-slate-400 dark:text-gray-800" id="toggle-password" onclick="togglePasswordVisibility()"></i>
                                 <div class="mt-2 text-sm text-blue-500">
                                     <a href="/forgot">Forgot Password?</a>
                                 </div>
@@ -191,24 +328,24 @@
                         </div>
                         
                         <div>
-                            <label for="newpassword" class="block mb-1 text-black dark:text-slate-200">New Password</label>
+                            <label for="newpassword" class="block mb-1">New Password</label>
                             <div class="mb-4 relative">
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="newpassword"
-                                        name="newpassword"
-                                        type="password">
-                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-newpassword" onclick="togglePasswordVisibility()"></i>
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="newpassword"
+                                       name="newpassword"
+                                       type="password">
+                                <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-slate-400 dark:text-gray-800" id="toggle-newpassword" onclick="togglePasswordVisibility()"></i>
                             </div>
                         </div>
                         
                         <div>
-                            <label for="confirmpassword" class="block mb-1 text-black dark:text-slate-200">Confirm Password</label>
+                            <label for="confirmpassword" class="block mb-1">Confirm Password</label>
                             <div class="mb-4 relative">
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="confirmpassword"
-                                        name="confirmpassword"
-                                        type="password">
-                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-confirmpassword" onclick="togglePasswordVisibility()"></i>
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="confirmpassword"
+                                       name="confirmpassword"
+                                       type="password">
+                                <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-slate-400 dark:text-gray-800" id="toggle-confirmpassword" onclick="togglePasswordVisibility()"></i>
                             </div>
                         </div>
                         <!-- Save Button -->
@@ -218,40 +355,40 @@
                             </div>
                         </div>
                     </form>
-                    </div>
+                </div>
 
-                    <!-- Delete Account -->
-                    <div id="delete-account" class=" p-4 rounded-lg mb-6 hidden">
-                        <p class="text-red-500 mb-2">This action is irreversible!</p>
-                        <form method="POST" action="/delete-account">
+                <!-- Delete Account -->
+                <div id="delete-account" class="p-4 rounded-lg mb-6 hidden">
+                    <p class="text-red-600 mb-2">This action is irreversible!</p>
+                    <form method="POST" action="/delete-account">
                         <div>
-                            <label for="deleteaccountpassword" class="block mb-1 text-black dark:text-slate-200">Confirm the deletion of your account by entering your password.</label>
+                            <label for="deleteaccountpassword" class="block mb-1">Confirm the deletion of your account by entering your password.</label>
                             <div class="mb-4 relative">
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="deleteaccountpassword"
-                                        name="deleteaccountpassword"
-                                        type="password">
-                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-deleteaccountpassword" onclick="togglePasswordVisibility()"></i>
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="deleteaccountpassword"
+                                       name="deleteaccountpassword"
+                                       type="password">
+                                <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-slate-400 dark:text-gray-800" id="toggle-deleteaccountpassword" onclick="togglePasswordVisibility()"></i>
                             </div>
                         </div>
                         <div>
-                            <label for="confirmdeleteaccountpassword" class="block mb-1 text-black dark:text-slate-200">Re-enter Password</label>
+                            <label for="confirmdeleteaccountpassword" class="block mb-1">Re-enter Password</label>
                             <div class="mb-4 relative">
-                                <input class=" w-full items-center justify-between p-3 rounded bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"
-                                        id="confirmdeleteaccountpassword"
-                                        name="confirmdeleteaccountpassword"
-                                        type="password">
-                                        <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-gray-800 dark:text-slate-400" id="toggle-confirmdeleteaccountpassword" onclick="togglePasswordVisibility()"></i>
+                                <input class="w-full p-3 rounded bg-slate-700 dark:bg-gray-100 text-white dark:text-gray-800"
+                                       id="confirmdeleteaccountpassword"
+                                       name="confirmdeleteaccountpassword"
+                                       type="password">
+                                <i class="far fa-eye absolute right-3 top-4 cursor-pointer text-slate-400 dark:text-gray-800" id="toggle-confirmdeleteaccountpassword" onclick="togglePasswordVisibility()"></i>
                             </div>
-                            <p class="text-black dark:text-slate-400 mb-2">Once your account has been deleted, there is no getting back of your data.</p>
+                            <p>Once your account has been deleted, there is no getting back of your data.</p>
                             <!-- Delete Account Button -->
                             <div class="w-full mt-6 flex justify-end">
                                 <div class="bg-red-600 text-center text-white rounded">
                                     <button type="submit" class="px-4 py-2 rounded-lg">Delete Account</button>
                                 </div>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -369,6 +506,15 @@
                     alert.style.display = 'none';
                 }, 5000); // 5000 milliseconds = 5 seconds
             });
+
+            // Check for user's preference on initial load
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.body.classList.add('light');
+                var elements = document.querySelectorAll('.left-column, .right-column, button');
+                elements.forEach(function(el) {
+                    el.classList.add('light');
+                });
+            }
         });
     </script>
 </body>
