@@ -15,7 +15,7 @@
         }
         .video-title {
             display: inline-block;
-            max-width: 100%; /* Adjust as needed */
+            max-width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -25,9 +25,8 @@
             justify-content: flex-end;
             align-items: center;
             margin-left: auto;
-            margin-right: 20px; /* Adjust this value as needed to fit within the header */
+            margin-right: 20px;
         }
-
         /* Modal CSS */
         #deleteModal {
             display: flex;
@@ -40,41 +39,45 @@
         }
 
         #deleteModal.hidden {
-            display: none; /* Ensure it's hidden by default */
+            display: none;
         }
 
         #deleteModal .modal-content {
             background: #121212;
-            padding: 1rem; /* Adjust padding as needed */
+            padding: 1rem;
             border-radius: 8px;
             box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-            width: 90%; /* Adjust width for mobile screens */
-            max-width: 400px; /* Maximum width for larger screens */
+            width: 90%;
+            max-width: 400px;
         }
 
-        #deleteModal h2 {
-            font-size: 1.25rem; /* Adjust as necessary */
+        /* Sidebar transition */
+        .-translate-x-full {
+            transform: translateX(-100%);
         }
 
-        #deleteModal p {
-            font-size: 1rem; /* Adjust as necessary */
-        }
+        .ml-64 {
+    margin-left: 16rem; /* 64px or 16rem is the width of the sidebar */
+}
 
-        #deleteModal .button {
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-        }
+.ml-0 {
+    margin-left: 0;
+}
+
+.main-content {
+    transition: margin-left 0.3s ease; /* Add a smooth transition */
+}
+
 
         /* Mobile adjustments */
         @media (max-width: 640px) {
             #deleteModal .modal-content {
-                width: 90%; /* Full width on small screens */
-                padding: 1rem; /* Maintain padding */
+                width: 90%;
+                padding: 1rem;
             }
-
             #deleteModal .button {
-                width: 100%; /* Full width buttons on mobile */
-                margin-top: 0.5rem; /* Spacing between buttons */
+                width: 100%;
+                margin-top: 0.5rem;
             }
         }
     </style>
@@ -88,32 +91,41 @@
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const menuToggleButton = document.getElementById('menuToggleButton');
-            const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
+document.addEventListener('DOMContentLoaded', (event) => {
+    const menuToggleButton = document.getElementById('menuToggleButton');
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
 
-            const showSidebarOnDesktop = () => {
-                const isMobile = window.matchMedia("(max-width: 767px)").matches;
-                if (!isMobile) {
-                    sidebar.classList.remove('-translate-x-full');
-                    content.classList.remove('ml-0');
-                    content.classList.add('ml-64');
-                } else {
-                    content.classList.remove('ml-64');
-                    content.classList.add('ml-0');
-                }
-            };
+    const showSidebarOnDesktop = () => {
+        const isMobile = window.matchMedia("(max-width: 767px)").matches;
+        if (!isMobile) {
+            sidebar.classList.remove('-translate-x-full');
+            content.classList.remove('ml-0');
+            content.classList.add('ml-64');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            content.classList.remove('ml-64');
+            content.classList.add('ml-0');
+        }
+    };
 
-            showSidebarOnDesktop();
+    showSidebarOnDesktop();
 
-            window.addEventListener('resize', showSidebarOnDesktop);
+    window.addEventListener('resize', showSidebarOnDesktop);
 
-            menuToggleButton.addEventListener('click', () => {
-                sidebar.classList.toggle('-translate-x-full');
-                content.classList.toggle('ml-64');
-            });
-        });
+    menuToggleButton.addEventListener('click', () => {
+        if (sidebar.classList.contains('-translate-x-full')) {
+            sidebar.classList.remove('-translate-x-full');
+            content.classList.remove('ml-0');
+            content.classList.add('ml-64');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            content.classList.remove('ml-64');
+            content.classList.add('ml-0');
+        }
+    });
+});
+
     </script>
 
     <script>
