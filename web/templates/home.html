@@ -223,85 +223,88 @@
           </div>
       </div>
     
-<!-- Results Section -->
-<div id="results-section" class="hidden mt-5">
-    <!-- Results will be injected here -->
-    <div>
-        <table id="summary" class="table-auto text-center w-full mt-4">
-            <thead class="text-white rounded">
-                <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                    <th class="px-4 py-1 w-1/2">Summary</th>
-                </tr>
-            </thead>
-            <tbody class="text-center text-gray-900 dark:text-white text-sm">
-                <!-- Content will be injected by JavaScript -->
-            </tbody>
-        </table>
+<!-- Results Container -->
+<div id="results-container" class="hidden mt-5">
+    <!-- Results Section -->
+    <div id="results-section">
+        <!-- Summary Table -->
+        <div>
+            <table id="summary" class="table-auto text-center w-full mt-4">
+                <thead class="text-white rounded">
+                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                        <th class="px-4 py-1 w-1/2">Summary</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center text-gray-900 dark:text-white text-sm">
+                    <!-- Content will be injected by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Comments Table -->
+        <div class="mt-5 pt-5 flex justify-center">
+            <table id="labeled-comments" class="table-auto w-full">
+                <thead class="text-white rounded">
+                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                        <th class="px-4 py-1 w-1/2">Comments</th>
+                        <th class="px-2 py-1 w-1/2">Sentiments</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center text-gray-900 dark:text-white text-sm">
+                    <!-- Content will be injected by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="pagination-controls" class="flex justify-center mt-4"></div>
+
+        <!-- Word Count Table and Bar Chart -->
+        <div class="flex justify-center mb-5 items-center">
+            <!-- Word Count Table -->
+            <div class="mt-[20px] w-full">
+                <table id="frequent-words" class="table-auto text-center text-sm w-full">
+                    <thead class="text-white rounded">
+                        <tr class="bg-red-600 dark:bg-slate-700">
+                            <th class="px-2 py-1 w-1/3">Word</th>
+                            <th class="px-2 py-1 w-1/3">Count</th>
+                            <th class="px-2 py-1 w-1/3">Sentiment</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-900 dark:text-white">
+                        <!-- Content will be injected by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="ml-4 mr-[50px] w-1/2">
+                <canvas id="barChart" width="250px" height="250px"></canvas>
+            </div>
+        </div>
+
+        <!-- Word Cloud Header -->
+        <div class="rounded mt-4 bg-red-600 dark:bg-slate-700 p-1 w-full">
+            <a class="text-white font-bold ml-2">Word Cloud</a>
+        </div>
+
+        <!-- Word Cloud Images -->
+        <div class="pb-8">
+            <div class="flex justify-center">
+                <!-- Positive Word Cloud -->
+                <div class="mt-[20px] w-1/2 px-4">
+                    <img id="positive-word-cloud" class="w-full rounded" src="">
+                    <p class="text-black dark:text-white text-center mt-2">Positive</p>
+                </div>
+                <!-- Negative Word Cloud -->
+                <div class="mt-[20px] w-1/2 px-4">
+                    <img id="negative-word-cloud" class="w-full rounded" src="">
+                    <p class="text-black dark:text-white text-center mt-2">Negative</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- TABLE FOR COMMENTS -->
-<div class="mt-5 pt-5 flex justify-center">
-    <table id="labeled-comments" class="table-auto w-full">
-        <thead class="text-white rounded">
-            <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                <th class="px-4 py-1 w-1/2">Comments</th>
-                <th class="px-2 py-1 w-1/2">Sentiments</th>
-            </tr>
-        </thead>
-        <tbody class="text-center text-gray-900 dark:text-white text-sm">
-            <!-- Content will be injected by JavaScript -->
-        </tbody>
-    </table>
-</div>
-
-<div id="pagination-controls" class="flex justify-center mt-4"></div>
-
-<!-- Flex Container for Word Count -->
-<div class="flex justify-center mb-5 items-center">
-  <!-- Word Count Table -->
-  <div class="mt-[20px] w-full">
-    <table id="frequent-words" class="table-auto text-center text-sm w-full">
-      <thead class="text-white rounded">
-        <tr class="bg-red-600 dark:bg-slate-700">
-          <th class="px-2 py-1 w-1/3">Word</th>
-          <th class="px-2 py-1 w-1/3">Count</th>
-          <th class="px-2 py-1 w-1/3">Sentiment</th>
-        </tr>
-      </thead>
-      <tbody class="text-gray-900 dark:text-white">
-        <!-- Content will be injected by JavaScript -->
-      </tbody>
-    </table>
-  </div>
-  <!-- Bar Chart -->
-<div class="ml-4 mr-[50px] w-1/2">
-    <canvas id="barChart" width="250px" height="250px"></canvas>
-</div>
-</div>
-
-
-
-<!-- Word Cloud Header -->
-<div class="rounded mt-4 bg-red-600 dark:bg-slate-700 p-1 w-full">
-    <a class="text-white font-bold ml-2">Word Cloud</a>
-</div>
-
-<!-- Word Cloud Images -->
-<div class="pb-8">
-    <div class="flex justify-center">
-        <!-- POSITIVE WORD CLOUD -->
-        <div class="mt-[20px] w-1/2 px-4">
-            <img id="positive-word-cloud" class="w-full rounded" src="">
-            <p class="text-black dark:text-white text-center mt-2">Positive</p>
-        </div>
-        <!-- NEGATIVE WORD CLOUD -->
-        <div class="mt-[20px] w-1/2 px-4">
-            <img id="negative-word-cloud" class="w-full rounded" src="">
-            <p class="text-black dark:text-white text-center mt-2">Negative</p>
-        </div>
-    </div>
-</div>
 
 
     
@@ -322,172 +325,178 @@
         .then(response => response.json())
         .then(data => {
             document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-            document.getElementById('results-section').classList.remove('hidden'); // Show results section
     
-            // Update summary
-            const summaryText = `As of today, this video has received ${data.positive_count2} positive comments, ${data.negative_count2} negative comments, and ${data.neutral_count2} neutral comments. The most frequently used words are: ${data.frequent_words2.map(word => `'${word[0]}'`).join(', ')} which were used ${data.frequent_words2.map(word => `${word[1]}`).join(', ')}, respectively.`;
-            document.getElementById('summary').innerHTML = `
-                <thead class="text-white">
-                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                        <th class="px-2 py-1">Interpretation of "${data.video_name2}"</th>
-                    </tr>
-                </thead>
-                <tbody class="text-gray-900 dark:text-white text-sm">
+            if (data) { // Ensure data exists
+                document.getElementById('results-container').classList.remove('hidden'); // Show results container
+    
+                // Update summary
+                const summaryText = `As of today, this video has received ${data.positive_count2} positive comments, ${data.negative_count2} negative comments, and ${data.neutral_count2} neutral comments. The most frequently used words are: ${data.frequent_words2.map(word => `'${word[0]}'`).join(', ')} which were used ${data.frequent_words2.map(word => `${word[1]}`).join(', ')}, respectively.`;
+                document.getElementById('summary').innerHTML = `
+                    <thead class="text-white">
+                        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                            <th class="px-2 py-1 w-1/2">Summary</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center text-gray-900 dark:text-white text-sm">
+                        <tr>
+                            <td class="px-2 py-2">${summaryText}</td>
+                        </tr>
+                    </tbody>`;
+    
+                // Update comments
+                const commentsTable = document.getElementById('labeled-comments').querySelector('tbody');
+                commentsTable.innerHTML = data.comments2.map(comment => `
+                    <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
+                        <td class="px-2 py-2">${comment.comment}</td>
+                        <td class="px-2 py-2">${comment.sentiment}</td>
+                    </tr>`).join('');
+    
+                // Update frequent words
+                const frequentWordsTable = document.getElementById('frequent-words').querySelector('tbody');
+                frequentWordsTable.innerHTML = data.frequent_words2.map(word => `
                     <tr>
-                        <td class="px-2 py-2">${summaryText}</td>
-                    </tr>
-                </tbody>`;
+                        <td class="px-2 py-1">${word[0]}</td>
+                        <td class="px-2 py-1">${word[1]}</td>
+                        <td class="py-1">${word[2]}</td>
+                    </tr>`).join('');
     
-            // Update comments
-            const commentsTable = document.getElementById('labeled-comments').querySelector('tbody');
-            commentsTable.innerHTML = data.comments2.map(comment => `
-                <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
-                    <td class="px-2 py-2">${comment.comment}</td>
-                    <td class="px-2 py-2">${comment.sentiment}</td>
-                </tr>`).join('');
-    
-            // Update frequent words
-            const frequentWordsTable = document.getElementById('frequent-words').querySelector('tbody');
-            frequentWordsTable.innerHTML = data.frequent_words2.map(word => `
-                <tr>
-                    <td class="px-2 py-1">${word[0]}</td>
-                    <td class="px-2 py-1">${word[1]}</td>
-                    <td class="py-1">${word[2]}</td>
-                </tr>`).join('');
-    
-            // Update bar chart
-            const ctx = document.getElementById('barChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Negative', 'Positive', 'Neutral'],
-                    datasets: [{
-                        label: 'Number of Comments Based on Sentiment',
-                        data: [data.negative_count2, data.positive_count2, data.neutral_count2],
-                        backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                // Update bar chart
+                const ctx = document.getElementById('barChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Negative', 'Positive', 'Neutral'],
+                        datasets: [{
+                            label: 'Number of Comments Based on Sentiment',
+                            data: [data.negative_count2, data.positive_count2, data.neutral_count2],
+                            backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
+                        }]
                     },
-                    plugins: {
-                        legend: {
-                            position: 'top',
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return tooltipItem.label + ': ' + tooltipItem.raw;
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.label + ': ' + tooltipItem.raw;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
-    
-            // Update word clouds
-            document.getElementById('positive-word-cloud').src = `data:image/png;base64,${data.positive_img_str2}`;
-            document.getElementById('negative-word-cloud').src = `data:image/png;base64,${data.negative_img_str2}`;
-    
-            // Implement Pagination
-            const rowsPerPage = 5;
-            let currentPage = 1;
-    
-            function renderTable() {
-                commentsTable.innerHTML = '';
-                const start = (currentPage - 1) * rowsPerPage;
-                const end = start + rowsPerPage;
-                const paginatedRows = data.comments2.slice(start, end);
-                paginatedRows.forEach(comment => {
-                    commentsTable.innerHTML += `
-                        <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
-                            <td class="px-2 py-2">${comment.comment}</td>
-                            <td class="px-2 py-2">${comment.sentiment}</td>
-                        </tr>`;
                 });
-            }
     
-            function renderPaginationControls() {
-                const paginationControls = document.getElementById('pagination-controls');
-                paginationControls.innerHTML = '';
-                const totalPages = Math.ceil(data.comments2.length / rowsPerPage);
+                // Update word clouds
+                document.getElementById('positive-word-cloud').src = `data:image/png;base64,${data.positive_img_str2}`;
+                document.getElementById('negative-word-cloud').src = `data:image/png;base64,${data.negative_img_str2}`;
     
-                if (currentPage > 1) {
-                    const prevButton = document.createElement('button');
-                    prevButton.textContent = '←';
-                    prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-                    prevButton.addEventListener('click', () => {
-                        if (currentPage > 1) {
-                            currentPage--;
+                // Implement Pagination
+                const rowsPerPage = 5;
+                let currentPage = 1;
+    
+                function renderTable() {
+                    commentsTable.innerHTML = '';
+                    const start = (currentPage - 1) * rowsPerPage;
+                    const end = start + rowsPerPage;
+                    const paginatedRows = data.comments2.slice(start, end);
+                    paginatedRows.forEach(comment => {
+                        commentsTable.innerHTML += `
+                            <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
+                                <td class="px-2 py-2">${comment.comment}</td>
+                                <td class="px-2 py-2">${comment.sentiment}</td>
+                            </tr>`;
+                    });
+                }
+    
+                function renderPaginationControls() {
+                    const paginationControls = document.getElementById('pagination-controls');
+                    paginationControls.innerHTML = '';
+                    const totalPages = Math.ceil(data.comments2.length / rowsPerPage);
+    
+                    if (currentPage > 1) {
+                        const prevButton = document.createElement('button');
+                        prevButton.textContent = '←';
+                        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+                        prevButton.addEventListener('click', () => {
+                            if (currentPage > 1) {
+                                currentPage--;
+                                renderTable();
+                                renderPaginationControls();
+                            }
+                        });
+                        paginationControls.appendChild(prevButton);
+                    }
+    
+                    const startPage = Math.max(1, currentPage - 1);
+                    const endPage = Math.min(totalPages, startPage + 2);
+    
+                    for (let i = startPage; i <= endPage; i++) {
+                        const pageButton = document.createElement('button');
+                        pageButton.textContent = i;
+                        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+                        if (i === currentPage) {
+                            pageButton.classList.add('font-bold');
+                        }
+                        pageButton.addEventListener('click', () => {
+                            currentPage = i;
                             renderTable();
                             renderPaginationControls();
+                        });
+                        paginationControls.appendChild(pageButton);
+                    }
+    
+                    if (endPage < totalPages - 1) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.textContent = '...';
+                        ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
+                        paginationControls.appendChild(ellipsis);
+                    }
+    
+                    if (endPage < totalPages) {
+                        const lastPageButton = document.createElement('button');
+                        lastPageButton.textContent = totalPages;
+                        lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+                        if (totalPages === currentPage) {
+                            lastPageButton.classList.add('font-bold');
                         }
-                    });
-                    paginationControls.appendChild(prevButton);
-                }
-    
-                const startPage = Math.max(1, currentPage - 1);
-                const endPage = Math.min(totalPages, startPage + 2);
-    
-                for (let i = startPage; i <= endPage; i++) {
-                    const pageButton = document.createElement('button');
-                    pageButton.textContent = i;
-                    pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-                    if (i === currentPage) {
-                        pageButton.classList.add('font-bold');
-                    }
-                    pageButton.addEventListener('click', () => {
-                        currentPage = i;
-                        renderTable();
-                        renderPaginationControls();
-                    });
-                    paginationControls.appendChild(pageButton);
-                }
-    
-                if (endPage < totalPages - 1) {
-                    const ellipsis = document.createElement('span');
-                    ellipsis.textContent = '...';
-                    ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
-                    paginationControls.appendChild(ellipsis);
-                }
-    
-                if (endPage < totalPages) {
-                    const lastPageButton = document.createElement('button');
-                    lastPageButton.textContent = totalPages;
-                    lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-                    if (totalPages === currentPage) {
-                        lastPageButton.classList.add('font-bold');
-                    }
-                    lastPageButton.addEventListener('click', () => {
-                        currentPage = totalPages;
-                        renderTable();
-                        renderPaginationControls();
-                    });
-                    paginationControls.appendChild(lastPageButton);
-                }
-    
-                if (currentPage < totalPages) {
-                    const nextButton = document.createElement('button');
-                    nextButton.textContent = '→';
-                    nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-                    nextButton.addEventListener('click', () => {
-                        if (currentPage < totalPages) {
-                            currentPage++;
+                        lastPageButton.addEventListener('click', () => {
+                            currentPage = totalPages;
                             renderTable();
                             renderPaginationControls();
-                        }
-                    });
-                    paginationControls.appendChild(nextButton);
-                }
-            }
+                        });
+                        paginationControls.appendChild(lastPageButton);
+                    }
     
-            renderTable();
-            renderPaginationControls();
+                    if (currentPage < totalPages) {
+                        const nextButton = document.createElement('button');
+                        nextButton.textContent = '→';
+                        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+                        nextButton.addEventListener('click', () => {
+                            if (currentPage < totalPages) {
+                                currentPage++;
+                                renderTable();
+                                renderPaginationControls();
+                            }
+                        });
+                        paginationControls.appendChild(nextButton);
+                    }
+                }
+    
+                renderTable();
+                renderPaginationControls();
+            } else {
+                // If no data, hide results container
+                document.getElementById('results-container').classList.add('hidden');
+            }
         })
         .catch(error => {
             document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
@@ -496,6 +505,7 @@
         });
     });
     </script>
+    
     
     </section>
     
