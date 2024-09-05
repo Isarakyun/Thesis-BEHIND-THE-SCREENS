@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from flask import session
 from . import db
 from sqlalchemy.orm import joinedload, aliased
-from .models import Users, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage
+from .models import Users, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, HighScoreComments
 import sys
 import os
 import base64
@@ -57,30 +57,26 @@ def results(youtube_url_id, youtube_video_id):
     count = db.session.query(SentimentCounter).filter_by(url_id=youtube_url_id).first()
     wordcloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
     comments = Comments.query.filter_by(user_id=user_id, url_id=youtube_url_id).all()
+    highscorecomments = HighScoreComments.query.filter_by(user_id=user_id, url_id=youtube_url_id).first()
     analysis_checker = WordCloudImage.query.filter_by(user_id=user_id).order_by(WordCloudImage.id.desc()).all()
+    frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtube_url_id).order_by(FrequentWords.url_id.desc()).all()
 
     if summary:
         summary_text = summary.summary
     else:
         summary_text = 'No summary found'
     
-    frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtube_url_id).order_by(FrequentWords.url_id.desc()).all()
-    
-    # Encode positive word cloud image data in Base64
     if wordcloud and wordcloud.image_positive_data:
-        # image_positive_data_base64 = base64.b64encode(wordcloud.image_positive_data).decode('utf-8')
         image_positive_data = wordcloud.image_positive_data
     else:
         image_positive_data = None
 
-    # Encode negative word cloud image data in Base64
     if wordcloud and wordcloud.image_negative_data:
-        # image_negative_data_base64 = base64.b64encode(wordcloud.image_negative_data).decode('utf-8')
         image_negative_data = wordcloud.image_negative_data
     else:
         image_negative_data = None
 
-    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, count=count, frequent_words=frequent_words, comments=comments, image_positive_data=image_positive_data, image_negative_data=image_negative_data, analysis_checker=analysis_checker)
+    return render_template("results.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, summary=summary_text, count=count, frequent_words=frequent_words, comments=comments, image_positive_data=image_positive_data, image_negative_data=image_negative_data, analysis_checker=analysis_checker, highscorecomments=highscorecomments)
 
 @views.route('/settings')
 @login_required

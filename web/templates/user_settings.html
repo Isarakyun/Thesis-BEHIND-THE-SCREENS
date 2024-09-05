@@ -8,143 +8,140 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Account Settings</title>
     <style>
-/* Base Styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #121212; /* Dark background */
-    margin: 0;
-    padding: 0;
-}
+        /* Base Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212; /* Dark background */
+            margin: 0;
+            padding: 0;
+        }
 
-.container {
-    display: flex;
-    justify-content: center; /* Center the container horizontally */
-    padding: 20px;
-    flex-wrap: wrap; /* Added to allow wrapping on small screens */
-    max-width: 1200px; /* Set a maximum width for the container */
-    margin: 0 auto; /* Center the container within the viewport */
-}
+        .container {
+            display: flex;
+            justify-content: center; /* Center the container horizontally */
+            padding: 20px;
+            flex-wrap: wrap; /* Added to allow wrapping on small screens */
+            max-width: 1200px; /* Set a maximum width for the container */
+            margin: 0 auto; /* Center the container within the viewport */
+        }
 
-.left-column,
-.right-column {
-    flex: 1;
-    margin: 10px;
-    padding: 20px;
-    background-color: #1E1E1E; /* Dark background for content areas */
-    border-radius: 8px;
-    color: #E2E8F0; /* Text color */
-    min-width: 300px; /* Ensure the columns have a reasonable minimum width */
-}
+        .left-column,
+        .right-column {
+            flex: 1;
+            margin: 10px;
+            padding: 20px;
+            background-color: #1E1E1E; /* Dark background for content areas */
+            border-radius: 8px;
+            color: #E2E8F0; /* Text color */
+            min-width: 300px; /* Ensure the columns have a reasonable minimum width */
+        }
 
-.text-xl {
-    font-size: 1.25rem;
-}
+        .text-xl {
+            font-size: 1.25rem;
+        }
 
-.text-2xl {
-    font-size: 1.5rem;
-}
+        .text-2xl {
+            font-size: 1.5rem;
+        }
 
-.rounded-lg {
-    border-radius: 0.5rem;
-}
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
 
-/* Button Styles */
-button {
-    background-color: transparent; /* Transparent background */
-    color: white; /* Text color */
-    border: none; /* Remove all borders */
-    border-radius: 8px; /* Rounded corners */
-    padding: 10px 20px; /* Button padding */
-    cursor: pointer; /* Pointer cursor */
-    box-shadow: none; /* Remove any box-shadow */
-    outline: none; /* Remove outline */
-}
+        /* Button Styles */
+        button {
+            background-color: transparent; /* Transparent background */
+            color: white; /* Text color */
+            border: none; /* Remove all borders */
+            border-radius: 8px; /* Rounded corners */
+            padding: 10px 20px; /* Button padding */
+            cursor: pointer; /* Pointer cursor */
+            box-shadow: none; /* Remove any box-shadow */
+            outline: none; /* Remove outline */
+        }
 
-/* Focus Styles */
-form input[type="text"]:focus,
-form input[type="email"]:focus,
-form input[type="password"]:focus {
-    outline: none; /* Remove the default focus outline */
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow to the focused input */
-    border-color: #007bff; /* Change border color to match the shadow */
-}
+        /* Focus Styles */
+        form input[type="text"]:focus,
+        form input[type="email"]:focus,
+        form input[type="password"]:focus {
+            outline: none; /* Remove the default focus outline */
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow to the focused input */
+            border-color: #007bff; /* Change border color to match the shadow */
+        }
 
-/* Light Mode */
-body.light {
-    background-color: #f8f9fa; /* Light background */
-}
+        /* Light Mode */
+        body.light {
+            background-color: #f8f9fa; /* Light background */
+        }
 
-body.light .left-column,
-body.light .right-column {
-    background-color: #ffffff; /* Light background for content areas */
-    color: #212529; /* Dark text color for light mode */
-}
+        body.light .left-column,
+        body.light .right-column {
+            background-color: #ffffff; /* Light background for content areas */
+            color: #212529; /* Dark text color for light mode */
+        }
 
-body.light button {
-    color: #212529; /* Dark text color for light mode */
-}
+        body.light button {
+            color: #212529; /* Dark text color for light mode */
+        }
 
-body.light form input[type="text"]:focus,
-body.light form input[type="email"]:focus,
-body.light form input[type="password"]:focus {
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow in light mode */
-    border-color: #007bff; /* Change border color to match the shadow */
-}
+        body.light form input[type="text"]:focus,
+        body.light form input[type="email"]:focus,
+        body.light form input[type="password"]:focus {
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow in light mode */
+            border-color: #007bff; /* Change border color to match the shadow */
+        }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        padding: 10px;
-    }
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 10px;
+            }
 
-    .left-column,
-    .right-column {
-        width: 100%;
-        margin: 5px 0;
-        padding: 15px;
-    }
+            .left-column,
+            .right-column {
+                width: 100%;
+                margin: 5px 0;
+                padding: 15px;
+            }
 
-    .text-xl {
-        font-size: 1rem; /* Adjusted for mobile */
-    }
+            .text-xl {
+                font-size: 1rem; /* Adjusted for mobile */
+            }
 
-    .text-2xl {
-        font-size: 1.25rem; /* Adjusted for mobile */
-    }
+            .text-2xl {
+                font-size: 1.25rem; /* Adjusted for mobile */
+            }
 
-    .alert {
-        width: 95%; /* Adjust alert width for mobile */
-        margin: 10px auto;
-        padding: 10px;
-        border-radius: 4px;
-        text-align: center;
-    }
-}
+            .alert {
+                width: 95%; /* Adjust alert width for mobile */
+                margin: 10px auto;
+                padding: 10px;
+                border-radius: 4px;
+                text-align: center;
+            }
+        }
 
-/* Restore original button and input colors for PC */
-@media (min-width: 769px) {
-    form input[type="text"],
-    form input[type="email"],
-    form input[type="password"] {
-        background-color: #2D3748; /* Input background for PC */
-        border: 1px solid #E2E8F0; /* Border to match the original design */
-    }
+        /* Restore original button and input colors for PC */
+        @media (min-width: 769px) {
+            form input[type="text"],
+            form input[type="email"],
+            form input[type="password"] {
+                background-color: #2D3748; /* Input background for PC */
+                border: 1px solid #E2E8F0; /* Border to match the original design */
+            }
 
-    body.light form input[type="text"],
-    body.light form input[type="email"],
-    body.light form input[type="password"] {
-        background-color: #ffffff; /* Light mode input background */
-        border: 1px solid #ced4da; /* Border color for light mode */
-        color: #212529; /* Text color for light mode */
-    }
-}
+            body.light form input[type="text"],
+            body.light form input[type="email"],
+            body.light form input[type="password"] {
+                background-color: #ffffff; /* Light mode input background */
+                border: 1px solid #ced4da; /* Border color for light mode */
+                color: #212529; /* Text color for light mode */
+            }
+        }
 
-        </style>
-        
-        
-        
-    
+    </style>
+
 </head>
 <body class="dark:bg-[#121212]">
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -196,7 +193,7 @@ body.light form input[type="password"]:focus {
                 </div>
                 <div id="delete-button" class="relative text-red-600 hover:bg-slate-700 dark:hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleDeleteAccount()">
                     <div class="ml-4">
-                        <button class="pt-3 pb-3">Delete Account</button>
+                        <button class="pt-3 pb-3 text-red-600">Delete Account</button>
                         <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
                 </div>
