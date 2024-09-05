@@ -12,7 +12,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE admin (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY,
     username VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(1000) NOT NULL
 );
@@ -27,7 +27,7 @@ CREATE TABLE get_url (
 );
 
 CREATE TABLE youtube_url (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY,
     url VARCHAR(150) NOT NULL,
     video_name VARCHAR(500) NOT NULL,
     video_id VARCHAR(150) NOT NULL,
@@ -51,7 +51,19 @@ CREATE TABLE summarized_comments (
     summary VARCHAR(50000) NOT NULL,
     url_id INT NOT NULL,
     user_id INT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    -- created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (url_id) REFERENCES youtube_url(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE high_score_comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    most_positive_comment VARCHAR(50000),
+    most_negative_comment VARCHAR(50000),
+    highest_positive_score FLOAT,
+    highest_negative_score FLOAT,
+    url_id INT NOT NULL,
+    user_id INT NOT NULL,
     FOREIGN KEY (url_id) REFERENCES youtube_url(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

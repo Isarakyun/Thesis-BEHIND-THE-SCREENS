@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import Users, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl
+from .models import Users, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl, HighScoreComments
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .analysis import clean_text, word_cloud, get_summary, extract_comments, word_cloud_blob
@@ -751,6 +751,9 @@ def analyze():
             if not url:
                 flash('Please enter a valid YouTube URL.', category='error')
                 return redirect(url_for('views.main'))
+            elif url:
+                if '/live/' in url:
+                    url = url.replace('/live/', '/watch?v=')
             try:
                 yt = YouTube(url)
                 video_name = yt.title
@@ -783,17 +786,40 @@ def analyze():
 
             # Sentiment Analysis for each comment
             sentiments = []
+            most_positive_comment = None
+            most_negative_comment = None
+            highest_positive_score = 0
+            highest_negative_score = 0
             for comment in filtered_comments:
                 try:
                     sentiment = sentiment_pipeline([comment])[0]
                     sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
                     sentiments.append(sentiment)
+
+                    # get the most positive and most negative comments
+                    if sentiment['label'] == 'Positive' and sentiment['score'] > highest_positive_score:
+                        highest_positive_score = sentiment['score']
+                        most_positive_comment = comment
+                    
+                    if sentiment['label'] == 'Negative' and sentiment['score'] < highest_negative_score:
+                        highest_negative_score = sentiment['score']
+                        most_negative_comment = comment
                 except RuntimeError as e: # This occurs because of the length of the comment. RoBERTa can only handle a maximum of 512 tokens.
                     continue  # Skip this comment and continue with the next one
                 except Exception as e:
                     flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
                     return redirect(url_for('views.main'))
-            
+                
+            high_score_comment = HighScoreComments(
+                user_id=current_user.id,
+                url_id=new_youtube_url.id,
+                most_positive_comment=most_positive_comment,
+                most_negative_comment=most_negative_comment,
+                highest_positive_score=highest_positive_score,
+                highest_negative_score=highest_negative_score
+            )
+            db.session.add(high_score_comment)
+
             # for sentiment counter
             positive_count = 0
             negative_count = 0
@@ -869,10 +895,6 @@ def analyze():
             negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
 
             if positive_img_str and negative_img_str:
-                # Decode the base64 strings back to binary data
-                # positive_img_data = base64.b64decode(positive_img_str)
-                # negative_img_data = base64.b64decode(negative_img_str)
-
                 positive_img_data = positive_img_str
                 negative_img_data = negative_img_str
                 

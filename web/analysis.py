@@ -123,17 +123,6 @@ def word_cloud(words, colormap, user_id, url_id, video_id, sentiment):
     img.save(file_path, format="PNG")
     return file_name
 
-# def analyze_summary(text):
-#     analysis = TextBlob(text)
-#     sentiment_score = analysis.sentiment.polarity
-#     if sentiment_score > 0.1:
-#         sentiment = "Positive"
-#     elif sentiment_score < -0.1:
-#         sentiment = "Negative"
-#     else:
-#         sentiment = "Neutral"
-#     return sentiment, sentiment_score
-
 def word_cloud_blob(words, colormap):
     stopwords = set(STOPWORDS)
     if not words:

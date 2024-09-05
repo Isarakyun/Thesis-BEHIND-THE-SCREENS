@@ -922,6 +922,9 @@ video {
 .flex-wrap-reverse {
   flex-wrap: wrap-reverse;
 }
+.italic {
+  font-style: italic;
+}
 .items-start {
   align-items: flex-start;
 }
@@ -1388,6 +1391,14 @@ video {
   --tw-text-opacity: 1;
   color: rgb(220 38 38 / var(--tw-text-opacity));
 }
+.text-red-700 {
+  --tw-text-opacity: 1;
+  color: rgb(185 28 28 / var(--tw-text-opacity)) /* #b91c1c */;
+}
+.text-slate-200 {
+  --tw-text-opacity: 1;
+  color: rgb(226 232 240 / var(--tw-text-opacity));
+}
 .text-slate-400 {
   --tw-text-opacity: 1;
   color: rgb(148 163 184 / var(--tw-text-opacity));
@@ -1407,6 +1418,14 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+.text-yellow-600 {
+  --tw-text-opacity: 1;
+  color: rgb(234 179 8 / var(--tw-text-opacity));
+}
+.text-yellow-700 {
+  --tw-text-opacity: 1;
+  color: rgb(161 98 7 / var(--tw-text-opacity)) /* #a16207 */;
 }
 .no-underline {
   text-decoration-line: none;
@@ -1856,9 +1875,14 @@ video {
     background-color: rgb(0 0 0 / var(--tw-bg-opacity));
   }
 
-  .dark\:bg-gray-100 {
+  .dark\:bg-blue-700 {
     --tw-bg-opacity: 1;
-    background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+    background-color: rgb(29 78 216 / var(--tw-bg-opacity)) /* #1d4ed8 */;
+  }
+
+  .dark\:bg-blue-800 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(16 42 111 / var(--tw-bg-opacity)) /* #102a6f */;
   }
 
   .dark\:bg-gray-700 {
@@ -1875,6 +1899,21 @@ video {
     --tw-bg-opacity: 1;
     background-color: rgb(17 24 39 / var(--tw-bg-opacity));
   }
+
+  .dark\:bg-red-600 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(185 28 28 / var(--tw-bg-opacity));
+  }
+
+  .dark\:bg-red-700 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(185 28 28 / var(--tw-bg-opacity));
+  }
+
+  .dark\:bg-slate-600 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(71 85 105 / var(--tw-bg-opacity)) /* #475569 */;
+}
 
   .dark\:bg-slate-700 {
     --tw-bg-opacity: 1;
@@ -1955,6 +1994,11 @@ video {
     color: rgb(255 255 255 / var(--tw-text-opacity));
   }
 
+  .dark\:text-yellow-600 {
+    --tw-text-opacity: 1;
+    color: rgb(202 138 4 / var(--tw-text-opacity)) /* #ca8a04 */;
+  }
+  
   .dark\:ring-white {
     --tw-ring-opacity: 1;
     --tw-ring-color: rgb(255 255 255 / var(--tw-ring-opacity));
