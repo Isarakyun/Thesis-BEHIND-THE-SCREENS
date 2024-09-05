@@ -146,7 +146,7 @@
           {% elif comment.sentiment == "Negative" %}
           <td class="px-2 py-2 text-red-700">{{ comment.sentiment }}</td>
           {% else %}
-          <td class="px-2 py-2 text-yellow-700">{{ comment.sentiment }}</td>
+          <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">{{ comment.sentiment }}</td>
           {% endif %}
         </tr>
         {% endfor %}
@@ -182,7 +182,7 @@
           {% if comment.sentiment == 'Positive' %}
           <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
             <td class="px-2 py-2">{{ comment.comment }}</td>
-            <td class="px-2 py-2">{{ comment.sentiment }}</td>
+            <td class="px-2 py-2 text-blue-700">{{ comment.sentiment }}</td>
           </tr>
           {% endif %}
         {% endfor %}
@@ -195,7 +195,7 @@
       </thead>
       <tbody class="text-center text-gray-900 dark:text-white text-sm">
         <tr class="sentiment-row">
-          <td class="px-2 py-2">There are no positive comments found.</td>
+          <td class="px-2 py-2 text-blue-700">There are no positive comments found.</td>
         </tr>
       </tbody>
     {% endif %}
@@ -218,7 +218,7 @@
           {% if comment.sentiment == 'Negative' %}
           <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
             <td class="px-2 py-2">{{ comment.comment }}</td>
-            <td class="px-2 py-2">{{ comment.sentiment }}</td>
+            <td class="px-2 py-2 text-red-700">{{ comment.sentiment }}</td>
           </tr>
           {% endif %}
         {% endfor %}
@@ -231,7 +231,7 @@
     </thead>
     <tbody class="text-center text-gray-900 dark:text-white text-sm">
       <tr class="sentiment-row">
-        <td class="px-2 py-2">There are no negative comments found.</td>
+        <td class="px-2 py-2 text-red-700">There are no negative comments found.</td>
       </tr>
     </tbody>
   {% endif %}
@@ -254,7 +254,7 @@
           {% if comment.sentiment == 'Neutral' %}
           <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
             <td class="px-2 py-2">{{ comment.comment }}</td>
-            <td class="px-2 py-2">{{ comment.sentiment }}</td>
+            <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">{{ comment.sentiment }}</td>
           </tr>
           {% endif %}
         {% endfor %}
@@ -267,7 +267,7 @@
         </thead>
         <tbody class="text-center text-gray-900 dark:text-white text-sm">
           <tr class="sentiment-row">
-            <td class="px-2 py-2">There are no neutral comments found.</td>
+            <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">There are no neutral comments found.</td>
           </tr>
         </tbody>
       {% endif %}
@@ -743,7 +743,7 @@
 {% if frequent_words %}
 <!-- Table for Word Count -->
 <div id="frequent-words" class="flex justify-center overflow-hidden mt-5 pt-5">
-  <table class="w-full ml-[50px] mr-[50px]">
+  <table class="w-1/2 ml-[50px] mr-[50px]">
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-lg">
           <th class="px-4 py-1">Word</th>
@@ -756,49 +756,61 @@
         <tr>
           <td class="px-2 py-2">{{ word.word }}</td>
           <td class="px-2 py-2">{{ word.count }} times</td>
-          <td class="px-2 py-2">{{ word.sentiment }}</td>
+          {% if word.sentiment == "Positive" %}
+          <td class="px-2 py-2 text-blue-700">{{ word.sentiment }}</td>
+          {% elif word.sentiment == "Negative" %}
+          <td class="px-2 py-2 text-red-700">{{ word.sentiment }}</td>
+          {% else %}
+          <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">{{ word.sentiment }}</td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
   </table>
+  <!-- Bar Chart -->
+  <div class="ml-4 mr-[50px] w-1/2">
+    <canvas id="barChart" width="250px" height="250px"></canvas>
+  </div>
 </div>
+{% endif %}
 
   <!-- did i mention i love fictional characters -->
   <!-- even if you did not, it's obvious xd -->
   <!-- bruh i didnt expect someone would reply here, i was just gonna give ppl who do "inspect element" something here -->
-  <!-- one of the devs/researchers here aint straight. it's me (hint is in one of the pages). -->
-   
-<!-- Pie Chart -->
-<div class="mt-[20px] ml-4 mr-[50px]">
-  <canvas id="pieChart" width="350px" height="350px"></canvas>
-</div>
-{% endif %}
+  <!-- one of the devs/researchers here aint straight. it's me (hint is in one of the pages). --> 
 
-  <script>
-    async function fetchSentimentData(urlId) {
-      const response = await fetch(`/api/sentiment/${urlId}`);
-      const data = await response.json();
-      return data;
-    }
-    async function updatePieChart(urlId) {
-      const data = await fetchSentimentData(urlId);
-    const ctx = document.getElementById('pieChart').getContext('2d');
-    const pieChart = new Chart(ctx, {
-      type: 'pie',
+<!-- script for bar chart -->
+<script>
+  async function fetchSentimentData(urlId) {
+    const response = await fetch(`/api/sentiment/${urlId}`);
+    const data = await response.json();
+    return data;
+  }
+
+  async function updateBarChart(urlId) {
+    const data = await fetchSentimentData(urlId);
+    const ctx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(ctx, {
+      type: 'bar',
       data: {
         labels: ['Negative', 'Positive', 'Neutral'],
         datasets: [{
-          label: 'Sentiment Analysis',
+          label: 'Number of Comments Based on Sentiment',
           data: [data.negative, data.positive, data.neutral],
-          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'], 
+          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
         plugins: {
           legend: {
-            position: 'left',
+            position: 'top',
           },
           tooltip: {
             callbacks: {
@@ -813,26 +825,26 @@
   }
 
   function getUrlParameter(name) {
-      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-      const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-      const results = regex.exec(location.search);
-      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    const results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 
   function getUrlPathParameter(position) {
-      const pathSegments = window.location.pathname.split('/');
-      return pathSegments[position] || null;
+    const pathSegments = window.location.pathname.split('/');
+    return pathSegments[position] || null;
   }
 
   window.onload = function() {
-      const urlId = getUrlPathParameter(2);
-      if (urlId) {
-          updatePieChart(urlId);
-      } else {
-          console.error('url_id parameter is missing in the URL');
-      }
+    const urlId = getUrlPathParameter(2);
+    if (urlId) {
+      updateBarChart(urlId);
+    } else {
+      console.error('url_id parameter is missing in the URL');
+    }
   };
-  </script>
+</script>
 
   <!-- WordCloud -->
   <div class="rounded ml-[50px] mr-[50px] mt-5 bg-red-600 dark:bg-slate-700 p-1">
