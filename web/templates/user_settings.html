@@ -118,6 +118,22 @@
             color: red; /* Keep icon color red on hover */
         }
     
+        /* Input Field Styles */
+        input {
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid;
+            background-color: #1f1f1f; /* Darker background for inputs in dark mode */
+            color: #E2E8F0; /* Text color for inputs in dark mode */
+        }
+    
+        /* Light Mode Input Field Styles */
+        body.light input {
+            background-color: #e9ecef; /* Subdued light background for inputs in light mode */
+            color: #212529; /* Text color for inputs in light mode */
+            border-color: #ced4da; /* Slightly darker border color for inputs in light mode */
+        }
+    
         /* Focus Styles */
         form input[type="text"]:focus,
         form input[type="email"]:focus,
@@ -187,6 +203,7 @@
             background-color: #e2e8f0; /* Hover background color for light mode */
         }
     </style>
+    
     
     
 
