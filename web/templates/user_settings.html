@@ -70,8 +70,7 @@
         /* Dark Mode Specific */
         body.dark #username-button button,
         body.dark #email-button button,
-        body.dark #password-button button,
-        body.dark #delete-button button {
+        body.dark #password-button button {
             color: white; /* Ensure text color is white in dark mode */
         }
     
@@ -80,6 +79,41 @@
         body.dark #password-button:hover button,
         body.dark #delete-button:hover button {
             color: black; /* Change text color to black on hover in dark mode */
+        }
+    
+        /* Icon Styles */
+        i.ri-arrow-right-line {
+            color: white; /* Default icon color */
+        }
+    
+        /* Hover Icon Effects */
+        #username-button:hover i.ri-arrow-right-line,
+        #email-button:hover i.ri-arrow-right-line,
+        #password-button:hover i.ri-arrow-right-line,
+        #delete-button:hover i.ri-arrow-right-line {
+            color: black; /* Change icon color to black on hover */
+        }
+    
+        /* Red Button and Icon for Delete Account */
+        #delete-button {
+            color: red; /* Default text color */
+        }
+    
+        #delete-button button {
+            color: red; /* Ensure text color is red */
+        }
+    
+        #delete-button i.ri-arrow-right-line {
+            color: red; /* Default icon color */
+        }
+    
+        /* Ensure Delete Account Button and Icon Stay Red */
+        #delete-button:hover button {
+            color: red; /* Keep text color red on hover */
+        }
+    
+        #delete-button:hover i.ri-arrow-right-line {
+            color: red; /* Keep icon color red on hover */
         }
     
         /* Focus Styles */
@@ -103,6 +137,14 @@
     
         body.light button {
             color: #212529; /* Dark text color for light mode */
+        }
+    
+        body.light #delete-button button {
+            color: #e3342f; /* Red text color for delete button in light mode */
+        }
+    
+        body.light #delete-button i.ri-arrow-right-line {
+            color: #e3342f; /* Red icon color for delete button in light mode */
         }
     
         body.light form input[type="text"]:focus,
@@ -143,24 +185,6 @@
             }
         }
     
-        /* Restore original button and input colors for PC */
-        @media (min-width: 769px) {
-            form input[type="text"],
-            form input[type="email"],
-            form input[type="password"] {
-                background-color: #2D3748; /* Input background for PC */
-                border: 1px solid #E2E8F0; /* Border to match the original design */
-            }
-    
-            body.light form input[type="text"],
-            body.light form input[type="email"],
-            body.light form input[type="password"] {
-                background-color: #ffffff; /* Light mode input background */
-                border: 1px solid #ced4da; /* Border color for light mode */
-                color: #212529; /* Text color for light mode */
-            }
-        }
-    
         /* Light Mode Button Hover */
         body.light #username-button:hover,
         body.light #email-button:hover,
@@ -170,10 +194,9 @@
         }
     </style>
     
-    
 
 </head>
-<body class="dark:bg-[#121212] dark:">
+<body class="dark:bg-[#121212]">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -227,6 +250,7 @@
                         <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
                 </div>
+                
                 <div class="mt-4 text-center text-secondary">
                     Your use of our services is also subject to our <a href="/privacy-policy" class="text-blue-400 hover:underline">Privacy Policy </a> and <a href="/user-agreement" class="text-blue-400 hover:underline">User Agreement</a>.
                 </div>
