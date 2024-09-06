@@ -988,6 +988,11 @@ def analyze2():
     
     if not youtube_url:
         return jsonify({'error': 'Please enter a valid YouTube URL.'}), 400
+    elif youtube_url:
+        if '/live/' in youtube_url:
+            youtube_url = youtube_url.replace('/live/', '/watch?v=')
+        elif 'youtu.be' in youtube_url:
+            youtube_url = youtube_url.replace('youtu.be/', 'youtube.com/watch?v=')
     
     try:
         yt = YouTube(youtube_url)
@@ -1018,9 +1023,10 @@ def analyze2():
             sentiments.append({'comment': comment, 'sentiment': sentiment['label']})
         except RuntimeError as e:
             continue 
+        except IndexError as e:
+            continue
         except Exception as e:
-            flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
-            return redirect(url_for('views.home'))
+            return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 400
         
         # Counting the sentiments
         if sentiment['label'] == 'Positive':
@@ -1046,17 +1052,9 @@ def analyze2():
             word_sentiment_label = "Neutral"
         frequent_words.append([word, count, word_sentiment_label])
 
-    summary = get_summary(all_comments_text)
+    # summary = get_summary(all_comments_text)
 
     # Generate Word Clouds
-    unlabeled_words = word_tokenize(all_comments_text)
-    positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
-    positive_text = ' '.join(positive_words)
-    positive_img_str = word_cloud_blob(positive_text, 'winter')
-    
-    negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
-    negative_text = ' '.join(negative_words)
-    negative_img_str = word_cloud_blob(negative_text, 'hot')
 
     response = {
         'video_name2': video_name,
@@ -1065,8 +1063,6 @@ def analyze2():
         'neutral_count2': neutral_count,
         'comments2': sentiments,
         'frequent_words2': frequent_words,
-        'positive_img_str2': positive_img_str,
-        'negative_img_str2': negative_img_str,
     }
 
     return jsonify(response), 200
