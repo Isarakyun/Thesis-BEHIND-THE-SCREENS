@@ -1,4 +1,4 @@
-{% extends "admin_base.html" %} {% block title %}User Logs{% endblock %}
+{% extends "admin_base.html" %} {% block title %}User Requests{% endblock %}
 
 {% block content %}
 <div class="py-2 px-4 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
@@ -6,36 +6,36 @@
         <i class="ri-menu-line cursor-pointer"></i>
     </button>
     <div>
-        <a href="{{ url_for('admin.user_audit') }}" class="text-m text-black dark:text-white ml-4">User Audit Trail</a>
+        <a href="{{ url_for('admin.user_requests') }}" class="text-m text-black dark:text-white ml-4">All User Requests</a>
     </div>  
 </div>
 <div class="pt-8">
     <div class="py-4 px-8">
         <div class="overflow-x-auto rounded-3xl">
-          {% if audit_trails %}
+            {% if requests %}
             <table class="min-w-full text-black dark:text-white rounded-3xl mt-4" id="audit-trail">
                 <thead>
                     <tr class="w-full bg-slate-300 dark:bg-gray-700 rounded-3xl">
-                        <th class="py-3 px-6 text-center rounded-tl-3xl">User ID</th>
-                        <th class="py-3 px-6 text-center">User</th>
-                        <th class="py-3 px-6 text-center">Action</th>
-                        <th class="py-3 px-6 text-center rounded-tr-3xl">Timestamp</th>
+                        <th class="py-3 px-6 text-center rounded-tl-3xl">User</th>
+                        <th class="py-3 px-6 text-center">URL</th>
+                        <th class="py-3 px-6 text-center">Attempt</th>
+                        <th class="py-3 px-6 text-center rounded-tr-3xl">Date</th>
                     </tr>
                 </thead>
                 <tbody class="bg-slate-200 dark:bg-gray-800">
-                    {% for audit in audit_trails %}
+                    {% for request in requests %}
                     <tr class="border-b border-slate-100 dark:border-gray-700">
-                        <td class="py-4 px-6 text-center">{{ audit.user_id }}</td>
-                        <td class="py-4 px-6 text-center">{{ audit.users }}</td>
-                        <td class="py-4 px-6 text-center">{{ audit.action }}</td>
-                        <td class="py-4 px-6 text-center">{{ audit.timestamp|format_date }}</td>
+                        <td class="py-4 px-6 text-center">{{ request.username }}</td>
+                        <td class="py-4 px-6 text-center">{{ request.url }}</td>
+                        <td class="py-4 px-6 text-center">{{ request.attempt }}</td>
+                        <td class="py-4 px-6 text-center">{{ request.created_at|format_date }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-          {% else %}
-          <div class="text-center text-gray-500 dark:text-gray-200 mt-4">No user logs found.</div>
-          {% endif %}
+            {% else %}
+            <div class="text-center text-gray-500 dark:text-gray-200 mt-4">No user requests found.</div>
+            {% endif %}
         </div>
         <div id="all-pagination-controls" class="flex justify-center mt-4 mb-4"></div>
     </div>

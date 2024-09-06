@@ -26,7 +26,7 @@
                     <tr class="border-b border-slate-100 dark:border-gray-700">
                         <td class="py-4 px-6 text-center">{{ audit.username }}</td>
                         <td class="py-4 px-6 text-center">{{ audit.action }}</td>
-                        <td class="py-4 px-6 text-center">{{ audit.timestamp }}</td>
+                        <td class="py-4 px-6 text-center">{{ audit.timestamp|format_date }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

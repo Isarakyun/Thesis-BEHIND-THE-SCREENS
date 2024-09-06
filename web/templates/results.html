@@ -84,7 +84,7 @@
           <td class="px-2 py-2">{{ highscorecomments.most_positive_comment }}</td>
           <td class="px-2 py-2">{{ (highscorecomments.highest_positive_score * 100) | round(2) }}%</td>
           {% else %}
-          <td class="px-2 py-2">There are no positive comments found.</td>
+          <td class="px-2 py-2 italic text-gray-500">There are no positive comments found.</td>
           <td class="px-2 py-2"></td>
           {% endif %}
         </tr>
@@ -857,7 +857,7 @@
         {% if image_positive_data %} 
           <img class="w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_positive_data) }}">
         {% else %}
-          <p class="text-black dark:text-white text-center mt-2">No positive words found.</p>
+          <p class="italic text-gray-500 text-center mt-2">No positive words found.</p>
         {% endif %}
         <p class="text-black dark:text-white text-center mt-2">Positive</p>
       </div>
@@ -866,11 +866,31 @@
         {% if image_negative_data %}
           <img class="w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_negative_data) }}">
         {% else %}
-          <p class="text-black dark:text-white text-center mt-2">No negative words found.</p>
+          <p class="italic text-gray-500 text-center mt-2">No negative words found.</p>
         {% endif %}
         <p class="text-black dark:text-white text-center mt-2">Negative</p>
       </div>
     </div>
   </div>
 </div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <div class="fixed bottom-4 right-4 space-y-4">
+        {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="alert bg-red-500 text-black p-3 text-sm rounded shadow-lg">
+            {{ message }}
+            <button type="button" class="ml-4 float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% else %}
+        <div class="alert bg-blue-600 text-white p-3 text-sm rounded shadow-lg">
+            {{ message }}
+            <button type="button" class="ml-4 float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% endwith %}
 {% endblock %}
