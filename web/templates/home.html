@@ -189,7 +189,7 @@
     <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
     
-    <section id="analyze" class="flex flex-col justify-center p-6 scroll-mt-10 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
+    <section id="analyze" class="flex flex-col p-6 my-6 scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
       <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Analyze Your YouTube Video</h2>
       <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube video you want to analyze below:</p>
     
@@ -223,120 +223,126 @@
           </div>
       </div>
     
-<!-- Results Section -->
-<div id="results-section" class="hidden mt-5">
-    <!-- Results will be injected here -->
-    <div>
-        <table id="summary" class="table-auto text-center w-full mt-4">
-            <thead class="text-white rounded">
-                <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                    <th class="px-4 py-1 w-1/2">Summary</th>
-                </tr>
-            </thead>
-            <tbody class="text-center text-gray-900 dark:text-white text-sm">
-                <!-- Content will be injected by JavaScript -->
-            </tbody>
-        </table>
+<!-- Results Container -->
+<div id="results-container" class="hidden mt-5">
+    <!-- Results Section -->
+    <div id="results-section">
+        <!-- Summary Table -->
+        <div>
+            <table id="summary" class="table-auto text-center w-full mt-4">
+                <thead class="text-white rounded">
+                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                        <th class="px-4 py-1 w-1/2">Summary</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center text-gray-900 dark:text-white text-sm">
+                    <!-- Content will be injected by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Comments Table -->
+        <div class="mt-5 pt-5 flex justify-center">
+            <table id="labeled-comments" class="table-auto w-full">
+                <thead class="text-white rounded">
+                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                        <th class="px-4 py-1 w-1/2">Comments</th>
+                        <th class="px-2 py-1 w-1/2">Sentiments</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center text-gray-900 dark:text-white text-sm">
+                    <!-- Content will be injected by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="pagination-controls" class="flex justify-center mt-4"></div>
+
+        <!-- Word Count Table and Bar Chart -->
+        <div class="flex justify-center mb-5 items-center">
+            <!-- Word Count Table -->
+            <div class="mt-[20px] w-full">
+                <table id="frequent-words" class="table-auto text-center text-sm w-full">
+                    <thead class="text-white rounded">
+                        <tr class="bg-red-600 dark:bg-slate-700">
+                            <th class="px-2 py-1 w-1/3">Word</th>
+                            <th class="px-2 py-1 w-1/3">Count</th>
+                            <th class="px-2 py-1 w-1/3">Sentiment</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-900 dark:text-white">
+                        <!-- Content will be injected by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="ml-4 mr-[50px] w-1/2">
+                <canvas id="barChart" width="250px" height="250px"></canvas>
+            </div>
+        </div>
+
+        <!-- Word Cloud Header -->
+        <div class="rounded mt-4 bg-red-600 dark:bg-slate-700 p-1 w-full">
+            <a class="text-white font-bold ml-2">Word Cloud</a>
+        </div>
+
+        <!-- Word Cloud Images -->
+        <div class="pb-8">
+            <div class="flex justify-center">
+                <!-- Positive Word Cloud -->
+                <div class="mt-[20px] w-1/2 px-4">
+                    <img id="positive-word-cloud" class="w-full rounded" src="">
+                    <p class="text-black dark:text-white text-center mt-2">Positive</p>
+                </div>
+                <!-- Negative Word Cloud -->
+                <div class="mt-[20px] w-1/2 px-4">
+                    <img id="negative-word-cloud" class="w-full rounded" src="">
+                    <p class="text-black dark:text-white text-center mt-2">Negative</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- TABLE FOR COMMENTS -->
-<div class="mt-5 pt-5 flex justify-center">
-    <table id="labeled-comments" class="table-auto w-full">
-        <thead class="text-white rounded">
-            <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                <th class="px-4 py-1 w-1/2">Comments</th>
-                <th class="px-2 py-1 w-1/2">Sentiments</th>
-            </tr>
-        </thead>
-        <tbody class="text-center text-gray-900 dark:text-white text-sm">
-            <!-- Content will be injected by JavaScript -->
-        </tbody>
-    </table>
-</div>
-
-<div id="pagination-controls" class="flex justify-center mt-4"></div>
-
-<!-- Flex Container for Word Count -->
-<div class="flex justify-center mb-5 items-center">
-  <!-- Word Count Table -->
-  <div class="mt-[20px] w-full">
-    <table id="frequent-words" class="table-auto text-center text-sm w-full">
-      <thead class="text-white rounded">
-        <tr class="bg-red-600 dark:bg-slate-700">
-          <th class="px-2 py-1 w-1/3">Word</th>
-          <th class="px-2 py-1 w-1/3">Count</th>
-          <th class="px-2 py-1 w-1/3">Sentiment</th>
-        </tr>
-      </thead>
-      <tbody class="text-gray-900 dark:text-white">
-        <!-- Content will be injected by JavaScript -->
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- Pie Chart -->
-<div class="mt-[20px] ml-4 mr-[50px]">
-    <canvas id="pieChart" width="350px" height="350px"></canvas>
-</div>
-
-<!-- Word Cloud Header -->
-<div class="rounded mt-4 bg-red-600 dark:bg-slate-700 p-1 w-full">
-    <a class="text-white font-bold ml-2">Word Cloud</a>
-</div>
-
-<!-- Word Cloud Images -->
-<div class="pb-8">
-    <div class="flex justify-center">
-        <!-- POSITIVE WORD CLOUD -->
-        <div class="mt-[20px] w-1/2 px-4">
-            <img id="positive-word-cloud" class="w-full rounded" src="">
-            <p class="text-black dark:text-white text-center mt-2">Positive</p>
-        </div>
-        <!-- NEGATIVE WORD CLOUD -->
-        <div class="mt-[20px] w-1/2 px-4">
-            <img id="negative-word-cloud" class="w-full rounded" src="">
-            <p class="text-black dark:text-white text-center mt-2">Negative</p>
-        </div>
-    </div>
-</div>
 
 
     
-      <script>
-        document.getElementById('analysis-form2').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
-        
-            const url = document.getElementById('url2').value;
-            document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
-        
-            fetch('/analyze2', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url2: url })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-                document.getElementById('results-section').classList.remove('hidden'); // Show results section
+<script>
+    document.getElementById('analysis-form2').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+    
+        const url = document.getElementById('url2').value;
+        document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
+    
+        fetch('/analyze2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url2: url })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
+    
+            if (data) { // Ensure data exists
+                document.getElementById('results-container').classList.remove('hidden'); // Show results container
     
                 // Update summary
                 const summaryText = `As of today, this video has received ${data.positive_count2} positive comments, ${data.negative_count2} negative comments, and ${data.neutral_count2} neutral comments. The most frequently used words are: ${data.frequent_words2.map(word => `'${word[0]}'`).join(', ')} which were used ${data.frequent_words2.map(word => `${word[1]}`).join(', ')}, respectively.`;
                 document.getElementById('summary').innerHTML = `
                     <thead class="text-white">
                         <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                            <th class="px-2 py-1">Interpretation of "${data.video_name2}"</th>
+                            <th class="px-2 py-1 w-1/2">Summary</th>
                         </tr>
                     </thead>
-                    <tbody class="text-gray-900 dark:text-white text-sm">
+                    <tbody class="text-center text-gray-900 dark:text-white text-sm">
                         <tr>
                             <td class="px-2 py-2">${summaryText}</td>
                         </tr>
                     </tbody>`;
-        
+    
                 // Update comments
                 const commentsTable = document.getElementById('labeled-comments').querySelector('tbody');
                 commentsTable.innerHTML = data.comments2.map(comment => `
@@ -344,7 +350,7 @@
                         <td class="px-2 py-2">${comment.comment}</td>
                         <td class="px-2 py-2">${comment.sentiment}</td>
                     </tr>`).join('');
-        
+    
                 // Update frequent words
                 const frequentWordsTable = document.getElementById('frequent-words').querySelector('tbody');
                 frequentWordsTable.innerHTML = data.frequent_words2.map(word => `
@@ -353,15 +359,15 @@
                         <td class="px-2 py-1">${word[1]}</td>
                         <td class="py-1">${word[2]}</td>
                     </tr>`).join('');
-        
-                // Update pie chart
-                const ctx = document.getElementById('pieChart').getContext('2d');
+    
+                // Update bar chart
+                const ctx = document.getElementById('barChart').getContext('2d');
                 new Chart(ctx, {
-                    type: 'pie',
+                    type: 'bar',
                     data: {
                         labels: ['Negative', 'Positive', 'Neutral'],
                         datasets: [{
-                            label: 'Sentiment Analysis',
+                            label: 'Number of Comments Based on Sentiment',
                             data: [data.negative_count2, data.positive_count2, data.neutral_count2],
                             backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
                         }]
@@ -369,21 +375,26 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
                         plugins: {
                             legend: {
-                                position: 'left',
+                                position: 'top',
                             },
                             tooltip: {
                                 callbacks: {
-                                    label: function(tooltipItem2) {
-                                        return tooltipItem2.label + ': ' + tooltipItem2.raw;
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.label + ': ' + tooltipItem.raw;
                                     }
                                 }
                             }
                         }
                     }
                 });
-        
+    
                 // Update word clouds
                 document.getElementById('positive-word-cloud').src = `data:image/png;base64,${data.positive_img_str2}`;
                 document.getElementById('negative-word-cloud').src = `data:image/png;base64,${data.negative_img_str2}`;
@@ -482,14 +493,20 @@
     
                 renderTable();
                 renderPaginationControls();
-            })
-            .catch(error => {
-                document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-                alert('An error occurred. Please try again.');
-                console.error('Error:', error);
-            });
+            } else {
+                // If no data, hide results container
+                document.getElementById('results-container').classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
+            alert('An error occurred. Please try again.');
+            console.error('Error:', error);
         });
-      </script>
+    });
+    </script>
+    
+    
     </section>
     
     <hr class="mx-auto bg-black dark:bg-white w-1/2">

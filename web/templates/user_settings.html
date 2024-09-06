@@ -30,7 +30,6 @@
             flex: 1;
             margin: 10px;
             padding: 20px;
-            background-color: #1E1E1E; /* Dark background for content areas */
             border-radius: 8px;
             color: #E2E8F0; /* Text color */
             min-width: 300px; /* Ensure the columns have a reasonable minimum width */
@@ -47,7 +46,10 @@
         .rounded-lg {
             border-radius: 0.5rem;
         }
-
+/* Light Mode */
+body.light button.text-red-600 {
+    color: #e3342f; /* Ensure the red color in light mode */
+}
         /* Button Styles */
         button {
             background-color: transparent; /* Transparent background */
@@ -76,7 +78,6 @@
 
         body.light .left-column,
         body.light .right-column {
-            background-color: #ffffff; /* Light background for content areas */
             color: #212529; /* Dark text color for light mode */
         }
 
@@ -206,9 +207,10 @@
         <!-- Right Column -->
         <div class="right-column">
             <div>
-                <h2 class="text-xl font-semibold mb-4">Account Information</h2>
+                <h1 class="ml-2 text-2xl font-bold mb-6">Account Information</h1>
+                <hr>
                 <!-- Description -->
-                <div id="description" class="mb-6">
+                <div id="description" class="mb-6 mt-4">
                     <p>View or change your account information. Click on the options on the left to get started.</p>
                 </div>
                 <!-- Username Change -->

@@ -29,8 +29,10 @@
     type="text"
     placeholder="Youtube URL here..." 
     />
-        <button type="submit" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600"><i class="ri-arrow-right-line"></i></button>
-  </div>
+    <button type="submit" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600">
+        <i class="ri-arrow-right-line"></i>
+    </button>
+</div>
 </form>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -55,7 +57,6 @@
 
 <div id="loading-message" class="flex flex-col items-center justify-center mt-[50px] hidden">
     <div class="flex items-center">
-        <!-- Spinner Icon -->
         <svg class="animate-spin h-5 w-5 text-gray-700 dark:text-gray-300 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -71,7 +72,6 @@
 document.getElementById('analysis-form').addEventListener('submit', function(event) {
     document.getElementById('analysis-form').classList.add('hidden');
     document.getElementById('loading-message').classList.remove('hidden');
-    this.submit();
 });
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -79,8 +79,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     alerts.forEach((alert, index) => {
         setTimeout(() => {
             alert.style.display = 'none';
-        }, 5000); // 5000 milliseconds = 5 seconds
+        }, 5000);
     });
 });
 </script>
+
 {% endblock %}
