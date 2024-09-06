@@ -8,140 +8,229 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Account Settings</title>
     <style>
-        /* Base Styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212; /* Dark background */
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            display: flex;
-            justify-content: center; /* Center the container horizontally */
-            padding: 20px;
-            flex-wrap: wrap; /* Added to allow wrapping on small screens */
-            max-width: 1200px; /* Set a maximum width for the container */
-            margin: 0 auto; /* Center the container within the viewport */
-        }
-
-        .left-column,
-        .right-column {
-            flex: 1;
-            margin: 10px;
-            padding: 20px;
-            border-radius: 8px;
-            color: #E2E8F0; /* Text color */
-            min-width: 300px; /* Ensure the columns have a reasonable minimum width */
-        }
-
-        .text-xl {
-            font-size: 1.25rem;
-        }
-
-        .text-2xl {
-            font-size: 1.5rem;
-        }
-
-        .rounded-lg {
-            border-radius: 0.5rem;
-        }
-/* Light Mode */
-body.light button.text-red-600 {
-    color: #e3342f; /* Ensure the red color in light mode */
+       /* Base Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Dark background */
+    margin: 0;
+    padding: 0;
 }
-        /* Button Styles */
-        button {
-            background-color: transparent; /* Transparent background */
-            color: white; /* Text color */
-            border: none; /* Remove all borders */
-            border-radius: 8px; /* Rounded corners */
-            padding: 10px 20px; /* Button padding */
-            cursor: pointer; /* Pointer cursor */
-            box-shadow: none; /* Remove any box-shadow */
-            outline: none; /* Remove outline */
-        }
 
-        /* Focus Styles */
-        form input[type="text"]:focus,
-        form input[type="email"]:focus,
-        form input[type="password"]:focus {
-            outline: none; /* Remove the default focus outline */
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow to the focused input */
-            border-color: #007bff; /* Change border color to match the shadow */
-        }
+.container {
+    display: flex;
+    justify-content: center; /* Center the container horizontally */
+    padding: 20px;
+    flex-wrap: wrap; /* Added to allow wrapping on small screens */
+    max-width: 1200px; /* Set a maximum width for the container */
+    margin: 0 auto; /* Center the container within the viewport */
+}
 
-        /* Light Mode */
-        body.light {
-            background-color: #f8f9fa; /* Light background */
-        }
+.left-column,
+.right-column {
+    flex: 1;
+    margin: 10px;
+    padding: 20px;
+    border-radius: 8px;
+    color: #E2E8F0; /* Text color */
+    min-width: 300px; /* Ensure the columns have a reasonable minimum width */
+}
 
-        body.light .left-column,
-        body.light .right-column {
-            color: #212529; /* Dark text color for light mode */
-        }
+.text-xl {
+    font-size: 1.25rem;
+}
 
-        body.light button {
-            color: #212529; /* Dark text color for light mode */
-        }
+.text-2xl {
+    font-size: 1.5rem;
+}
 
-        body.light form input[type="text"]:focus,
-        body.light form input[type="email"]:focus,
-        body.light form input[type="password"]:focus {
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow in light mode */
-            border-color: #007bff; /* Change border color to match the shadow */
-        }
+.rounded-lg {
+    border-radius: 0.5rem;
+}
 
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                padding: 10px;
-            }
+/* Button Styles */
+button {
+    background-color: transparent; /* Transparent background */
+    color: white; /* Text color */
+    border: none; /* Remove all borders */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px 20px; /* Button padding */
+    cursor: pointer; /* Pointer cursor */
+    box-shadow: none; /* Remove any box-shadow */
+    outline: none; /* Remove outline */
+}
 
-            .left-column,
-            .right-column {
-                width: 100%;
-                margin: 5px 0;
-                padding: 15px;
-            }
+/* Hover Effects */
+#username-button:hover button,
+#email-button:hover button,
+#password-button:hover button,
+#delete-button:hover button {
+    color: black; /* Change text color to black on hover */
+}
 
-            .text-xl {
-                font-size: 1rem; /* Adjusted for mobile */
-            }
+/* Dark Mode Specific */
+body.dark #username-button button,
+body.dark #email-button button,
+body.dark #password-button button,
+body.dark #delete-button button {
+    color: white; /* Ensure text color is white in dark mode */
+}
 
-            .text-2xl {
-                font-size: 1.25rem; /* Adjusted for mobile */
-            }
+body.dark #username-button:hover button,
+body.dark #email-button:hover button,
+body.dark #password-button:hover button,
+body.dark #delete-button:hover button {
+    color: black; /* Change text color to black on hover in dark mode */
+}
 
-            .alert {
-                width: 95%; /* Adjust alert width for mobile */
-                margin: 10px auto;
-                padding: 10px;
-                border-radius: 4px;
-                text-align: center;
-            }
-        }
+/* Icon Styles */
+i.ri-arrow-right-line {
+    color: white; /* Default icon color */
+}
 
-        /* Restore original button and input colors for PC */
-        @media (min-width: 769px) {
-            form input[type="text"],
-            form input[type="email"],
-            form input[type="password"] {
-                background-color: #2D3748; /* Input background for PC */
-                border: 1px solid #E2E8F0; /* Border to match the original design */
-            }
+/* Light Mode Icon Styles */
+body.light i.ri-arrow-right-line {
+    color: black; /* Default icon color for light mode */
+}
 
-            body.light form input[type="text"],
-            body.light form input[type="email"],
-            body.light form input[type="password"] {
-                background-color: #ffffff; /* Light mode input background */
-                border: 1px solid #ced4da; /* Border color for light mode */
-                color: #212529; /* Text color for light mode */
-            }
-        }
+/* Hover Icon Effects */
+#username-button:hover i.ri-arrow-right-line,
+#email-button:hover i.ri-arrow-right-line,
+#password-button:hover i.ri-arrow-right-line,
+#delete-button:hover i.ri-arrow-right-line {
+    color: black; /* Change icon color to black on hover */
+}
+
+/* Red Button and Icon for Delete Account */
+#delete-button {
+    color: red; /* Default text color */
+}
+
+#delete-button button {
+    color: red; /* Ensure button text color remains red */
+    background-color: transparent; /* Transparent background to avoid interfering with text color */
+    border: none; /* Ensure button has no border */
+}
+
+#delete-button i.ri-arrow-right-line {
+    color: red; /* Default icon color */
+}
+
+/* Ensure Delete Account Button and Icon Stay Red */
+#delete-button:hover button {
+    color: red; /* Keep text color red on hover */
+}
+
+#delete-button:hover i.ri-arrow-right-line {
+    color: red; /* Keep icon color red on hover */
+}
+
+/* Input Field Styles */
+input {
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid;
+    background-color: #121212; /* Dark background for inputs in dark mode */
+    color: #E2E8F0; /* Text color for inputs in dark mode */
+}
+
+/* Light Mode Input Field Styles */
+body.light input {
+    background-color: #f8f9fa; /* Light background for inputs in light mode */
+    color: #212529; /* Text color for inputs in light mode */
+    border-color: #e2e8f0; /* Border color for inputs in light mode */
+}
+
+/* Focus Styles */
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus {
+    outline: none; /* Remove the default focus outline */
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow to the focused input */
+    border-color: #007bff; /* Change border color to match the shadow */
+}
+
+/* Light Mode */
+body.light {
+    background-color: #f8f9fa; /* Light background */
+}
+
+body.light .left-column,
+body.light .right-column {
+    color: #212529; /* Dark text color for light mode */
+}
+
+body.light button {
+    color: #212529; /* Dark text color for light mode */
+}
+
+body.light form input[type="text"]:focus,
+body.light form input[type="email"]:focus,
+body.light form input[type="password"]:focus {
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow in light mode */
+    border-color: #007bff; /* Change border color to match the shadow */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .left-column,
+    .right-column {
+        width: 100%;
+        margin: 5px 0;
+        padding: 15px;
+    }
+
+    .text-xl {
+        font-size: 1rem; /* Adjusted for mobile */
+    }
+
+    .text-2xl {
+        font-size: 1.25rem; /* Adjusted for mobile */
+    }
+
+    .alert {
+        width: 95%; /* Adjust alert width for mobile */
+        margin: 10px auto;
+        padding: 10px;
+        border-radius: 4px;
+        text-align: center;
+    }
+}
+
+/* Light Mode Button Hover */
+body.light #username-button:hover,
+body.light #email-button:hover,
+body.light #password-button:hover,
+body.light #delete-button:hover {
+    background-color: #e2e8f0; /* Hover background color for light mode */
+}
+/* Right Column Button Styles */
+.right-column .bg-blue-600 button {
+    color: white; /* Ensure text color is white */
+    background-color: #1d4ed8; /* Consistent blue background for the right column buttons */
+}
+
+.right-column .bg-blue-600 button:hover {
+    color: white; /* Ensure text color remains white on hover */
+}
+
+.right-column .bg-red-600 button {
+    color: white; /* Ensure text color is white */
+    background-color: #dc2626; /* Consistent red background for delete button */
+}
+
+.right-column .bg-red-600 button:hover {
+    color: white; /* Ensure text color remains white on hover */
+}
 
     </style>
+    
+
+    
 
 </head>
 <body class="dark:bg-[#121212]">
@@ -192,12 +281,16 @@ body.light button.text-red-600 {
                         <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
                 </div>
-                <div id="delete-button" class="relative text-red-600 hover:bg-slate-700 dark:hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleDeleteAccount()">
+                <div id="delete-button" class="relative rounded-md cursor-pointer hover:bg-slate-700 dark:hover:bg-slate-300" onclick="toggleDeleteAccount()">
                     <div class="ml-4">
-                        <button class="pt-3 pb-3 text-red-600">Delete Account</button>
-                        <i class="ri-arrow-right-line absolute right-3 top-3"></i>
+                        <button class="pt-3 pb-3 text-red-600 bg-transparent border-none">
+                            Delete Account
+                        </button>
+                        <i class="ri-arrow-right-line absolute right-3 top-3 text-red-600"></i>
                     </div>
                 </div>
+                
+                
                 <div class="mt-4 text-center text-secondary">
                     Your use of our services is also subject to our <a href="/privacy-policy" class="text-blue-400 hover:underline">Privacy Policy </a> and <a href="/user-agreement" class="text-blue-400 hover:underline">User Agreement</a>.
                 </div>
@@ -237,12 +330,13 @@ body.light button.text-red-600 {
                                        value="{{ username }}">
                             </div>
                         </div>
-                        <!-- Save Button -->
-                        <div class="w-full mt-6 flex justify-end">
-                            <div class="bg-blue-600 text-center text-white rounded">
-                                <button type="submit" class="px-4 py-2 rounded-lg">Save</button>
-                            </div>
+                    <!-- Save Button -->
+                    <div class="w-full mt-6 flex justify-end">
+                        <div class="bg-blue-600 text-center rounded">
+                            <button type="submit" class="px-4 py-2 rounded-lg">Save</button>
                         </div>
+                    </div>
+
                     </form>
                 </div>
 
@@ -400,19 +494,19 @@ body.light button.text-red-600 {
             var togglePasswordIcon = document.getElementById("toggle-password");
             var toggleNewPasswordIcon = document.getElementById("toggle-newpassword");
             var toggleConfirmPasswordIcon = document.getElementById("toggle-confirmpassword");
-
+    
             var deleteAccountPasswordField = document.getElementById("deleteaccountpassword");
             var confirmDeleteAccountPasswordField = document.getElementById("confirmdeleteaccountpassword");
             var toggleDeleteAccountPassword = document.getElementById("toggle-deleteaccountpassword");
             var toggleConfirmDeleteAccountPassword = document.getElementById("toggle-confirmdeleteaccountpassword");
-
+    
             if (passwordField.type === "password") {
                 passwordField.type = "text";
                 newPasswordField.type = "text";
                 confirmPasswordField.type = "text";
                 deleteAccountPasswordField.type = "text";
                 confirmDeleteAccountPasswordField.type = "text";
-
+    
                 togglePasswordIcon.classList.remove("fa-eye");
                 togglePasswordIcon.classList.add("fa-eye-slash");
                 toggleNewPasswordIcon.classList.remove("fa-eye");
@@ -441,7 +535,7 @@ body.light button.text-red-600 {
                 toggleConfirmDeleteAccountPassword.classList.add("fa-eye");
             }
         }
-
+    
         function toggleUsernameSettings() {
             var description = document.getElementById("description");
             var usernameChange = document.getElementById("username-change");
@@ -455,7 +549,7 @@ body.light button.text-red-600 {
             passwordChange.classList.add("hidden");
             deleteAccount.classList.add("hidden");
         }
-
+    
         function toggleEmailSettings() {
             var description = document.getElementById("description");
             var usernameChange = document.getElementById("username-change");
@@ -469,7 +563,7 @@ body.light button.text-red-600 {
             passwordChange.classList.add("hidden");
             deleteAccount.classList.add("hidden");
         }
-
+    
         function togglePasswordSettings() {
             var description = document.getElementById("description");
             var usernameChange = document.getElementById("username-change");
@@ -483,7 +577,7 @@ body.light button.text-red-600 {
             passwordChange.classList.remove("hidden");
             deleteAccount.classList.add("hidden");
         }
-
+    
         function toggleDeleteAccount() {
             var description = document.getElementById("description");
             var usernameChange = document.getElementById("username-change");
@@ -497,7 +591,7 @@ body.light button.text-red-600 {
             passwordChange.classList.add("hidden");
             deleteAccount.classList.remove("hidden");
         }
-
+    
         document.addEventListener('DOMContentLoaded', (event) => {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach((alert, index) => {
@@ -505,7 +599,7 @@ body.light button.text-red-600 {
                     alert.style.display = 'none';
                 }, 5000); // 5000 milliseconds = 5 seconds
             });
-
+    
             // Check for user's preference on initial load
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
                 document.body.classList.add('light');
@@ -514,7 +608,25 @@ body.light button.text-red-600 {
                     el.classList.add('light');
                 });
             }
+    
+            // Listen for changes in the color scheme
+            window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+                if (e.matches) {
+                    document.body.classList.add('light');
+                    var elements = document.querySelectorAll('.left-column, .right-column, button');
+                    elements.forEach(function(el) {
+                        el.classList.add('light');
+                    });
+                } else {
+                    document.body.classList.remove('light');
+                    var elements = document.querySelectorAll('.left-column, .right-column, button');
+                    elements.forEach(function(el) {
+                        el.classList.remove('light');
+                    });
+                }
+            });
         });
     </script>
+    
 </body>
 </html>

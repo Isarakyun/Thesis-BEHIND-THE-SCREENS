@@ -57,17 +57,21 @@
         }
 
         .ml-64 {
-    margin-left: 16rem; /* 64px or 16rem is the width of the sidebar */
-}
+            margin-left: 16rem; /* 64px or 16rem is the width of the sidebar */
+        }
 
-.ml-0 {
-    margin-left: 0;
-}
+        .ml-0 {
+            margin-left: 0;
+        }
 
-.main-content {
-    transition: margin-left 0.3s ease; /* Add a smooth transition */
-}
+        /* No transition class */
+        .no-transition {
+            transition: none !important;
+        }
 
+        .main-content {
+            transition: margin-left 0.3s ease; /* Add a smooth transition */
+        }
 
         /* Mobile adjustments */
         @media (max-width: 640px) {
@@ -80,10 +84,18 @@
                 margin-top: 0.5rem;
             }
         }
+
         /* Ensure heading text is always white */
-#deleteModal h2 {
-    color: #ffffff; /* White text color */
-}
+        #deleteModal h2 {
+            color: #ffffff; /* White text color */
+        }
+
+        /* Ensure dropdown menu appears above other content */
+        #dropdownMenu {
+            z-index: 60; /* Ensure this is higher than other elements */
+            position: absolute;
+        }
+
 
     </style>
 </head>
@@ -91,15 +103,19 @@
     {% if user is defined %}
         {% include 'sidebar.html' %}
     {% endif %}
-    <main id="content" class="transition-all duration-300 ease-in-out bg-slate-100 dark:bg-[#181818] min-h-screen ml-0 md:ml-64">
+    <main id="content" class="main-content bg-slate-100 dark:bg-[#181818] min-h-screen ml-0 md:ml-64">
         {% block content %}{% endblock %}
     </main>
 
     <script>
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
     const menuToggleButton = document.getElementById('menuToggleButton');
     const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');
+
+    // Add the no-transition class to disable initial transition
+    sidebar.classList.add('no-transition');
+    content.classList.add('no-transition');
 
     const showSidebarOnDesktop = () => {
         const isMobile = window.matchMedia("(max-width: 767px)").matches;
@@ -129,22 +145,46 @@ document.addEventListener('DOMContentLoaded', (event) => {
             content.classList.add('ml-0');
         }
     });
+
+    // Remove the no-transition class after the page has fully loaded
+    setTimeout(() => {
+        sidebar.classList.remove('no-transition');
+        content.classList.remove('no-transition');
+    }, 300); // Wait 300ms to match your existing animation duration
 });
 
-    </script>
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdownButton = document.getElementById('dropdownButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
 
-    <script>
-        document.getElementById('dropdownButton').addEventListener('click', function() {
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            dropdownMenu.classList.toggle('hidden');
-        });
+    dropdownButton.addEventListener('click', function() {
+        dropdownMenu.classList.toggle('hidden');
+        
+        const buttonRect = dropdownButton.getBoundingClientRect();
+        const menuRect = dropdownMenu.getBoundingClientRect();
+        
+        // Ensure the dropdown menu stays within the viewport
+        if (window.innerHeight - buttonRect.bottom < menuRect.height) {
+            dropdownMenu.style.top = `-${menuRect.height + 4}px`; // Move it above the button
+        } else {
+            dropdownMenu.style.top = '100%'; // Default position below the button
+        }
 
-        window.addEventListener('click', function(e) {
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
+        // Optional: Adjust position horizontally if needed
+        if (buttonRect.left + menuRect.width > window.innerWidth) {
+            dropdownMenu.style.left = `-${menuRect.width}px`; // Move it left if it goes out of bounds
+        } else {
+            dropdownMenu.style.left = '0'; // Default position
+        }
+    });
+
+    window.addEventListener('click', function(e) {
+        if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+});
+
     </script>
 </body>
 </html>
