@@ -208,6 +208,24 @@ body.light #password-button:hover,
 body.light #delete-button:hover {
     background-color: #e2e8f0; /* Hover background color for light mode */
 }
+/* Right Column Button Styles */
+.right-column .bg-blue-600 button {
+    color: white; /* Ensure text color is white */
+    background-color: #1d4ed8; /* Consistent blue background for the right column buttons */
+}
+
+.right-column .bg-blue-600 button:hover {
+    color: white; /* Ensure text color remains white on hover */
+}
+
+.right-column .bg-red-600 button {
+    color: white; /* Ensure text color is white */
+    background-color: #dc2626; /* Consistent red background for delete button */
+}
+
+.right-column .bg-red-600 button:hover {
+    color: white; /* Ensure text color remains white on hover */
+}
 
     </style>
     
@@ -312,12 +330,13 @@ body.light #delete-button:hover {
                                        value="{{ username }}">
                             </div>
                         </div>
-                        <!-- Save Button -->
-                        <div class="w-full mt-6 flex justify-end">
-                            <div class="bg-blue-600 text-center text-white rounded">
-                                <button type="submit" class="px-4 py-2 rounded-lg">Save</button>
-                            </div>
+                    <!-- Save Button -->
+                    <div class="w-full mt-6 flex justify-end">
+                        <div class="bg-blue-600 text-center rounded">
+                            <button type="submit" class="px-4 py-2 rounded-lg">Save</button>
                         </div>
+                    </div>
+
                     </form>
                 </div>
 
