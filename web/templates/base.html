@@ -93,7 +93,10 @@
         /* Ensure dropdown menu appears above other content */
         #dropdownMenu {
             z-index: 60; /* Ensure this is higher than other elements */
+            position: absolute;
         }
+
+
     </style>
 </head>
 <body>
@@ -157,15 +160,21 @@ document.addEventListener('DOMContentLoaded', () => {
     dropdownButton.addEventListener('click', function() {
         dropdownMenu.classList.toggle('hidden');
         
-        // Adjust dropdown position if necessary
         const buttonRect = dropdownButton.getBoundingClientRect();
         const menuRect = dropdownMenu.getBoundingClientRect();
         
         // Ensure the dropdown menu stays within the viewport
-        if (buttonRect.bottom + menuRect.height > window.innerHeight) {
+        if (window.innerHeight - buttonRect.bottom < menuRect.height) {
             dropdownMenu.style.top = `-${menuRect.height + 4}px`; // Move it above the button
         } else {
             dropdownMenu.style.top = '100%'; // Default position below the button
+        }
+
+        // Optional: Adjust position horizontally if needed
+        if (buttonRect.left + menuRect.width > window.innerWidth) {
+            dropdownMenu.style.left = `-${menuRect.width}px`; // Move it left if it goes out of bounds
+        } else {
+            dropdownMenu.style.left = '0'; // Default position
         }
     });
 
@@ -175,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
     </script>
 </body>
 </html>
