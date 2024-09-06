@@ -494,19 +494,19 @@ body.light #delete-button:hover {
             var togglePasswordIcon = document.getElementById("toggle-password");
             var toggleNewPasswordIcon = document.getElementById("toggle-newpassword");
             var toggleConfirmPasswordIcon = document.getElementById("toggle-confirmpassword");
-
+    
             var deleteAccountPasswordField = document.getElementById("deleteaccountpassword");
             var confirmDeleteAccountPasswordField = document.getElementById("confirmdeleteaccountpassword");
             var toggleDeleteAccountPassword = document.getElementById("toggle-deleteaccountpassword");
             var toggleConfirmDeleteAccountPassword = document.getElementById("toggle-confirmdeleteaccountpassword");
-
+    
             if (passwordField.type === "password") {
                 passwordField.type = "text";
                 newPasswordField.type = "text";
                 confirmPasswordField.type = "text";
                 deleteAccountPasswordField.type = "text";
                 confirmDeleteAccountPasswordField.type = "text";
-
+    
                 togglePasswordIcon.classList.remove("fa-eye");
                 togglePasswordIcon.classList.add("fa-eye-slash");
                 toggleNewPasswordIcon.classList.remove("fa-eye");
@@ -535,7 +535,7 @@ body.light #delete-button:hover {
                 toggleConfirmDeleteAccountPassword.classList.add("fa-eye");
             }
         }
-
+    
         function toggleUsernameSettings() {
             var description = document.getElementById("description");
             var usernameChange = document.getElementById("username-change");
@@ -549,7 +549,7 @@ body.light #delete-button:hover {
             passwordChange.classList.add("hidden");
             deleteAccount.classList.add("hidden");
         }
-
+    
         function toggleEmailSettings() {
             var description = document.getElementById("description");
             var usernameChange = document.getElementById("username-change");
@@ -563,7 +563,7 @@ body.light #delete-button:hover {
             passwordChange.classList.add("hidden");
             deleteAccount.classList.add("hidden");
         }
-
+    
         function togglePasswordSettings() {
             var description = document.getElementById("description");
             var usernameChange = document.getElementById("username-change");
@@ -577,7 +577,7 @@ body.light #delete-button:hover {
             passwordChange.classList.remove("hidden");
             deleteAccount.classList.add("hidden");
         }
-
+    
         function toggleDeleteAccount() {
             var description = document.getElementById("description");
             var usernameChange = document.getElementById("username-change");
@@ -591,7 +591,7 @@ body.light #delete-button:hover {
             passwordChange.classList.add("hidden");
             deleteAccount.classList.remove("hidden");
         }
-
+    
         document.addEventListener('DOMContentLoaded', (event) => {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach((alert, index) => {
@@ -599,7 +599,7 @@ body.light #delete-button:hover {
                     alert.style.display = 'none';
                 }, 5000); // 5000 milliseconds = 5 seconds
             });
-
+    
             // Check for user's preference on initial load
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
                 document.body.classList.add('light');
@@ -608,7 +608,25 @@ body.light #delete-button:hover {
                     el.classList.add('light');
                 });
             }
+    
+            // Listen for changes in the color scheme
+            window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+                if (e.matches) {
+                    document.body.classList.add('light');
+                    var elements = document.querySelectorAll('.left-column, .right-column, button');
+                    elements.forEach(function(el) {
+                        el.classList.add('light');
+                    });
+                } else {
+                    document.body.classList.remove('light');
+                    var elements = document.querySelectorAll('.left-column, .right-column, button');
+                    elements.forEach(function(el) {
+                        el.classList.remove('light');
+                    });
+                }
+            });
         });
     </script>
+    
 </body>
 </html>
