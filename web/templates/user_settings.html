@@ -70,7 +70,8 @@
         /* Dark Mode Specific */
         body.dark #username-button button,
         body.dark #email-button button,
-        body.dark #password-button button {
+        body.dark #password-button button,
+        body.dark #delete-button button {
             color: white; /* Ensure text color is white in dark mode */
         }
     
@@ -86,6 +87,11 @@
             color: white; /* Default icon color */
         }
     
+        /* Light Mode Icon Styles */
+        body.light i.ri-arrow-right-line {
+            color: black; /* Default icon color for light mode */
+        }
+    
         /* Hover Icon Effects */
         #username-button:hover i.ri-arrow-right-line,
         #email-button:hover i.ri-arrow-right-line,
@@ -97,10 +103,6 @@
         /* Red Button and Icon for Delete Account */
         #delete-button {
             color: red; /* Default text color */
-        }
-    
-        #delete-button button {
-            color: red; /* Ensure text color is red */
         }
     
         #delete-button i.ri-arrow-right-line {
@@ -137,14 +139,6 @@
     
         body.light button {
             color: #212529; /* Dark text color for light mode */
-        }
-    
-        body.light #delete-button button {
-            color: #e3342f; /* Red text color for delete button in light mode */
-        }
-    
-        body.light #delete-button i.ri-arrow-right-line {
-            color: #e3342f; /* Red icon color for delete button in light mode */
         }
     
         body.light form input[type="text"]:focus,
@@ -193,6 +187,7 @@
             background-color: #e2e8f0; /* Hover background color for light mode */
         }
     </style>
+    
     
 
 </head>
