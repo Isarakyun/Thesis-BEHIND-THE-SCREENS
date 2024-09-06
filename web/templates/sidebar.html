@@ -1,4 +1,4 @@
-<div class="fixed left-0 top-0 w-64 h-screen bg-slate-200 dark:bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0" id="sidebar">
+<div class="fixed left-0 top-0 w-64 h-screen bg-slate-200 dark:bg-[#121212] p-4 z-50 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 flex flex-col" id="sidebar">
     <div>
         <a class="flex items-center pb-4 border-b border-gray-900 dark:border-white">
             <span class="text-red-600 text-sm font-bold dark:text-white ml-2">Previous Sessions</span>
@@ -12,9 +12,9 @@
 
     <!-- Side Nav -->
     <div class="flex-grow overflow-y-auto custom-scrollbar">
-        <ul class="mt-4">
+        <ul class="mt-4 space-y-4">
             {% for youtube_url in youtube_urls %}
-            <li class="mb-5 group">
+            <li class="group">
                 <div class="text-red-600 dark:text-gray-400 text-xs mb-2 ml-4">{{ youtube_url.created_at|format_date }}</div>
                 <div class="flex items-center justify-between py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md">
                     <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="flex-1 text-sm video-title truncate">
@@ -29,43 +29,43 @@
         </ul>
     </div>
 
-  <!-- Account -->
-  <div class="absolute bottom-3 w-full">
-    <div class="flex flex-col pt-2 juice:py-2 border-x-gray-800 dark:border-white/20 ml-2">
-        <span class="flex w-full flex-row flex-wrap-reverse justify-between">
-            <div class="flex items-center gap-2">
-                <div class="flex flex-col text-gray-900 dark:text-white">
-                    <div class="flex items-center">
-                        <a>{{ user.username }}</a>
-                        {% if user.confirmed_email == False %}
-                        <i class="fas fa-exclamation-circle text-red-600 ml-2" title="Unverified Account"></i>
-                        {% endif %}
-                    </div>
+<!-- Account section -->
+<div class="pt-2 juice:py-2 border-t border-gray-800 dark:border-white/20 mt-auto ml-2">
+    <span class="flex w-full flex-row justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="flex flex-col text-gray-900 dark:text-white">
+                <div class="flex items-center">
+                    <a>{{ user.username }}</a>
+                    {% if user.confirmed_email == False %}
+                    <i class="fas fa-exclamation-circle text-red-600 ml-2" title="Unverified Account"></i>
+                    {% endif %}
                 </div>
-
-                <div class="absolute right-0 top-0 mt-2 mr-8 text-left">
-                    <div>
-                        <button id="dropdownButton" class="inline-flex justify-center">
-                            <i class="ri-more-fill text-black dark:text-white"></i>
-                        </button>
-                    </div>
-                    
-                    <div id="dropdownMenu" class="bottom-10 absolute left-3 mt-2 w-56 rounded-md shadow-lg dark:bg-[#1c1b1b] bg-white ring-1 dark:ring-white ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
-                        <div class="py-0" role="none">
-                            <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Account settings</a>
-                            <a href="/privacy-policy" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Privacy Policy</a>
-                            <a href="/user-agreement" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">User Agreement</a>
-                            <a href="/logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Log Out</a>
-                        </div>
-                    </div>
-                </div> 
             </div>
-        </span>
-    </div>
+        </div>
+
+        <!-- Three dots (dropdown button) moved to the right -->
+        <div class="ml-auto relative">
+            <button id="dropdownButton" class="inline-flex justify-center">
+                <i class="ri-more-fill text-black dark:text-white"></i>
+            </button>
+
+            <!-- Dropdown menu now appears above the button -->
+            <div id="dropdownMenu" class="absolute bottom-full left-0 mb-2 w-56 rounded-md shadow-lg dark:bg-[#1c1b1b] bg-white ring-1 dark:ring-white ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
+                <div class="py-0" role="none">
+                    <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Account settings</a>
+                    <a href="/privacy-policy" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Privacy Policy</a>
+                    <a href="/user-agreement" class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">User Agreement</a>
+                    <a href="/logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-[#121212]" role="menuitem">Log Out</a>
+                </div>
+            </div>
+        </div> 
+    </span>
+</div>
+
 </div>
 
 
-</div>
+
 
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-slate-400 dark:bg-slate-800 bg-opacity-90 hidden z-50">

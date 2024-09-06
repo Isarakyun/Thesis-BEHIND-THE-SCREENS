@@ -84,6 +84,13 @@
 #deleteModal h2 {
     color: #ffffff; /* White text color */
 }
+.no-animation {
+    transition: none !important; /* Disable transition initially */
+}
+/* Ensure dropdown menu appears above other content */
+#dropdownMenu {
+    z-index: 60; /* Ensure this is higher than other elements */
+}
 
     </style>
 </head>
@@ -134,17 +141,32 @@ document.addEventListener('DOMContentLoaded', (event) => {
     </script>
 
     <script>
-        document.getElementById('dropdownButton').addEventListener('click', function() {
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            dropdownMenu.classList.toggle('hidden');
-        });
+document.addEventListener('DOMContentLoaded', (event) => {
+    const dropdownButton = document.getElementById('dropdownButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
 
-        window.addEventListener('click', function(e) {
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
+    dropdownButton.addEventListener('click', function() {
+        dropdownMenu.classList.toggle('hidden');
+        
+        // Adjust dropdown position if necessary
+        const buttonRect = dropdownButton.getBoundingClientRect();
+        const menuRect = dropdownMenu.getBoundingClientRect();
+        
+        // Ensure the dropdown menu stays within the viewport
+        if (buttonRect.bottom + menuRect.height > window.innerHeight) {
+            dropdownMenu.style.top = `-${menuRect.height + 4}px`; // Move it above the button
+        } else {
+            dropdownMenu.style.top = '100%'; // Default position below the button
+        }
+    });
+
+    window.addEventListener('click', function(e) {
+        if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+});
+
     </script>
 </body>
 </html>
