@@ -6,7 +6,7 @@ from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from .models import Users, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, WordCloudImage, GetUrl, HighScoreComments
 # fron .models import SummarizedComments
-from datetime import datetime
+from datetime import datetime, timedelta
 from . import db
 import re
 import os
@@ -269,6 +269,24 @@ def delete_user(user_id):
         return jsonify({'error': str(e)}), 500
 
     # return redirect(url_for('admin.users'))
+
+@admin_bp.route('/delete-user-logs', methods=['POST'])
+@admin_required
+def delete_user_logs():
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    db.session.query(UserLog).filter(UserLog.timestamp < thirty_days_ago).delete()
+    db.session.commit()
+    flash('User logs deleted successfully!', 'success')
+    return redirect(url_for('admin.user_audit'))
+
+@admin_bp.route('/delete-admin-logs', methods=['POST'])
+@admin_required
+def delete_admin_logs():
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    db.session.query(AdminLog).filter(AdminLog.timestamp < thirty_days_ago).delete()
+    db.session.commit()
+    flash('Admin logs deleted successfully!', 'success')
+    return redirect(url_for('admin.admin_audit'))
 
 @admin_bp.route('/logout')
 @admin_required

@@ -9,11 +9,19 @@
         <a href="{{ url_for('admin.user_audit') }}" class="text-m text-black dark:text-white ml-4">User Audit Trail</a>
     </div>  
 </div>
-<div class="pt-8">
-    <div class="py-4 px-8">
+<!-- DELETE USER LOGS 30 DAYS AGO -->
+<div class="pt-8 justify-end flex">
+  <div class="py-4 px-8">
+    <button onclick="showDeleteUserLogsModal()" class="mt-4 bg-red-600 px-4 py-2 rounded-md text-white">Delete User Logs (Last 30 Days)</button>
+  </div>
+</div>
+
+<!-- TABLE FOR USER LOGS -->
+<div>
+    <div class="py-2 px-8">
         <div class="overflow-x-auto rounded-3xl">
           {% if audit_trails %}
-            <table class="min-w-full text-black dark:text-white rounded-3xl mt-4" id="audit-trail">
+            <table class="min-w-full text-black dark:text-white rounded-3xl" id="audit-trail">
                 <thead>
                     <tr class="w-full bg-slate-300 dark:bg-gray-700 rounded-3xl">
                         <th class="py-3 px-6 text-center rounded-tl-3xl">User ID</th>
@@ -40,6 +48,56 @@
         <div id="all-pagination-controls" class="flex justify-center mt-4 mb-4"></div>
     </div>
 </div>
+
+<!-- MODAL FOR DELETE USER LOGS -->
+<div id="deleteUserLogsModal" class="fixed inset-0 flex items-center justify-center bg-slate-600 bg-opacity-80 hidden z-50">
+  <div class="bg-slate-200 dark:bg-[#121212] p-6 rounded-lg shadow-lg max-w-sm w-full">
+      <h2 class="text-lg font-semibold text-black dark:text-white mb-2">Are you sure you want to delete all the user logs older than 30 days?</h2>
+      <p class="text-sm text-red-500 mb-4">You can't redo this action.</p>
+      <div class="flex justify-end">
+          <button type="button" onclick="hideDeleteUserLogsModal()" id="cancelDeleteUserLogsButton" class="mr-4 bg-slate-300 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded-md hover:bg-slate-400 dark:hover:bg-gray-600">
+              Cancel
+          </button>
+          <form action="{{ url_for('admin.delete_user_logs') }}" method="POST">
+              <button id="confirmDeleteUserLogsButton" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                  Delete
+              </button>
+          </form>
+      </div>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <div class="fixed bottom-4 right-4 space-y-4">
+        {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="alert bg-red-500 text-black p-3 text-sm rounded shadow-lg">
+            {{ message }}
+            <button type="button" class="ml-4 float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% else %}
+        <div class="alert bg-blue-600 text-white p-3 text-sm rounded shadow-lg">
+            {{ message }}
+            <button type="button" class="ml-4 float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% endwith %}
+
+<script>
+  function showDeleteUserLogsModal() {
+      const modal = document.getElementById('deleteUserLogsModal');
+      modal.classList.remove('hidden');
+  }
+
+  function hideDeleteUserLogsModal() {
+      const modal = document.getElementById('deleteUserLogsModal');
+      modal.classList.add('hidden');
+  }
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

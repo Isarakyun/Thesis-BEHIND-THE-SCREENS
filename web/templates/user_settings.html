@@ -9,229 +9,183 @@
     <title>Account Settings</title>
     <style>
        /* Base Styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #121212; /* Dark background */
-    margin: 0;
-    padding: 0;
-}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212; /* Dark background */
+            margin: 0;
+            padding: 0;
+        }
 
-.container {
-    display: flex;
-    justify-content: center; /* Center the container horizontally */
-    padding: 20px;
-    flex-wrap: wrap; /* Added to allow wrapping on small screens */
-    max-width: 1200px; /* Set a maximum width for the container */
-    margin: 0 auto; /* Center the container within the viewport */
-}
+        .container {
+            display: flex;
+            justify-content: center; /* Center the container horizontally */
+            padding: 20px;
+            flex-wrap: wrap; /* Added to allow wrapping on small screens */
+            max-width: 1200px; /* Set a maximum width for the container */
+            margin: 0 auto; /* Center the container within the viewport */
+        }
 
-.left-column,
-.right-column {
-    flex: 1;
-    margin: 10px;
-    padding: 20px;
-    border-radius: 8px;
-    color: #E2E8F0; /* Text color */
-    min-width: 300px; /* Ensure the columns have a reasonable minimum width */
-}
+        .left-column,
+        .right-column {
+            flex: 1;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 8px;
+            color: #E2E8F0; /* Text color */
+            min-width: 300px; /* Ensure the columns have a reasonable minimum width */
+        }
 
-.text-xl {
-    font-size: 1.25rem;
-}
+        .text-xl {
+            font-size: 1.25rem;
+        }
 
-.text-2xl {
-    font-size: 1.5rem;
-}
+        .text-2xl {
+            font-size: 1.5rem;
+        }
 
-.rounded-lg {
-    border-radius: 0.5rem;
-}
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
 
-/* Button Styles */
-button {
-    background-color: transparent; /* Transparent background */
-    color: white; /* Text color */
-    border: none; /* Remove all borders */
-    border-radius: 8px; /* Rounded corners */
-    padding: 10px 20px; /* Button padding */
-    cursor: pointer; /* Pointer cursor */
-    box-shadow: none; /* Remove any box-shadow */
-    outline: none; /* Remove outline */
-}
+        /* Button Styles */
+        button {
+            background-color: transparent; /* Transparent background */
+            color: white; /* Text color */
+            border: none; /* Remove all borders */
+            border-radius: 8px; /* Rounded corners */
+            padding: 10px 20px; /* Button padding */
+            cursor: pointer; /* Pointer cursor */
+            box-shadow: none; /* Remove any box-shadow */
+            outline: none; /* Remove outline */
+        }
 
-/* Hover Effects */
-#username-button:hover button,
-#email-button:hover button,
-#password-button:hover button,
-#delete-button:hover button {
-    color: black; /* Change text color to black on hover */
-}
+        /* Red Button and Icon for Delete Account */
+        #delete-button {
+            color: red; /* Default text color */
+        }
 
-/* Dark Mode Specific */
-body.dark #username-button button,
-body.dark #email-button button,
-body.dark #password-button button,
-body.dark #delete-button button {
-    color: white; /* Ensure text color is white in dark mode */
-}
+        #delete-button button {
+            color: red; /* Ensure button text color remains red */
+            background-color: transparent; /* Transparent background to avoid interfering with text color */
+            border: none; /* Ensure button has no border */
+        }
 
-body.dark #username-button:hover button,
-body.dark #email-button:hover button,
-body.dark #password-button:hover button,
-body.dark #delete-button:hover button {
-    color: black; /* Change text color to black on hover in dark mode */
-}
+        #delete-button i.ri-arrow-right-line {
+            color: red; /* Default icon color */
+        }
 
-/* Icon Styles */
-i.ri-arrow-right-line {
-    color: white; /* Default icon color */
-}
+        /* Ensure Delete Account Button and Icon Stay Red */
+        #delete-button:hover button {
+            color: red; /* Keep text color red on hover */
+        }
 
-/* Light Mode Icon Styles */
-body.light i.ri-arrow-right-line {
-    color: black; /* Default icon color for light mode */
-}
+        #delete-button:hover i.ri-arrow-right-line {
+            color: red; /* Keep icon color red on hover */
+        }
 
-/* Hover Icon Effects */
-#username-button:hover i.ri-arrow-right-line,
-#email-button:hover i.ri-arrow-right-line,
-#password-button:hover i.ri-arrow-right-line,
-#delete-button:hover i.ri-arrow-right-line {
-    color: black; /* Change icon color to black on hover */
-}
+        /* Input Field Styles */
+        input {
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid;
+            background-color: #121212; /* Dark background for inputs in dark mode */
+            color: #E2E8F0; /* Text color for inputs in dark mode */
+        }
 
-/* Red Button and Icon for Delete Account */
-#delete-button {
-    color: red; /* Default text color */
-}
+        /* Light Mode Input Field Styles */
+        body.light input {
+            background-color: #f8f9fa; /* Light background for inputs in light mode */
+            color: #212529; /* Text color for inputs in light mode */
+            border-color: #e2e8f0; /* Border color for inputs in light mode */
+        }
 
-#delete-button button {
-    color: red; /* Ensure button text color remains red */
-    background-color: transparent; /* Transparent background to avoid interfering with text color */
-    border: none; /* Ensure button has no border */
-}
+        /* Focus Styles */
+        form input[type="text"]:focus,
+        form input[type="email"]:focus,
+        form input[type="password"]:focus {
+            outline: none; /* Remove the default focus outline */
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow to the focused input */
+            border-color: #007bff; /* Change border color to match the shadow */
+        }
 
-#delete-button i.ri-arrow-right-line {
-    color: red; /* Default icon color */
-}
+        /* Light Mode */
+        body.light {
+            background-color: #f8f9fa; /* Light background */
+        }
 
-/* Ensure Delete Account Button and Icon Stay Red */
-#delete-button:hover button {
-    color: red; /* Keep text color red on hover */
-}
+        body.light .left-column,
+        body.light .right-column {
+            color: #212529; /* Dark text color for light mode */
+        }
 
-#delete-button:hover i.ri-arrow-right-line {
-    color: red; /* Keep icon color red on hover */
-}
+        body.light button {
+            color: #212529; /* Dark text color for light mode */
+        }
 
-/* Input Field Styles */
-input {
-    border-radius: 8px;
-    padding: 10px;
-    border: 1px solid;
-    background-color: #121212; /* Dark background for inputs in dark mode */
-    color: #E2E8F0; /* Text color for inputs in dark mode */
-}
+        body.light form input[type="text"]:focus,
+        body.light form input[type="email"]:focus,
+        body.light form input[type="password"]:focus {
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow in light mode */
+            border-color: #007bff; /* Change border color to match the shadow */
+        }
 
-/* Light Mode Input Field Styles */
-body.light input {
-    background-color: #f8f9fa; /* Light background for inputs in light mode */
-    color: #212529; /* Text color for inputs in light mode */
-    border-color: #e2e8f0; /* Border color for inputs in light mode */
-}
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 10px;
+            }
 
-/* Focus Styles */
-form input[type="text"]:focus,
-form input[type="email"]:focus,
-form input[type="password"]:focus {
-    outline: none; /* Remove the default focus outline */
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow to the focused input */
-    border-color: #007bff; /* Change border color to match the shadow */
-}
+            .left-column,
+            .right-column {
+                width: 100%;
+                margin: 5px 0;
+                padding: 15px;
+            }
 
-/* Light Mode */
-body.light {
-    background-color: #f8f9fa; /* Light background */
-}
+            .text-xl {
+                font-size: 1rem; /* Adjusted for mobile */
+            }
 
-body.light .left-column,
-body.light .right-column {
-    color: #212529; /* Dark text color for light mode */
-}
+            .text-2xl {
+                font-size: 1.25rem; /* Adjusted for mobile */
+            }
 
-body.light button {
-    color: #212529; /* Dark text color for light mode */
-}
+            .alert {
+                width: 95%; /* Adjust alert width for mobile */
+                margin: 10px auto;
+                padding: 10px;
+                border-radius: 4px;
+                text-align: center;
+            }
+        }
 
-body.light form input[type="text"]:focus,
-body.light form input[type="email"]:focus,
-body.light form input[type="password"]:focus {
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Apply a blue shadow in light mode */
-    border-color: #007bff; /* Change border color to match the shadow */
-}
+        /* Light Mode Button Hover */
+        body.light #username-button:hover,
+        body.light #email-button:hover,
+        body.light #password-button:hover,
+        body.light #delete-button:hover {
+            background-color: #e2e8f0; /* Hover background color for light mode */
+        }
+        /* Right Column Button Styles */
+        .right-column .bg-blue-600 button {
+            color: white; /* Ensure text color is white */
+            background-color: #1d4ed8; /* Consistent blue background for the right column buttons */
+        }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        padding: 10px;
-    }
+        .right-column .bg-blue-600 button:hover {
+            color: white; /* Ensure text color remains white on hover */
+        }
 
-    .left-column,
-    .right-column {
-        width: 100%;
-        margin: 5px 0;
-        padding: 15px;
-    }
+        .right-column .bg-red-600 button {
+            color: white; /* Ensure text color is white */
+            background-color: #dc2626; /* Consistent red background for delete button */
+        }
 
-    .text-xl {
-        font-size: 1rem; /* Adjusted for mobile */
-    }
-
-    .text-2xl {
-        font-size: 1.25rem; /* Adjusted for mobile */
-    }
-
-    .alert {
-        width: 95%; /* Adjust alert width for mobile */
-        margin: 10px auto;
-        padding: 10px;
-        border-radius: 4px;
-        text-align: center;
-    }
-}
-
-/* Light Mode Button Hover */
-body.light #username-button:hover,
-body.light #email-button:hover,
-body.light #password-button:hover,
-body.light #delete-button:hover {
-    background-color: #e2e8f0; /* Hover background color for light mode */
-}
-/* Right Column Button Styles */
-.right-column .bg-blue-600 button {
-    color: white; /* Ensure text color is white */
-    background-color: #1d4ed8; /* Consistent blue background for the right column buttons */
-}
-
-.right-column .bg-blue-600 button:hover {
-    color: white; /* Ensure text color remains white on hover */
-}
-
-.right-column .bg-red-600 button {
-    color: white; /* Ensure text color is white */
-    background-color: #dc2626; /* Consistent red background for delete button */
-}
-
-.right-column .bg-red-600 button:hover {
-    color: white; /* Ensure text color remains white on hover */
-}
-
+        .right-column .bg-red-600 button:hover {
+            color: white; /* Ensure text color remains white on hover */
+        }
     </style>
-    
-
-    
-
 </head>
 <body class="dark:bg-[#121212]">
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -257,31 +211,31 @@ body.light #delete-button:hover {
         <div class="left-column">
             <div class="flex">
                 <div class="text-xl">
-                    <a href="/main" class="px-3 py-2 hover:bg-gray-800 dark:hover:bg-slate-300 rounded-full"><i class="ri-arrow-left-line"></i></a>
+                    <a href="/main" class="px-3 py-2 dark:hover:bg-gray-800 hover:bg-slate-300 rounded-full"><i class="ri-arrow-left-line"></i></a>
                 </div>
                 <h1 class="ml-2 text-2xl font-bold mb-6">Account Settings</h1>
             </div>
             <hr>
             <div class="w-full">
-                <div id="username-button" class="mt-2 relative hover:bg-slate-700 dark:hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleUsernameSettings()">
+                <div id="username-button" class="mt-2 relative text-black dark:text-white dark:hover:bg-slate-700 hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleUsernameSettings()">
                     <div class="ml-4">
                         <button class="pt-3 pb-3">Username</button>
                         <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
                 </div>
-                <div id="email-button" class="relative hover:bg-slate-700 dark:hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleEmailSettings()">
+                <div id="email-button" class="relative text-black dark:text-white dark:hover:bg-slate-700 hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleEmailSettings()">
                     <div class="ml-4">
                         <button class="pt-3 pb-3">Email</button>
                         <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
                 </div>
-                <div id="password-button" class="relative hover:bg-slate-700 dark:hover:bg-slate-300 rounded-md cursor-pointer" onclick="togglePasswordSettings()">
+                <div id="password-button" class="relative text-black dark:text-white dark:hover:bg-slate-700 hover:bg-slate-300 rounded-md cursor-pointer" onclick="togglePasswordSettings()">
                     <div class="ml-4">
                         <button class="pt-3 pb-3">Password</button>
                         <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
                 </div>
-                <div id="delete-button" class="relative rounded-md cursor-pointer hover:bg-slate-700 dark:hover:bg-slate-300" onclick="toggleDeleteAccount()">
+                <div id="delete-button" class="relative rounded-md cursor-pointer dark:hover:bg-slate-700 hover:bg-slate-300" onclick="toggleDeleteAccount()">
                     <div class="ml-4">
                         <button class="pt-3 pb-3 text-red-600 bg-transparent border-none">
                             Delete Account
@@ -365,9 +319,6 @@ body.light #delete-button:hover {
                         </div>
                     </form>
                     {% else %}
-                    <div class="mb-6">
-                        <p>You can change your email here. Please enter a valid email.</p>
-                    </div>
                     <form method="POST" action="/change-email">
                         <div class="mb-4 hidden">
                             <label for="old-email" class="block mb-2">Current Email</label>
@@ -402,9 +353,6 @@ body.light #delete-button:hover {
 
                 <!-- Password Change -->
                 <div id="password-change" class="p-4 rounded-lg mb-6 hidden">
-                    <div class="mb-6">
-                        <p>You can change your password here.</p>
-                    </div>
                     <form method="POST" action="/change-password">
                         <div>
                             <label for="password" class="block mb-1">Current Password</label>
