@@ -75,32 +75,55 @@
     </style>
 </head>
 <body class="min-h-screen bg-slate-50 dark:bg-[#121212] dark:text-white">
-  <header class="text-white bg-red-800 sticky top-0 z-20">
-    <section class="max-w-6xl mx-auto p-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold">
-            <a href="/#hero"> 🖥️ BEHIND THE SCREENS </a>
-        </h1>
-        <nav class="hidden sm:flex space-x-8 text-m" aria-label="main">
-            <a href="/#services" class="hover:opacity-90">Services</a>
-            <a href="/#analyze" class="hover:opacity-90">Analyze</a>
-            <a href="/#features" class="hover:opacity-90">Features</a>
-            <a href="/#contact" class="hover:opacity-90">Contact Us</a>
-        </nav>
-        <div class="flex items-center space-x-4">
-            {% if user.is_authenticated %}
-            <a href="/" id="home" class="hover:opacity-90 text-m">Home</a>
-            <a href="/main" id="home" class="hover:opacity-90 text-m">Analysis</a>
-            <a href="/logout" id="logout" class="hover:opacity-90 text-m">Logout</a>
-            {% else %}
-            <a href="/login" id="login" class="hover:opacity-90 text-m">Log In</a>
-            <a href="/sign-up" id="signUp" class="hover:opacity-90 text-m">Sign Up</a>
-            {% endif %}
-            <button id="mobile-open-button" class="text-3xl sm:hidden focus:outline-none">
-                &#9776;
-            </button>
-        </div>
-    </section>
-</header>
+    <header class="text-white bg-red-800 sticky top-0 z-20">
+        <section class="max-w-6xl mx-auto p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">
+                <a href="/#hero"> 🖥️ BEHIND THE SCREENS </a>
+            </h1>
+            <nav class="hidden md:flex space-x-8 text-m" aria-label="main">
+                <a href="/#services" class="hover:opacity-90">Services</a>
+                <a href="/#analyze" class="hover:opacity-90">Analyze</a>
+                <a href="/#features" class="hover:opacity-90">Features</a>
+                <a href="/#contact" class="hover:opacity-90">Contact Us</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <nav class="hidden md:flex space-x-4">
+                    {% if user.is_authenticated %}
+                    <a href="/" id="home" class="hover:opacity-90 text-m">Home</a>
+                    <a href="/main" id="home" class="hover:opacity-90 text-m">Analysis</a>
+                    <a href="/logout" id="logout" class="hover:opacity-90 text-m">Logout</a>
+                    {% else %}
+                    <a href="/login" id="login" class="hover:opacity-90 text-m">Log In</a>
+                    <a href="/sign-up" id="signUp" class="hover:opacity-90 text-m">Sign Up</a>
+                    {% endif %}
+                </nav>
+                <button id="hamburger-button" class="text-3xl sm:hidden cursor-pointer">
+                    &#9776;
+                </button>
+            </div>
+        </section>
+    
+        <!-- Mobile Menu -->
+        <section id="mobile-menu" class="top-68 justify-center absolute hidden w-full origin-top animate-open-menu flex-col bg-black text-5xl h-screen overflow-y-auto">
+            <nav class="flex flex-col items-center py-8 space-y-6" aria-label="mobile">
+                {% if user.is_authenticated %}
+                <a href="/logout" class="w-full py-6 text-center hover:opacity-90">Log Out</a>
+                <a href="/" class="w-full py-6 text-center hover:opacity-90">Home</a>
+                <a href="/main" class="w-full py-6 text-center hover:opacity-90">Analysis</a> <!-- Added Analysis link -->
+                {% else %}
+                <a href="/login" class="w-full py-6 text-center hover:opacity-90">Log In</a>
+                <a href="/sign-up" class="w-full py-6 text-center hover:opacity-90">Sign Up</a>
+                {% endif %}
+                <a href="/#services" class="w-full py-6 text-center hover:opacity-90">Services</a>
+                <a href="/#features" class="w-full py-6 text-center hover:opacity-90">Features</a>
+                <a href="/#contact" class="w-full py-6 text-center hover:opacity-90">Contact Us</a>
+                <a href="/#footer" class="w-full py-6 text-center hover:opacity-90">Footer</a>
+            </nav>
+        </section>
+    </header>
+    
+    
+    
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -119,7 +142,8 @@
         {% endfor %}
     {% endif %}
     {% endwith %}
-    <main class="max-w-4xl mx-auto"><section id="hero" class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
+    <main class="max-w-4xl mx-auto">
+    <section id="hero" class="flex flex-col-reverse justify-center sm:flex-row p-6 items-center gap-8 mb-12 scroll-mt-40 h-screen">
         <article class="sm:w-1/2">
             <h2 class="max-w-md text-4xl font-bold text-center sm:text-5xl sm:text-left text-slate-900 dark:text-white">
                 
@@ -165,7 +189,7 @@
     <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
     
-    <section id="analyze" class="p-6 my-12 scroll-mt-20 widescreen:section-min-height tallscreen:section-min-height text-center">
+    <section id="analyze" class="flex flex-col p-6 my-6 scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
       <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Analyze Your YouTube Video</h2>
       <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube video you want to analyze below:</p>
     
@@ -199,108 +223,89 @@
           </div>
       </div>
     
-      <!-- Results Section -->
-      <div id="results-section" class="hidden mt-5">
-          <!-- Results will be injected here -->
-          <div>
-            <table id="summary" class="table-auto text-center ml-[50px] mr-[50px] mt-4">
-                <!-- Content will be injected by JavaScript -->
+<!-- Results Container -->
+<div id="results-container" class="hidden mt-5">
+    <!-- Results Section -->
+    <div id="results-section">
+        <!-- Summary Table -->
+        <div>
+            <table id="summary" class="table-auto text-center w-full mt-4">
+                <thead class="text-white rounded">
+                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                        <th class="px-4 py-1 w-1/2">Summary</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center text-gray-900 dark:text-white text-sm">
+                    <!-- Content will be injected by JavaScript -->
+                </tbody>
             </table>
-          </div>
-    
-          <!-- TABLE FOR COMMENTS -->
-          <div class="mt-5 pt-5 flex justify-center">
-              <table id="labeled-comments" class="table-auto ml-[50px] mr-[50px] mt-4">
-                  <thead class="text-white">
-                      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                          <th class="px-4 py-1">Comments</th>
-                          <th class="px-2 py-1">Sentiments</th>
-                      </tr>
-                  </thead>
-                  <tbody class="text-center text-gray-900 dark:text-white text-sm">
-                      <!-- Content will be injected by JavaScript -->
-                  </tbody>
-              </table>
-          </div>
-          <div id="pagination-controls" class="flex justify-center mt-4"></div>
-    
-    <!-- Flex Container for Word Count and Pie Chart -->
-    <div class="flex justify-center mb-5 space-x-5 items-center">
-      <!-- Word Count Table -->
-      <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
-        <table id="frequent-words" class="table-auto text-center text-sm w-full">
-          <thead class="text-white">
-            <tr class="bg-red-600 dark:bg-slate-700">
-              <th class="px-2 py-1">Word</th>
-              <th class="px-2 py-1">Count</th>
-              <th class="px-2 py-1">Sentiment</th>
-            </tr>
-          </thead>
-          <tbody class="text-gray-900 dark:text-white">
-            <!-- Content will be injected by JavaScript -->
-          </tbody>
-        </table>
-      </div>
+        </div>
 
-      <!-- Pie Chart -->
-      <div class="mt-[20px] ml-4 mr-[50px]">
-        <canvas id="pieChart" width="350px" height="350px"></canvas>
-      </div>
+        <!-- Comments Table -->
+        <div class="mt-5 pt-5 flex justify-center">
+            <table id="labeled-comments" class="table-auto w-full">
+                <thead class="text-white rounded">
+                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                        <th class="px-4 py-1 w-3/4">Comments</th>
+                        <th class="px-2 py-1 w-1/4">Sentiments</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center text-gray-900 dark:text-white text-sm">
+                    <!-- Content will be injected by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="pagination-controls" class="flex justify-center mt-4"></div>
+
+        <!-- Word Count Table and Bar Chart -->
+
+        <!-- Word Cloud -->
+
+        <!-- Create Account Advertisement -->
+        <div class="mt-5 text-xs italic text-yellow-700 dark:text-yellow-600">
+            <div class="font-bold">Create an account to save your analysis and have detailed results (such as highlighted comments, word counter, word cloud, and bar graph).</div>
+            <div class="mt-2">* Please note that the model used for the analysis doesn't recognize slangs or inside jokes depending on the content of the video.</div>
+            <div class="mt-2">* Comments with timestamps and replies aren't included in the analysis.</div>
+        </div>
     </div>
+</div>
+
+<script>
+    document.getElementById('analysis-form2').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
     
-          <!-- Word Cloud -->
-          <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
-              <a class="text-white font-bold ml-2">Word Cloud</a>
-          </div>
-          <div class="pb-8">
-              <div class="flex justify-center">
-                  <!-- POSITIVE WORD CLOUD -->
-                  <div class="mt-[20px] ml-[50px] mr-4">
-                      <img id="positive-word-cloud" class="w-full rounded" src="">
-                      <p class="text-black dark:text-white text-center mt-2">Positive</p>
-                  </div>
-                  <!-- NEGATIVE WORD CLOUD -->
-                  <div class="mt-[20px] ml-4 mr-[50px]">
-                      <img id="negative-word-cloud" class="w-full rounded" src="">
-                      <p class="text-black dark:text-white text-center mt-2">Negative</p>
-                  </div>
-              </div>
-          </div>
-      </div>
+        const url = document.getElementById('url2').value;
+        document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
     
-      <script>
-        document.getElementById('analysis-form2').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
-        
-            const url = document.getElementById('url2').value;
-            document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
-        
-            fetch('/analyze2', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url2: url })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-                document.getElementById('results-section').classList.remove('hidden'); // Show results section
+        fetch('/analyze2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url2: url })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
+    
+            if (data) { // Ensure data exists
+                document.getElementById('results-container').classList.remove('hidden'); // Show results container
     
                 // Update summary
-                const summaryText = `As of today, this video has received ${data.positive_count2} positive comments, ${data.negative_count2} negative comments, and ${data.neutral_count2} neutral comments. The most frequently used words are: ${data.frequent_words2.map(word => `'${word[0]}'`).join(', ')} which were used ${data.frequent_words2.map(word => `${word[1]}`).join(', ')}, respectively.`;
+                const summaryText = `As of today, this video has received ${data.positive_count2} positive comments, ${data.negative_count2} negative comments, and ${data.neutral_count2} neutral comments. The most frequently used words are: ${data.frequent_words2.map(word => `'${word[0]}'`).join(', ')} which were used ${data.frequent_words2.map(word => `${word[1]}`).join(', ')} times, respectively.`;
                 document.getElementById('summary').innerHTML = `
                     <thead class="text-white">
                         <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                            <th class="px-2 py-1">Interpretation of "${data.video_name2}"</th>
+                            <th class="px-2 py-1 w-1/2">Summary</th>
                         </tr>
                     </thead>
-                    <tbody class="text-gray-900 dark:text-white text-sm">
+                    <tbody class="text-center text-gray-900 dark:text-white text-sm">
                         <tr>
                             <td class="px-2 py-2">${summaryText}</td>
                         </tr>
                     </tbody>`;
-        
+    
                 // Update comments
                 const commentsTable = document.getElementById('labeled-comments').querySelector('tbody');
                 commentsTable.innerHTML = data.comments2.map(comment => `
@@ -308,49 +313,6 @@
                         <td class="px-2 py-2">${comment.comment}</td>
                         <td class="px-2 py-2">${comment.sentiment}</td>
                     </tr>`).join('');
-        
-                // Update frequent words
-                const frequentWordsTable = document.getElementById('frequent-words').querySelector('tbody');
-                frequentWordsTable.innerHTML = data.frequent_words2.map(word => `
-                    <tr>
-                        <td class="px-2 py-1">${word[0]}</td>
-                        <td class="px-2 py-1">${word[1]}</td>
-                        <td class="py-1">${word[2]}</td>
-                    </tr>`).join('');
-        
-                // Update pie chart
-                const ctx = document.getElementById('pieChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Negative', 'Positive', 'Neutral'],
-                        datasets: [{
-                            label: 'Sentiment Analysis',
-                            data: [data.negative_count2, data.positive_count2, data.neutral_count2],
-                            backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'left',
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(tooltipItem2) {
-                                        return tooltipItem2.label + ': ' + tooltipItem2.raw;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-        
-                // Update word clouds
-                document.getElementById('positive-word-cloud').src = `data:image/png;base64,${data.positive_img_str2}`;
-                document.getElementById('negative-word-cloud').src = `data:image/png;base64,${data.negative_img_str2}`;
     
                 // Implement Pagination
                 const rowsPerPage = 5;
@@ -446,17 +408,23 @@
     
                 renderTable();
                 renderPaginationControls();
-            })
-            .catch(error => {
-                document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-                alert('An error occurred. Please try again.');
-                console.error('Error:', error);
-            });
+            } else {
+                // If no data, hide results container
+                document.getElementById('results-container').classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
+            alert(`An error occurred: ${error.message}. Please try again.`);
+            console.error('Error:', error);
         });
-      </script>
+    });
+</script>
+    
+    
     </section>
     
-    
+    <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
        <section id="features" class="p-6 my-12 scroll-mt-20 widescreen:section-min-height tallscreen:section-min-height">
         <div class="text-center mb-12">
@@ -548,32 +516,32 @@
     <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
     <section id="contact" class="p-6 my-12 scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height">
-        <h2 class="text-m font-bold text-center sm:text-5xl mb-6 text-slate-900 dark:text-white">
+        <h2 class="text-4xl font-bold text-center sm:text-5xl mb-6 text-slate-900 dark:text-white">
             Contact Us
         </h2>
         <ul class="list-none mx-auto my-12 flex flex-col sm:flex-row items-center gap-8">
             <li class="shadow-xl w-2/3 sm:w-5/6 flex flex-col items-center border border-solid border-slate-100 dark:border-gray-100 bg-white dark:bg-black py-6 px-2 rounded-3xl">
-            <img src="./static/loc1-removebg-preview.png" alt="Explorer" class="w-1/2 mb-6"> 
-            <h3 class="text-3xl text-center text-slate-900 dark:text-white">ADDRESS</h3>        
-            <p class="hidden sm:block text-3xl text-center mt-2 text-slate-500 dark:text-slate-400"></p>
-                    <!-- TO DO -->
-            <p class="sm:  text-2xl text-center mt-2 text-slate-900 dark:text-slate-500">06-21 ZEDDY Blvd.</p>        
+                <img src="./static/loc1-removebg-preview.png" alt="Explorer" class="w-1/2 mb-6"> 
+                <h3 class="text-3xl text-center text-slate-900 dark:text-white">ADDRESS</h3>        
+                <p class="hidden sm:block text-3xl text-center mt-2 text-slate-500 dark:text-slate-400"></p>
+                        <!-- TO DO -->
+                <p class="sm:  text-2xl text-center mt-2 text-slate-900 dark:text-slate-500">04-18 Behind the Blvd.</p>        
             </li>
             <li class="shadow-xl w-2/3 sm:w-5/6 flex flex-col items-center border border-solid border-slate-100 dark:border-gray-100 bg-white dark:bg-black py-6 px-2 rounded-3xl">
                 <img src="./static/phone.png" alt="Explorer" class="w-1/2 mb-6"> 
                 <h3 class="text-3xl text-center text-slate-900 dark:text-white">PHONE</h3>        
                 <p class="hidden sm:block text-3xl text-center mt-2 text-slate-500 dark:text-slate-400"></p>   
                 <!-- TO DO -->     
-                <p class="sm: text-2xl text-center mt-2 text-slate-900 dark:text-slate-500">+649054760746</p>        
-                </li>
-                <li class="shadow-xl w-2/3 sm:w-5/6 flex flex-col items-center border border-solid border-slate-100 dark:border-gray-100 bg-white dark:bg-black py-6 px-2 rounded-3xl">
-                    <img src="./static/email.png" alt="Explorer" class="w-1/2 mb-6"> 
-                    <h3 class="text-3xl text-center text-slate-900 dark:text-white">EMAIL</h3>        
-                    <p class="hidden sm:block text-3xl text-center mt-2 text-slate-500 dark:text-slate-400"></p>   
-                    <!-- TO DO -->     
-                    <p class="sm: text-2xl text-center mt-2 text-slate-900 dark:text-slate-500">testgmail@yahoo.com</p>        
-                    </li>
-    </ul>
+                <p class="sm: text-2xl text-center mt-2 text-slate-900 dark:text-slate-500">+639#########</p>        
+            </li>
+            <li class="shadow-xl w-2/3 sm:w-5/6 flex flex-col items-center border border-solid border-slate-100 dark:border-gray-100 bg-white dark:bg-black py-6 px-2 rounded-3xl">
+                <img src="./static/email.png" alt="Explorer" class="w-1/2 mb-6"> 
+                <h3 class="text-3xl text-center text-slate-900 dark:text-white">EMAIL</h3>        
+                <p class="hidden sm:block text-3xl text-center mt-2 text-slate-500 dark:text-slate-400"></p>   
+                <!-- TO DO -->     
+                <p class="sm: text-2xl text-center mt-2 text-slate-900 dark:text-slate-500">email@email.com</p>        
+            </li>
+        </ul>
         
     </section>
     </main>
@@ -584,11 +552,11 @@
       <section class="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row sm:justify-between">
           <address>
               <!-- TO DO -->
-              <h2>Behind the Screens, Inc.</h2>
-              383 Bacolor Main<br>
-              Pampanga, Philippines 12345-5555<br>
-              Email: <a href="mailto:behindthescreen.com">behindthescreen.thesis@gmail.com</a><br>
-              Phone: <a href="tel:+15555555555">(555) 555-5555</a>
+              <h2>Behind the Screens</h2>
+              DHVSU - Main (Bacolor)<br>
+              Pampanga, Philippines<br>
+              Email: <a href="mailto:behindthescreen.thesis@gmail.com">behindthescreen.thesis@gmail.com</a><br>
+              Phone: <a href="tel:+639#########">(+63) 9## ### ####</a>
           </address>
           <nav class="hidden md:flex flex-col gap-2" aria-label="footer">
               <a href="#services" class="hover:opacity-90">Services</a>
@@ -637,6 +605,22 @@ function fetchAndDisplayResults(url) {
 
   </script>
   
-    
+  <script>
+    const initApp = () => {
+        const hamburgerBtn = document.getElementById('hamburger-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        const toggleMenu = () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+            hamburgerBtn.classList.toggle('toggle-btn');
+        };
+
+        hamburgerBtn.addEventListener('click', toggleMenu);
+        mobileMenu.addEventListener('click', toggleMenu);
+    };
+
+    document.addEventListener('DOMContentLoaded', initApp);
+</script>
 </body>
 </html>

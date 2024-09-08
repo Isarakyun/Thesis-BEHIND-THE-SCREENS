@@ -1,18 +1,20 @@
 {% extends "base.html" %} {% block title %}Results of {{ youtube_url.video_name }}{% endblock %}
 
 {% block content %}
-<div class="py-2 px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full">
-  <button type="button" class="text-lg text-black dark:text-white" id="menuToggleButton">
+<div class="py-2 px-4 sm:px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full z-50">
+  <button type="button" class="text-lg text-black dark:text-white mr-4 sm:mr-6" id="menuToggleButton">
       <i class="ri-menu-line cursor-pointer"></i>
   </button>
-  <div>
-      <a href="{{ url_for('views.home') }}" class="text-m text-black dark:text-white ml-4">
+  <div class="flex-1 flex items-center space-x-4">
+      <a href="{{ url_for('views.home') }}" class="text-base sm:text-m text-black dark:text-white">
           Behind the Screens
       </a>
       {% if user.confirmed_email == False %}
-      <span class="text-m text-red-600 ml-4">Your email hasn't been verified yet. Go to your settings to confirm your email.</span>
+      <span class="text-sm sm:text-m text-red-600">
+          Your email hasn't been verified yet. Go to your settings to confirm your email.
+      </span>
       {% endif %}
-  </div>       
+  </div>
 </div>
 
 <!-- SUMMARY -->
@@ -48,16 +50,70 @@
               {% else %}
                 {{ word.count }},
               {% endif %}
-            {% endfor %} respectively. The overall sentiment is {{ overall_sentiment}}.
+            {% endfor %} respectively. The overall sentiment is {{ overall_sentiment }}.
           {% else %}
             No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis (such as ongoing live streams).
           {% endif %}
         </td>
       </tr>
+      <tr>
+        <td class="px-2 py-2 italic text-yellow-700 dark:text-yellow-600">Please note that the model used for the analysis doesn't recognize slangs or inside jokes depending on the content of the video.</td>
+      </tr>
+      <tr>
+        <td class="px-2 italic text-yellow-700 dark:text-yellow-600">Comments with timestamps and replies aren't included in the analysis.</td>
+      </tr>
     </tbody>
   </table>
 </div>    
-  
+
+<!-- Most Positive and Negative Comments -->
+<div id="high-score-comments" class="flex justify-center overflow-hidden mt-5 pt-5">
+  <table class="w-full ml-[50px] mr-[50px]">
+    {% if youtube_url.created_at is not none and highscorecomments %}
+      <thead class="text-white">
+        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+          <th class="px-4 py-1"></th>
+          <th class="px-4 py-1">Highlighted Comments</th>
+          <th class="px-2 py-1">Score</th>
+        </tr>
+      </thead>
+      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+        <tr>
+          <td class="px-2 py-2 text-blue-700 dark:text-white dark:bg-blue-700 font-bold">Most Positive</td>
+          {% if highscorecomments.most_positive_comment is not none %}
+          <td class="px-2 py-2">{{ highscorecomments.most_positive_comment }}</td>
+          <td class="px-2 py-2">{{ (highscorecomments.highest_positive_score * 100) | round(2) }}%</td>
+          {% else %}
+          <td class="px-2 py-2 italic text-gray-500">There are no positive comments found.</td>
+          <td class="px-2 py-2"></td>
+          {% endif %}
+        </tr>
+        <tr>
+          <td class="px-2 py-2 text-red-700 dark:text-white dark:bg-red-700 font-bold">Most Negative</td>
+          {% if highscorecomments.most_negative_comment is not none %}
+          <td class="px-2 py-2">{{ highscorecomments.most_negative_comment }}</td>
+          <td class="px-2 py-2">{{ (highscorecomments.highest_negative_score * 100) | round(2) }}%</td>
+          {% else %}
+          <td class="px-2 py-2 italic text-gray-500">There are no negative comments found.</td>
+          <td class="px-2 py-2"></td>
+          {% endif %}
+        </tr>
+      </tbody>
+    {% else %}
+      <thead class="text-white">
+        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+          <th class="px-4 py-1">Most Positive and/or Negative Comments</th>
+        </tr>
+      </thead>
+      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+        <tr class="sentiment-row">
+          <td class="px-2 py-2">There are no comments found.</td>
+        </tr>
+      </tbody>
+    {% endif %}
+  </table>
+</div>
+
   <!-- Dropdown for sentiment selection -->
 <div class="mt-5 pt-5 flex justify-end ml-[50px] mr-[50px] shadow-lg">
   {% if youtube_url.created_at is not none and frequent_words %}
@@ -77,15 +133,21 @@
     {% if youtube_url.created_at is not none and frequent_words %}
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-          <th class="px-4 py-1">Comments</th>
-          <th class="px-2 py-1">Sentiments</th>
+          <th class="px-4 py-1 w-4/5">Comments</th>
+          <th class="px-2 py-1 w-1/5">Sentiment</th>
         </tr>
       </thead>
       <tbody class="text-center text-gray-900 dark:text-white text-sm">
         {% for comment in comments %}
         <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
           <td class="px-2 py-2">{{ comment.comment }}</td>
-          <td class="px-2 py-2">{{ comment.sentiment }}</td>
+          {% if comment.sentiment == "Positive" %}
+          <td class="px-2 py-2 text-blue-700">{{ comment.sentiment }}</td>
+          {% elif comment.sentiment == "Negative" %}
+          <td class="px-2 py-2 text-red-700">{{ comment.sentiment }}</td>
+          {% else %}
+          <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">{{ comment.sentiment }}</td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
@@ -111,8 +173,8 @@
     {% if youtube_url.created_at is not none and count.positive is not none and frequent_words %}
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-          <th class="px-4 py-1">Comments</th>
-          <th class="px-2 py-1">Sentiments</th>
+          <th class="px-4 py-1 w-4/5">Comments</th>
+          <th class="px-2 py-1 w-1/5">Sentiment</th>
         </tr>
       </thead>
       <tbody class="text-center text-gray-900 dark:text-white text-sm">
@@ -120,7 +182,7 @@
           {% if comment.sentiment == 'Positive' %}
           <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
             <td class="px-2 py-2">{{ comment.comment }}</td>
-            <td class="px-2 py-2">{{ comment.sentiment }}</td>
+            <td class="px-2 py-2 text-blue-700">{{ comment.sentiment }}</td>
           </tr>
           {% endif %}
         {% endfor %}
@@ -133,7 +195,7 @@
       </thead>
       <tbody class="text-center text-gray-900 dark:text-white text-sm">
         <tr class="sentiment-row">
-          <td class="px-2 py-2">There are no positive comments found.</td>
+          <td class="px-2 py-2 text-blue-700">There are no positive comments found.</td>
         </tr>
       </tbody>
     {% endif %}
@@ -147,8 +209,8 @@
     {% if youtube_url.created_at is not none and count.negative is not none and frequent_words %}
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-          <th class="px-4 py-1">Comments</th>
-          <th class="px-2 py-1">Sentiments</th>
+          <th class="px-4 py-1 w-4/5">Comments</th>
+          <th class="px-2 py-1 w-1/5">Sentiment</th>
         </tr>
       </thead>
       <tbody class="text-center text-gray-900 dark:text-white text-sm">
@@ -156,7 +218,7 @@
           {% if comment.sentiment == 'Negative' %}
           <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
             <td class="px-2 py-2">{{ comment.comment }}</td>
-            <td class="px-2 py-2">{{ comment.sentiment }}</td>
+            <td class="px-2 py-2 text-red-700">{{ comment.sentiment }}</td>
           </tr>
           {% endif %}
         {% endfor %}
@@ -169,7 +231,7 @@
     </thead>
     <tbody class="text-center text-gray-900 dark:text-white text-sm">
       <tr class="sentiment-row">
-        <td class="px-2 py-2">There are no negative comments found.</td>
+        <td class="px-2 py-2 text-red-700">There are no negative comments found.</td>
       </tr>
     </tbody>
   {% endif %}
@@ -183,8 +245,8 @@
     {% if youtube_url.created_at is not none and count.neutral is not none and frequent_words %}
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-          <th class="px-4 py-1">Comments</th>
-          <th class="px-2 py-1">Sentiments</th>
+          <th class="px-4 py-1 w-4/5">Comments</th>
+          <th class="px-2 py-1 w-1/5">Sentiment</th>
         </tr>
       </thead>
       <tbody class="text-center text-gray-900 dark:text-white text-sm">
@@ -192,7 +254,7 @@
           {% if comment.sentiment == 'Neutral' %}
           <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
             <td class="px-2 py-2">{{ comment.comment }}</td>
-            <td class="px-2 py-2">{{ comment.sentiment }}</td>
+            <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">{{ comment.sentiment }}</td>
           </tr>
           {% endif %}
         {% endfor %}
@@ -205,7 +267,7 @@
         </thead>
         <tbody class="text-center text-gray-900 dark:text-white text-sm">
           <tr class="sentiment-row">
-            <td class="px-2 py-2">There are no neutral comments found.</td>
+            <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">There are no neutral comments found.</td>
           </tr>
         </tbody>
       {% endif %}
@@ -677,62 +739,78 @@
     }
   })
 </script>
+
 {% if frequent_words %}
-<div class="flex justify-center mb-5 space-x-5 items-center">
-  <!-- Table for Word Count -->
-  <div class="flex justify-center mt-[20px] ml-[50px] mr-4">
-    <table id="frequent-words" class="table-auto text-center text-sm w-full">
+<!-- Table for Word Count and Bar Chart -->
+<div id="frequent-words" class="flex justify-center overflow-hidden mt-5 pt-5">
+  <table class="w-1/2 ml-[50px] mr-[50px]">
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700">
-          <th class="px-2 py-1">Word</th>
-          <th class="px-2 py-1">Count</th>
+        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+          <th class="px-4 py-1">Word</th>
+          <th class="px-4 py-1">Count</th>
           <th class="px-2 py-1">Sentiment</th>
         </tr>
       </thead>
-      <tbody class="text-gray-900 dark:text-white">
+      <tbody class="text-center text-gray-900 dark:text-white text-sm">
         {% for word in frequent_words %}
         <tr>
-          <td class="px-2 py-1">{{ word.word }}</td>
-          <td class="px-2 py-1">{{ word.count }}</td>
-          <td class="py-1">{{ word.sentiment }}</td>
+          <td class="px-2 py-2">{{ word.word }}</td>
+          <td class="px-2 py-2">{{ word.count }} times</td>
+          {% if word.sentiment == "Positive" %}
+          <td class="px-2 py-2 text-blue-700">{{ word.sentiment }}</td>
+          {% elif word.sentiment == "Negative" %}
+          <td class="px-2 py-2 text-red-700">{{ word.sentiment }}</td>
+          {% else %}
+          <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">{{ word.sentiment }}</td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
-    </table>
+  </table>
+  <!-- Bar Chart -->
+  <div class="ml-4 mr-[50px] w-1/2">
+    <canvas id="barChart" width="250px" height="250px"></canvas>
   </div>
-
-  <!-- did i mention i love fictional characters -->
-<!-- Pie Chart -->
-<div class="mt-[20px] ml-4 mr-[50px]">
-  <canvas id="pieChart" width="350px" height="350px"></canvas>
 </div>
 {% endif %}
-</div>
-  <script>
-    async function fetchSentimentData(urlId) {
-      const response = await fetch(`/api/sentiment/${urlId}`);
-      const data = await response.json();
-      return data;
-    }
-    async function updatePieChart(urlId) {
-      const data = await fetchSentimentData(urlId);
-    const ctx = document.getElementById('pieChart').getContext('2d');
-    const pieChart = new Chart(ctx, {
-      type: 'pie',
+
+  <!-- did i mention i love fictional characters -->
+  <!-- even if you did not, it's obvious xd -->
+  <!-- bruh i didnt expect someone would reply here, i was just gonna give ppl who do "inspect element" something here -->
+  <!-- one of the devs/researchers here aint straight. it's me (hint is in one of the pages). --> 
+
+<!-- script for bar chart -->
+<script>
+  async function fetchSentimentData(urlId) {
+    const response = await fetch(`/api/sentiment/${urlId}`);
+    const data = await response.json();
+    return data;
+  }
+
+  async function updateBarChart(urlId) {
+    const data = await fetchSentimentData(urlId);
+    const ctx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(ctx, {
+      type: 'bar',
       data: {
         labels: ['Negative', 'Positive', 'Neutral'],
         datasets: [{
-          label: 'Sentiment Analysis',
+          label: 'Number of Comments Based on Sentiment',
           data: [data.negative, data.positive, data.neutral],
-          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'], 
+          backgroundColor: ['#b91c1c', '#1d4ed8', '#fbbf24'],
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
         plugins: {
           legend: {
-            position: 'left',
+            position: 'top',
           },
           tooltip: {
             callbacks: {
@@ -747,29 +825,29 @@
   }
 
   function getUrlParameter(name) {
-      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-      const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-      const results = regex.exec(location.search);
-      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    const results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 
   function getUrlPathParameter(position) {
-      const pathSegments = window.location.pathname.split('/');
-      return pathSegments[position] || null;
+    const pathSegments = window.location.pathname.split('/');
+    return pathSegments[position] || null;
   }
 
   window.onload = function() {
-      const urlId = getUrlPathParameter(2);
-      if (urlId) {
-          updatePieChart(urlId);
-      } else {
-          console.error('url_id parameter is missing in the URL');
-      }
+    const urlId = getUrlPathParameter(2);
+    if (urlId) {
+      updateBarChart(urlId);
+    } else {
+      console.error('url_id parameter is missing in the URL');
+    }
   };
-  </script>
+</script>
 
   <!-- WordCloud -->
-  <div class="rounded ml-[50px] mr-[50px] mt-4 bg-red-600 dark:bg-slate-700 p-1">
+  <div class="rounded ml-[50px] mr-[50px] mt-5 bg-red-600 dark:bg-slate-700 p-1">
     <a class="text-white font-bold ml-2">Word Cloud</a>
   </div>     
   <div class="pb-8">
@@ -777,26 +855,42 @@
       <!-- POSITIVE WORD CLOUD -->
       <div class="mt-[20px] ml-[50px] mr-4">
         {% if image_positive_data %} 
-          <!-- <img class="w-full rounded" src="{{ image_positive_data }}"> -->
-          <!-- <img class="w-full rounded" src="./../static/wordcloud/{{ image_positive_data }}"> -->
           <img class="w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_positive_data) }}">
         {% else %}
-          <p class="text-black dark:text-white text-center mt-2">No positive words found.</p>
+          <p class="italic text-gray-500 text-center mt-2">No positive words found.</p>
         {% endif %}
         <p class="text-black dark:text-white text-center mt-2">Positive</p>
       </div>
       <!-- NEGATIVE WORD CLOUD -->
       <div class="mt-[20px] ml-4 mr-[50px]">
         {% if image_negative_data %}
-          <!-- <img class="w-full rounded" src="{{ image_negative_data }}"> -->
-          <!-- <img class="w-full rounded" src="./../static/wordcloud/{{ image_negative_data }}"> -->
           <img class="w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_negative_data) }}">
         {% else %}
-          <p class="text-black dark:text-white text-center mt-2">No negative words found.</p>
+          <p class="italic text-gray-500 text-center mt-2">No negative words found.</p>
         {% endif %}
         <p class="text-black dark:text-white text-center mt-2">Negative</p>
       </div>
     </div>
   </div>
 </div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <div class="fixed bottom-4 right-4 space-y-4">
+        {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="alert bg-red-500 text-black p-3 text-sm rounded shadow-lg">
+            {{ message }}
+            <button type="button" class="ml-4 float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% else %}
+        <div class="alert bg-blue-600 text-white p-3 text-sm rounded shadow-lg">
+            {{ message }}
+            <button type="button" class="ml-4 float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% endwith %}
 {% endblock %}

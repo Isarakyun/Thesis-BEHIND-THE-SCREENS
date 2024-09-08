@@ -35,7 +35,8 @@ class YoutubeUrl(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     comments = db.relationship('Comments')
-    summarizedComments = db.relationship('SummarizedComments')
+    # summarizedComments = db.relationship('SummarizedComments')
+    highScoreComments = db.relationship('HighScoreComments')
     frequentWords = db.relationship('FrequentWords')
     sentimentCounter = db.relationship('SentimentCounter')
     wordCloudImage = db.relationship('WordCloudImage')
@@ -48,10 +49,20 @@ class Comments(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
 
-class SummarizedComments(db.Model):
-    __tablename__ = 'summarized_comments'
+# class SummarizedComments(db.Model):
+#     __tablename__ = 'summarized_comments'
+#     id = db.Column(db.Integer, primary_key=True)
+#     summary = db.Column(db.String(50000))
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+#     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
+
+class HighScoreComments(db.Model):
+    __tablename__ = 'high_score_comments'
     id = db.Column(db.Integer, primary_key=True)
-    summary = db.Column(db.String(50000))
+    most_positive_comment = db.Column(db.String(50000))
+    most_negative_comment = db.Column(db.String(50000))
+    highest_positive_score = db.Column(db.Float)
+    highest_negative_score = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     url_id = db.Column(db.Integer, db.ForeignKey('youtube_url.id'))
 
@@ -94,7 +105,8 @@ class Users(db.Model, UserMixin):
     get_url = db.relationship('GetUrl')
     youtube_url = db.relationship('YoutubeUrl')
     comments = db.relationship('Comments')
-    summarizedComments = db.relationship('SummarizedComments')
+    # summarizedComments = db.relationship('SummarizedComments')
+    highScoreComments = db.relationship('HighScoreComments')
     frequentWords = db.relationship('FrequentWords')
     sentimentCounter = db.relationship('SentimentCounter')
     wordCloudImage = db.relationship('WordCloudImage')

@@ -65,42 +65,42 @@ def clean_text(text):
     text = ' '.join(words)
     return text
 
-def get_summary(joined_comments):
-    sentences = sent_tokenize(joined_comments)
+# def get_summary(joined_comments):
+#     sentences = sent_tokenize(joined_comments)
 
-    stop_words = set(stopwords.words("english"))
-    preprocessed_sentences = []
-    for sentence in sentences:
-        words = word_tokenize(sentence)
-        filtered_words = [
-            word for word in words if word.lower() not in stop_words]
-        preprocessed_sentences.append(filtered_words)
+#     stop_words = set(stopwords.words("english"))
+#     preprocessed_sentences = []
+#     for sentence in sentences:
+#         words = word_tokenize(sentence)
+#         filtered_words = [
+#             word for word in words if word.lower() not in stop_words]
+#         preprocessed_sentences.append(filtered_words)
 
-    flat_preprocessed_words = [
-        word for sentence in preprocessed_sentences for word in sentence]
-    word_freq = FreqDist(flat_preprocessed_words)
+#     flat_preprocessed_words = [
+#         word for sentence in preprocessed_sentences for word in sentence]
+#     word_freq = FreqDist(flat_preprocessed_words)
 
-    sentence_scores = {}
-    for i, sentence in enumerate(preprocessed_sentences):
-        for word in sentence:
-            if word in word_freq:
-                if i in sentence_scores:
-                    sentence_scores[i] += word_freq[word]
-                else:
-                    sentence_scores[i] = word_freq[word]
+#     sentence_scores = {}
+#     for i, sentence in enumerate(preprocessed_sentences):
+#         for word in sentence:
+#             if word in word_freq:
+#                 if i in sentence_scores:
+#                     sentence_scores[i] += word_freq[word]
+#                 else:
+#                     sentence_scores[i] = word_freq[word]
 
-    summary_sentences = []
-    if sentence_scores:
-        sorted_scores = sorted(sentence_scores.items(),
-                               key=lambda x: x[1], reverse=True)
-        # Select the top 3 sentences as the summary
-        top_sentences = sorted_scores[:3]
-        for index, _ in top_sentences:
-            summary_sentences.append(sentences[index])
+#     summary_sentences = []
+#     if sentence_scores:
+#         sorted_scores = sorted(sentence_scores.items(),
+#                                key=lambda x: x[1], reverse=True)
+#         # Select the top 3 sentences as the summary
+#         top_sentences = sorted_scores[:3]
+#         for index, _ in top_sentences:
+#             summary_sentences.append(sentences[index])
 
-    # Join the summary sentences to create the final summary
-    summary = ' '.join(summary_sentences)
-    return summary
+#     # Join the summary sentences to create the final summary
+#     summary = ' '.join(summary_sentences)
+#     return summary
 
 def word_cloud(words, colormap, user_id, url_id, video_id, sentiment):
     stopwords = set(STOPWORDS)
@@ -122,17 +122,6 @@ def word_cloud(words, colormap, user_id, url_id, video_id, sentiment):
     # Save the image to the specified file path
     img.save(file_path, format="PNG")
     return file_name
-
-# def analyze_summary(text):
-#     analysis = TextBlob(text)
-#     sentiment_score = analysis.sentiment.polarity
-#     if sentiment_score > 0.1:
-#         sentiment = "Positive"
-#     elif sentiment_score < -0.1:
-#         sentiment = "Negative"
-#     else:
-#         sentiment = "Neutral"
-#     return sentiment, sentiment_score
 
 def word_cloud_blob(words, colormap):
     stopwords = set(STOPWORDS)
