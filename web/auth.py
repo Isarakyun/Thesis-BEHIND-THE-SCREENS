@@ -7,7 +7,7 @@ from .models import Users, Admin, YoutubeUrl, Comments, FrequentWords, Sentiment
 # from .models import SummarizedComments
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import clean_text, word_cloud, extract_comments, word_cloud_blob
+from .analysis import clean_text, word_cloud, extract_comments, word_cloud_string
 # from .analysis import get_summary
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
@@ -905,12 +905,14 @@ def analyze():
             # Generate the positive word cloud
             positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
             positive_text = ' '.join(positive_words)
-            positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
-            
+            # positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
+            positive_img_str = word_cloud_string(positive_text, 'winter')
+
             # Generate the negative word cloud
             negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
             negative_text = ' '.join(negative_words)
-            negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
+            # negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
+            negative_img_str = word_cloud_string(negative_text, 'hot')
 
             if positive_img_str and negative_img_str:
                 positive_img_data = positive_img_str

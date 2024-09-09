@@ -65,6 +65,40 @@ def clean_text(text):
     text = ' '.join(words)
     return text
 
+# SAVING THE WORD CLOUD IMAGE TO THE STATIC FOLDER
+def word_cloud(words, colormap, user_id, url_id, video_id, sentiment):
+    stopwords = set(STOPWORDS)
+    if not words:
+        return None
+    
+    wordcloud = WordCloud(max_font_size=100, max_words=50, width=800, height=400, background_color='white', stopwords=stopwords, colormap=colormap).generate(words)
+    
+    img = wordcloud.to_image()
+    
+    # Define the directory and file name
+    directory = 'web\static\wordcloud'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    file_name = f"{user_id}_{url_id}_{video_id}{sentiment}.png"
+    file_path = os.path.join(directory, file_name)
+    # to_view = f"./../static/wordcloud/{file_name}"
+    
+    # Save the image to the specified file path
+    img.save(file_path, format="PNG")
+    return file_name
+
+# WORD CLOUD FOR STORING THE STRING VERSION AND CONVERTING IT TO BASE64 IN THE FRONTEND
+def word_cloud_string(words, colormap):
+    stopwords = set(STOPWORDS)
+    if not words:
+        return None
+    wordcloud = WordCloud(max_font_size=100, max_words=50, width=800, height=400, background_color='white', stopwords=stopwords, colormap=colormap).generate(words)
+    img = wordcloud.to_image()
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)  # Ensure the buffer is at the beginning
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
 # def get_summary(joined_comments):
 #     sentences = sent_tokenize(joined_comments)
 
@@ -101,35 +135,3 @@ def clean_text(text):
 #     # Join the summary sentences to create the final summary
 #     summary = ' '.join(summary_sentences)
 #     return summary
-
-def word_cloud(words, colormap, user_id, url_id, video_id, sentiment):
-    stopwords = set(STOPWORDS)
-    if not words:
-        return None
-    
-    wordcloud = WordCloud(max_font_size=100, max_words=50, width=800, height=400, background_color='white', stopwords=stopwords, colormap=colormap).generate(words)
-    
-    img = wordcloud.to_image()
-    
-    # Define the directory and file name
-    directory = 'web\static\wordcloud'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    file_name = f"{user_id}_{url_id}_{video_id}{sentiment}.png"
-    file_path = os.path.join(directory, file_name)
-    # to_view = f"./../static/wordcloud/{file_name}"
-    
-    # Save the image to the specified file path
-    img.save(file_path, format="PNG")
-    return file_name
-
-def word_cloud_blob(words, colormap):
-    stopwords = set(STOPWORDS)
-    if not words:
-        return None
-    wordcloud = WordCloud(max_font_size=100, max_words=50, width=800, height=400, background_color='white', stopwords=stopwords, colormap=colormap).generate(words)
-    img = wordcloud.to_image()
-    buffer = BytesIO()
-    img.save(buffer, format="PNG")
-    buffer.seek(0)  # Ensure the buffer is at the beginning
-    return base64.b64encode(buffer.getvalue()).decode('utf-8')
