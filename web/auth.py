@@ -884,7 +884,7 @@ def analyze():
                 db.session.add(new_frequent_word)
                 frequent_words_objects.append(new_frequent_word)
 
-            """GENERATE and INSERT SUMMARY"""
+            """GENERATE and INSERT SUMMARY: uncomment when needed"""
             # summary = get_summary(all_comments_text)
             # summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
             # db.session.add(summarized_comment)
@@ -905,14 +905,18 @@ def analyze():
             # Generate the positive word cloud
             positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
             positive_text = ' '.join(positive_words)
-            # positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
-            positive_img_str = word_cloud_string(positive_text, 'winter')
+            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
+            positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
+            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
+            # positive_img_str = word_cloud_string(positive_text, 'winter')
 
             # Generate the negative word cloud
             negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
             negative_text = ' '.join(negative_words)
-            # negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
-            negative_img_str = word_cloud_string(negative_text, 'hot')
+            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
+            negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
+            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
+            # negative_img_str = word_cloud_string(negative_text, 'hot')
 
             if positive_img_str and negative_img_str:
                 positive_img_data = positive_img_str
@@ -1056,7 +1060,15 @@ def analyze2():
 
     # summary = get_summary(all_comments_text)
 
-    # Generate Word Clouds
+    """Generate Word Clouds: uncomment when needed"""
+    # unlabeled_words = word_tokenize(all_comments_text)
+    # positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
+    # positive_text = ' '.join(positive_words)
+    # positive_img_str = word_cloud_string(positive_text, 'winter')
+    
+    # negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
+    # negative_text = ' '.join(negative_words)
+    # negative_img_str = word_cloud_string(negative_text, 'hot')
 
     response = {
         'video_name2': video_name,
@@ -1065,6 +1077,9 @@ def analyze2():
         'neutral_count2': neutral_count,
         'comments2': sentiments,
         'frequent_words2': frequent_words,
+        # 'summary2': summary,
+        # 'positive_img2': positive_img_str,
+        # 'negative_img2': negative_img_str
     }
 
     return jsonify(response), 200
