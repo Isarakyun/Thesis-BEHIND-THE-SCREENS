@@ -74,17 +74,17 @@ def word_cloud(words, colormap, user_id, url_id, video_id, sentiment):
     wordcloud = WordCloud(max_font_size=100, max_words=50, width=800, height=400, background_color='white', stopwords=stopwords, colormap=colormap).generate(words)
     
     img = wordcloud.to_image()
-    
-    # Define the directory and file name
-    directory = 'web\static\wordcloud'
+
+    directory = os.path.join('web', 'static', 'wordcloud')
+
     if not os.path.exists(directory):
         os.makedirs(directory)
+
     file_name = f"{user_id}_{url_id}_{video_id}{sentiment}.png"
     file_path = os.path.join(directory, file_name)
-    # to_view = f"./../static/wordcloud/{file_name}"
-    
-    # Save the image to the specified file path
+
     img.save(file_path, format="PNG")
+
     return file_name
 
 # WORD CLOUD FOR STORING THE STRING VERSION AND CONVERTING IT TO BASE64 IN THE FRONTEND
