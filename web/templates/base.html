@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-scrollbar.css') }}">
+    <link href="../../static/css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/custom-scrollbar.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>{% block title %}Behind the Screens{% endblock %}</title> 
@@ -15,75 +15,176 @@
         }
         .video-title {
             display: inline-block;
-            max-width: 100%; /* Adjust as needed */
+            max-width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        /* Add this CSS if needed to ensure proper visibility and alignment */
         .header-button-container {
             display: flex;
             justify-content: flex-end;
             align-items: center;
             margin-left: auto;
-            margin-right: 20px; /* Adjust this value as needed to fit within the header */
+            margin-right: 20px;
         }
-        .video-title {
-            max-width: 180px;  /* Adjust this value as needed */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        /* Modal CSS */
+        #deleteModal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background-color: rgba(0, 0, 0, 0.8);
         }
+
+        #deleteModal.hidden {
+            display: none;
+        }
+
+        #deleteModal .modal-content {
+            background: #121212;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        /* Sidebar transition */
+        .-translate-x-full {
+            transform: translateX(-100%);
+        }
+
+        .ml-64 {
+            margin-left: 16rem; /* 64px or 16rem is the width of the sidebar */
+        }
+
+        .ml-0 {
+            margin-left: 0;
+        }
+
+        /* No transition class */
+        .no-transition {
+            transition: none !important;
+        }
+
+        .main-content {
+            transition: margin-left 0.3s ease; /* Add a smooth transition */
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 640px) {
+            #deleteModal .modal-content {
+                width: 90%;
+                padding: 1rem;
+            }
+            #deleteModal .button {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+        }
+
+        /* Ensure heading text is always white */
+        #deleteModal h2 {
+            color: #ffffff; /* White text color */
+        }
+
+        /* Ensure dropdown menu appears above other content */
+        #dropdownMenu {
+            z-index: 60; /* Ensure this is higher than other elements */
+            position: absolute;
+        }
+
+
     </style>
 </head>
 <body>
     {% if user is defined %}
         {% include 'sidebar.html' %}
     {% endif %}
-    <main class="w-[calc(100%-256px)] ml-64 bg-slate-100 dark:bg-[#181818] min-h-screen transition-width duration-300 ease-in-out" id="content">
+    <main id="content" class="main-content bg-slate-100 dark:bg-[#181818] min-h-screen ml-0 md:ml-64">
         {% block content %}{% endblock %}
     </main>
 
     <script>
-        module.exports = {
-            theme: {
-                extend: {
-                    placeholderColor: {
-                        'gray': '#404040',
-                    }
-                }
-            },
-            variants: {
-                extend: {
-                    placeholderColor: ['responsive', 'dark', 'focus', 'hover', 'active'],
-                }
-            },
-            plugins: [],
-        }
-    </script>
-    <script>
-        const menuToggleButton = document.getElementById('menuToggleButton');
-        const sidebar = document.getElementById('sidebar');
-        const content = document.getElementById('content');
-        menuToggleButton.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            content.classList.toggle('w-full');
-            content.classList.toggle('ml-64');
-        });
-    </script>
+document.addEventListener('DOMContentLoaded', () => {
+    const menuToggleButton = document.getElementById('menuToggleButton');
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
 
-    <script>
-        document.getElementById('dropdownButton').addEventListener('click', function() {
-            var dropdownMenu = document.getElementById('dropdownMenu');
-            dropdownMenu.classList.toggle('hidden');
-        });
+    // Add the no-transition class to disable initial transition
+    sidebar.classList.add('no-transition');
+    content.classList.add('no-transition');
+
+    const showSidebarOnDesktop = () => {
+        const isMobile = window.matchMedia("(max-width: 767px)").matches;
+        if (!isMobile) {
+            sidebar.classList.remove('-translate-x-full');
+            content.classList.remove('ml-0');
+            content.classList.add('ml-64');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            content.classList.remove('ml-64');
+            content.classList.add('ml-0');
+        }
+    };
+
+    showSidebarOnDesktop();
+
+    window.addEventListener('resize', showSidebarOnDesktop);
+
+    menuToggleButton.addEventListener('click', () => {
+        if (sidebar.classList.contains('-translate-x-full')) {
+            sidebar.classList.remove('-translate-x-full');
+            content.classList.remove('ml-0');
+            content.classList.add('ml-64');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            content.classList.remove('ml-64');
+            content.classList.add('ml-0');
+        }
+    });
+
+    // Remove the no-transition class after the page has fully loaded
+    setTimeout(() => {
+        sidebar.classList.remove('no-transition');
+        content.classList.remove('no-transition');
+    }, 300); // Wait 300ms to match your existing animation duration
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdownButton = document.getElementById('dropdownButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    dropdownButton.addEventListener('click', function() {
+        dropdownMenu.classList.toggle('hidden');
         
-        window.addEventListener('click', function(e) {
-            var dropdownMenu = document.getElementById('dropdownMenu');
-            if (!document.getElementById('dropdownButton').contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
+        const buttonRect = dropdownButton.getBoundingClientRect();
+        const menuRect = dropdownMenu.getBoundingClientRect();
+        
+        // Ensure the dropdown menu stays within the viewport
+        if (window.innerHeight - buttonRect.bottom < menuRect.height) {
+            dropdownMenu.style.top = `-${menuRect.height + 4}px`; // Move it above the button
+        } else {
+            dropdownMenu.style.top = '100%'; // Default position below the button
+        }
+
+        // Optional: Adjust position horizontally if needed
+        if (buttonRect.left + menuRect.width > window.innerWidth) {
+            dropdownMenu.style.left = `-${menuRect.width}px`; // Move it left if it goes out of bounds
+        } else {
+            dropdownMenu.style.left = '0'; // Default position
+        }
+    });
+
+    window.addEventListener('click', function(e) {
+        if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+});
+
     </script>
 </body>
 </html>

@@ -10,6 +10,9 @@
         <a href="{{ url_for('admin.users') }}" class="flex items-center py-3 px-4 text-black dark:text-white no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
             <i class="ri-user-line mr-4"></i> Users
         </a>
+        <a href="{{ url_for('admin.user_requests') }}" class="flex items-center py-3 px-4 text-black dark:text-white no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
+            <i class="ri-task-line mr-4"></i> User Requests
+        </a>
         <a href="{{ url_for('admin.summary_history') }}" class="flex items-center py-3 px-4 text-black dark:text-white no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
             <i class="ri-history-line mr-4"></i> User Analyses
         </a>
@@ -19,12 +22,12 @@
         <a href="{{ url_for('admin.admin_audit') }}" class="flex items-center py-3 px-4 text-black dark:text-white no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
             <i class="ri-shield-user-line mr-4"></i> Admin Logs
         </a>
-        <a onclick="showLogoutConfirmModal()" id="logoutButton" class="flex items-center py-3 px-4 text-red-500 no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md">
+        <a onclick="showLogoutConfirmModal()" id="logoutButton" class="flex items-center py-3 px-4 text-red-500 no-underline rounded-md transition-colors duration-200 hover:bg-slate-300 dark:hover:bg-gray-800 hover:rounded-md cursor-pointer">
             <i class="ri-logout-box-line mr-4"></i> Logout
         </a>
     </nav>
 </div>
-<div id="logoutConfirmModal" class="fixed inset-0 flex items-center justify-center bg-slate-400 dark:bg-slate-800 bg-opacity-90 hidden z-50">
+<div id="logoutConfirmModal" class="fixed inset-0 flex items-center justify-center bg-slate-600 bg-opacity-80 hidden z-50">
     <div class="bg-slate-200 dark:bg-[#121212] p-6 rounded-lg shadow-lg max-w-sm w-full">
         <h2 class="text-lg font-semibold text-black dark:text-white mb-6">Are you sure you want to logout?</h2>
         <div class="flex justify-end">

@@ -3,10 +3,12 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-from .models import Users, Admin, YoutubeUrl, Comments, SummarizedComments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl
+from .models import Users, Admin, YoutubeUrl, Comments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl, HighScoreComments
+# from .models import SummarizedComments
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import clean_text, word_cloud, get_summary, extract_comments, word_cloud_blob
+from .analysis import clean_text, word_cloud, extract_comments, word_cloud_string
+# from .analysis import get_summary
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
@@ -715,7 +717,8 @@ def delete_account():
                 db.session.query(WordCloudImage).filter_by(user_id=current_user.id).delete()
                 db.session.query(SentimentCounter).filter_by(user_id=current_user.id).delete()
                 db.session.query(FrequentWords).filter_by(user_id=current_user.id).delete()
-                db.session.query(SummarizedComments).filter_by(user_id=current_user.id).delete()
+                # db.session.query(SummarizedComments).filter_by(user_id=current_user.id).delete()
+                db.session.query(HighScoreComments).filter_by(user_id=current_user.id).delete()
                 db.session.query(Comments).filter_by(user_id=current_user.id).delete()
                 db.session.query(YoutubeUrl).filter_by(user_id=current_user.id).delete()
                 db.session.query(GetUrl).filter_by(user_id=current_user.id).delete()
@@ -751,6 +754,15 @@ def analyze():
             if not url:
                 flash('Please enter a valid YouTube URL.', category='error')
                 return redirect(url_for('views.main'))
+            elif url:
+                if '/live/' in url:
+                    url = url.replace('/live/', '/watch?v=')
+                elif 'youtu.be' in url:
+                    """
+                    example: https://youtu.be/cb0BtfLUnvE (ディストーションと抱擁 by 不破湊)
+                    convert to: https://youtube.com/watch?v=cb0BtfLUnvE
+                    """
+                    url = url.replace('youtu.be/', 'youtube.com/watch?v=')
             try:
                 yt = YouTube(url)
                 video_name = yt.title
@@ -766,7 +778,7 @@ def analyze():
             db.session.commit()
             user_log(f"User ID: {current_user.id} | requested analysis for video '{video_name}'")
 
-            # THE FOLLOWING CODE BLOCK WILL ONLY BE COMMITTED WHEN THE ANALYSIS IS SUCCESSFUL
+            """THE FOLLOWING CODE BLOCK WILL ONLY BE COMMITTED WHEN THE ANALYSIS IS SUCCESSFUL"""
             # Adding the URL to the youtube_url table, youtube_url table's id is get_url's id if successful
             new_youtube_url = YoutubeUrl(id=new_url.id, url=url, user_id=current_user.id, video_name=video_name, video_id=video_id, created_at=created_at)
             db.session.add(new_youtube_url)
@@ -783,17 +795,50 @@ def analyze():
 
             # Sentiment Analysis for each comment
             sentiments = []
+            most_positive_comment = None
+            most_negative_comment = None
+            highest_positive_score = 0
+            highest_negative_score = 0
+
             for comment in filtered_comments:
                 try:
                     sentiment = sentiment_pipeline([comment])[0]
                     sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
                     sentiments.append(sentiment)
-                except RuntimeError as e: # This occurs because of the length of the comment. RoBERTa can only handle a maximum of 512 tokens.
+
+                    # get the most positive and most negative comments
+                    if sentiment['label'] == 'Positive' and sentiment['score'] > highest_positive_score:
+                        highest_positive_score = sentiment['score']
+                        most_positive_comment = comment
+                    
+                    if sentiment['label'] == 'Negative' and sentiment['score'] > highest_negative_score:
+                        highest_negative_score = sentiment['score']
+                        most_negative_comment = comment
+                except RuntimeError as e: 
+                    """This occurs because of the length of the comment. 
+                    RoBERTa can only handle a maximum of 512 tokens."""
+                    current_app.logger.error(f'Exception: {str(e)} - Comment: {comment}')
                     continue  # Skip this comment and continue with the next one
+                except IndexError as e:
+                    current_app.logger.error(f'IndexError: {str(e)} - Comment: {comment}')
+                    # flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
+                    # return redirect(url_for('views.main'))
+                    continue
                 except Exception as e:
+                    current_app.logger.error(f'Exception: {str(e)} - Comment: {comment}')
                     flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
                     return redirect(url_for('views.main'))
-            
+                
+            high_score_comment = HighScoreComments(
+                user_id=current_user.id,
+                url_id=new_youtube_url.id,
+                most_positive_comment=most_positive_comment,
+                most_negative_comment=most_negative_comment,
+                highest_positive_score=highest_positive_score,
+                highest_negative_score=highest_negative_score
+            )
+            db.session.add(high_score_comment)
+
             # for sentiment counter
             positive_count = 0
             negative_count = 0
@@ -839,11 +884,10 @@ def analyze():
                 db.session.add(new_frequent_word)
                 frequent_words_objects.append(new_frequent_word)
 
-            # GENERATE and INSERT SUMMARY
-            summary = get_summary(all_comments_text)
-
-            summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
-            db.session.add(summarized_comment)
+            """GENERATE and INSERT SUMMARY: uncomment when needed"""
+            # summary = get_summary(all_comments_text)
+            # summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
+            # db.session.add(summarized_comment)
 
             # INSERT the counts to the sentiment_counter table
             sentiment_counter = SentimentCounter(
@@ -861,18 +905,20 @@ def analyze():
             # Generate the positive word cloud
             positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
             positive_text = ' '.join(positive_words)
+            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
             positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
-            
+            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
+            # positive_img_str = word_cloud_string(positive_text, 'winter')
+
             # Generate the negative word cloud
             negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
             negative_text = ' '.join(negative_words)
+            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
             negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
+            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
+            # negative_img_str = word_cloud_string(negative_text, 'hot')
 
             if positive_img_str and negative_img_str:
-                # Decode the base64 strings back to binary data
-                # positive_img_data = base64.b64decode(positive_img_str)
-                # negative_img_data = base64.b64decode(negative_img_str)
-
                 positive_img_data = positive_img_str
                 negative_img_data = negative_img_str
                 
@@ -901,12 +947,14 @@ def analyze():
 def delete_analysis(item_id):
     # Check if the item exists and belongs to the current user
     youtube_url = YoutubeUrl.query.filter_by(id=item_id, user_id=current_user.id).first()
+    video_name = youtube_url.video_name if youtube_url else None
     
     if youtube_url:
         try:
             # Delete related entries in other tables
             db.session.query(Comments).filter_by(url_id=youtube_url.id).delete()
-            db.session.query(SummarizedComments).filter_by(url_id=youtube_url.id).delete()
+            # db.session.query(SummarizedComments).filter_by(url_id=youtube_url.id).delete()
+            db.session.query(HighScoreComments).filter_by(url_id=youtube_url.id).delete()
             db.session.query(FrequentWords).filter_by(url_id=youtube_url.id).delete()
             db.session.query(SentimentCounter).filter_by(url_id=youtube_url.id).delete()
             db.session.query(WordCloudImage).filter_by(url_id=youtube_url.id).delete()
@@ -923,6 +971,7 @@ def delete_analysis(item_id):
             db.session.commit()
             
             user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {item_id}")
+            flash(f"Analysis for {video_name} deleted successfully.", category='success')
             return jsonify({'message': 'Previous analysis deleted successfully'}), 200
             # return redirect(url_for('views.main'))
             # response = {
@@ -945,6 +994,11 @@ def analyze2():
     
     if not youtube_url:
         return jsonify({'error': 'Please enter a valid YouTube URL.'}), 400
+    elif youtube_url:
+        if '/live/' in youtube_url:
+            youtube_url = youtube_url.replace('/live/', '/watch?v=')
+        elif 'youtu.be' in youtube_url:
+            youtube_url = youtube_url.replace('youtu.be/', 'youtube.com/watch?v=')
     
     try:
         yt = YouTube(youtube_url)
@@ -975,9 +1029,10 @@ def analyze2():
             sentiments.append({'comment': comment, 'sentiment': sentiment['label']})
         except RuntimeError as e:
             continue 
+        except IndexError as e:
+            continue
         except Exception as e:
-            flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
-            return redirect(url_for('views.home'))
+            return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 400
         
         # Counting the sentiments
         if sentiment['label'] == 'Positive':
@@ -1003,17 +1058,17 @@ def analyze2():
             word_sentiment_label = "Neutral"
         frequent_words.append([word, count, word_sentiment_label])
 
-    summary = get_summary(all_comments_text)
+    # summary = get_summary(all_comments_text)
 
-    # Generate Word Clouds
-    unlabeled_words = word_tokenize(all_comments_text)
-    positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
-    positive_text = ' '.join(positive_words)
-    positive_img_str = word_cloud_blob(positive_text, 'winter')
+    """Generate Word Clouds: uncomment when needed"""
+    # unlabeled_words = word_tokenize(all_comments_text)
+    # positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
+    # positive_text = ' '.join(positive_words)
+    # positive_img_str = word_cloud_string(positive_text, 'winter')
     
-    negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
-    negative_text = ' '.join(negative_words)
-    negative_img_str = word_cloud_blob(negative_text, 'hot')
+    # negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
+    # negative_text = ' '.join(negative_words)
+    # negative_img_str = word_cloud_string(negative_text, 'hot')
 
     response = {
         'video_name2': video_name,
@@ -1022,8 +1077,9 @@ def analyze2():
         'neutral_count2': neutral_count,
         'comments2': sentiments,
         'frequent_words2': frequent_words,
-        'positive_img_str2': positive_img_str,
-        'negative_img_str2': negative_img_str,
+        # 'summary2': summary,
+        # 'positive_img2': positive_img_str,
+        # 'negative_img2': negative_img_str
     }
 
     return jsonify(response), 200

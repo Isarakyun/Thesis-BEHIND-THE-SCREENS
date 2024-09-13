@@ -4,8 +4,9 @@ from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
-from .models import Users, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, SummarizedComments, WordCloudImage, GetUrl
-from datetime import datetime
+from .models import Users, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, WordCloudImage, GetUrl, HighScoreComments
+# fron .models import SummarizedComments
+from datetime import datetime, timedelta
 from . import db
 import re
 import os
@@ -100,6 +101,21 @@ def users():
     users_dict = [user.to_dict() for user in users]
     return render_template('admin_users.html', users=users_dict)
 
+@admin_bp.route('/user-requests')
+@admin_required
+def user_requests():
+    requests = db.session.query(GetUrl).order_by(GetUrl.created_at.desc()).all()
+    request_details = []
+    for request in requests:
+        user = Users.query.get(request.user_id)
+        request_details.append({
+            'created_at': request.created_at,
+            'url': request.url,
+            'username': user.username,
+            'attempt': request.attempt
+        })
+    return render_template('admin_user_requests.html', requests=request_details)
+
 @admin_bp.route('/edit-user', methods=['POST'])
 @admin_required
 def edit_user():
@@ -107,6 +123,9 @@ def edit_user():
     username = request.form.get('username')
     email = request.form.get('email')
     password = request.form.get('password')  # Optional field for password
+
+    old_username = Users.query.get(user_id).username
+    old_email = Users.query.get(user_id).email
 
     existing_email = Users.query.filter_by(email=email).first()
     existing_username = Users.query.filter_by(username=username).first()
@@ -117,21 +136,29 @@ def edit_user():
         flash('Email address already exists.', 'error')
     elif existing_username and existing_username.id != user.id:
         flash('Username already exists.', 'error')
+    elif username == 'admin':
+        flash('Username cannot be "admin".', 'error')
     elif not re.match(valid_email, email):
         flash('Invalid email address.', 'error')
     elif not user:
         flash('User not found.', 'error')
     else:
-        user.username = username
-        user.email = email
+        if username != old_username:
+            user.username = username
+            log_audit_trail(f"Edited USERNAME of ID: {user_id} | From: '{old_username}' To: '{username}'")
+    
+        if email != old_email:
+            user.email = email
+            log_audit_trail(f"Edited EMAIL of ID: {user_id} | User: {username}")
+
         if password:
             if not re.match(valid_password, password):
                 flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
             else:
                 user.password = generate_password_hash(password, method='sha256')
+                log_audit_trail(f"Edited PASSWORD of ID: {user_id} | User: {username}")
         db.session.commit()
-        log_audit_trail(f"Edited user {username}")
-        flash(f'User:{username} updated successfully!', 'success')
+        flash(f'User: {username} updated successfully!', 'success')
 
     return redirect(url_for('admin.users'))
 
@@ -214,7 +241,8 @@ def delete_user(user_id):
 
             # Delete related records
             db.session.query(WordCloudImage).filter_by(user_id=user_id).delete()
-            db.session.query(SummarizedComments).filter_by(user_id=user_id).delete()
+            # db.session.query(SummarizedComments).filter_by(user_id=user_id).delete()
+            db.session.query(HighScoreComments).filter_by(user_id=user_id).delete()
             db.session.query(SentimentCounter).filter_by(user_id=user_id).delete()
             db.session.query(FrequentWords).filter_by(user_id=user_id).delete()
             db.session.query(Comments).filter_by(user_id=user_id).delete()
@@ -241,6 +269,26 @@ def delete_user(user_id):
         return jsonify({'error': str(e)}), 500
 
     # return redirect(url_for('admin.users'))
+
+@admin_bp.route('/delete-user-logs', methods=['POST'])
+@admin_required
+def delete_user_logs():
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    old_user_logs = UserLog.query.filter(UserLog.timestamp < thirty_days_ago).count()
+    db.session.query(UserLog).filter(UserLog.timestamp < thirty_days_ago).delete()
+    db.session.commit()
+    flash(f'{old_user_logs} User logs deleted successfully!', 'success')
+    return redirect(url_for('admin.user_audit'))
+
+@admin_bp.route('/delete-admin-logs', methods=['POST'])
+@admin_required
+def delete_admin_logs():
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    old_admin_logs = AdminLog.query.filter(AdminLog.timestamp < thirty_days_ago).count()
+    db.session.query(AdminLog).filter(AdminLog.timestamp < thirty_days_ago).delete()
+    db.session.commit()
+    flash(f'{old_admin_logs} Admin logs deleted successfully!', 'success')
+    return redirect(url_for('admin.admin_audit'))
 
 @admin_bp.route('/logout')
 @admin_required

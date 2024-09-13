@@ -16,19 +16,19 @@
             <table class="min-w-full text-black dark:text-white rounded-3xl mt-4" id="analyses">
                 <thead>
                     <tr class="w-full bg-slate-300 dark:bg-gray-700 rounded-3xl">
-                        <th class="py-3 px-6 text-center rounded-tl-3xl">Date</th>
+                        <th class="py-3 px-6 text-center rounded-tl-3xl">User</th>
                         <th class="py-3 px-6 text-center">URL</th>
                         <th class="py-3 px-6 text-center">Title</th>
-                        <th class="py-3 px-6 text-center rounded-tr-3xl">User</th>
+                        <th class="py-3 px-6 text-center rounded-tr-3xl">Date</th>
                     </tr>
                 </thead>
                 <tbody class="bg-slate-200 dark:bg-gray-800">
                     {% for summary in summaries %}
                     <tr class="border-b border-slate-100 dark:border-gray-700">
-                        <td class="py-4 px-6 text-center">{{ summary.created_at|format_date }}</td>
+                      <td class="py-4 px-6 text-center">{{ summary.username }}</td>
                         <td class="py-4 px-6 text-center">{{ summary.video_url }}</td>
                         <td class="py-4 px-6 text-center">{{ summary.video_name }}</td>
-                        <td class="py-4 px-6 text-center">{{ summary.username }}</td>
+                        <td class="py-4 px-6 text-center">{{ summary.created_at|format_date }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
