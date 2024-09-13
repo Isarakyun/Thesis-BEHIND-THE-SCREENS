@@ -763,6 +763,13 @@ def analyze():
                     convert to: https://youtube.com/watch?v=cb0BtfLUnvE
                     """
                     url = url.replace('youtu.be/', 'youtube.com/watch?v=')
+                elif '/shorts/' in url:
+                    
+                    """
+                    example: https://www.youtube.com/shorts/6VQBtlJiFYE (by 不破湊)
+                    convert to: https://youtube.com/watch?v=6VQBtlJiFYE
+                    """
+                    url = url.replace('/shorts/', '/watch?v=')
             try:
                 yt = YouTube(url)
                 video_name = yt.title
