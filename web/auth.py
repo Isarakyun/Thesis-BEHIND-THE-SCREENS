@@ -1006,6 +1006,8 @@ def analyze2():
             youtube_url = youtube_url.replace('/live/', '/watch?v=')
         elif 'youtu.be' in youtube_url:
             youtube_url = youtube_url.replace('youtu.be/', 'youtube.com/watch?v=')
+        elif '/shorts/' in youtube_url:
+            youtube_url = youtube_url.replace('/shorts/', '/watch?v=')
     
     try:
         yt = YouTube(youtube_url)
