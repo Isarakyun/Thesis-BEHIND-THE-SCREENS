@@ -39,6 +39,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 sia = SentimentIntensityAnalyzer()
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
+valid_password = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$'
 
 """
 Audit Trail Logger:
@@ -147,8 +148,8 @@ def sign_up():
             flash('Email must be valid.', category='error')
         elif password != confirmpassword:
             flash('Passwords don\'t match.', category='error')
-        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
-            flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
+        elif not re.match(valid_password, password):
+            flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
         else:
             new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'), created_at=created_at)
             db.session.add(new_user)
@@ -312,8 +313,8 @@ def reset_password(token):
             user = Users.query.filter_by(email=email).first()
             if password != confirmpassword:
                 flash('Passwords don\'t match.', category='error')
-            elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
-                flash('Password must be at least 8 characters long and contain both letters and numbers.', category='error')
+            elif not re.match(valid_password, password):
+                flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
             else:
                 user.password=generate_password_hash(password, method='sha256')
                 db.session.commit()
@@ -394,8 +395,8 @@ def change_password():
         confirm_password = request.form.get('confirmpassword')
         if check_password_hash(current_user.password, current_password):
             if new_password == confirm_password:
-                if len(new_password) < 8:
-                    flash('Password must be at least 8 characters.', category='error')
+                if not re.match(valid_password, new_password):
+                    flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
                 else:
                     current_user.password = generate_password_hash(new_password, method='sha256')
                     db.session.commit()
