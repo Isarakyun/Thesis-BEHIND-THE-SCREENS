@@ -23,7 +23,11 @@
   <table id="summary" class="w-full justify-center text-center ml-[50px] mr-[50px] mt-16 relative z-10">
     <thead class="text-white">
       <tr class="bg-red-600 dark:bg-slate-700 text-xl">
+        {% if youtube_url.created_at and count.positive is not none and count.negative is not none and count.neutral is not none and frequent_words %}
         <th class="px-2 py-1">Interpretation of " {{ youtube_url.video_name }} "</th>
+        {% else %}
+        <th class="px-2 py-1">Analysis Unavailable</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody class="text-gray-900 dark:text-white font-medium bg-slate-200 dark:bg-[#1c1b1b]">
@@ -70,13 +74,17 @@
       <tr>
         <td class="px-2 py-2">The <span class="font-bold text-2xl">overall sentiment</span> of the comments is
           {% if overall_sentiment == 'POSITIVE' %}
-          <span class="font-bold text-2xl text-blue-500">{{ overall_sentiment }}.</span>
+            <span class="font-bold text-2xl text-blue-500">{{ overall_sentiment }}.</span>
           {% elif overall_sentiment == 'NEGATIVE' %}
-          <span class="font-bold text-2xl text-red-600">{{ overall_sentiment }}.</span>
+            <span class="font-bold text-2xl text-red-600">{{ overall_sentiment }}.</span>
           {% else %}
-          <span class="font-bold text-2xl text-yellow-700 dark:text-yellow-600">{{ overall_sentiment }}.</span>
+            <span class="font-bold text-2xl text-yellow-700 dark:text-yellow-600">{{ overall_sentiment }}.</span>
           {% endif %}
-          {% else %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td class="px-2 py-2">
             No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis (such as ongoing live streams).
         </td>
       </tr>
@@ -92,10 +100,10 @@
 </div>    
 
 <!-- Most Positive and Negative Comments -->
+{% if youtube_url.created_at is not none and highscorecomments %}
 <div id="high-score-comments" class="flex overflow-hidden mt-12 pt-5 relative">
   <img src="{{ url_for('static', filename='highlights-text.png' )}}" class="absolute ml-[100px] w-[600px] opacity-25">
   <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-12">
-    {% if youtube_url.created_at is not none and highscorecomments %}
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1"></th>
@@ -125,21 +133,13 @@
           {% endif %}
         </tr>
       </tbody>
-    {% else %}
-      <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-xl">
-          <th class="px-4 py-1">Most Positive and/or Negative Comments</th>
-        </tr>
-      </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-m">
-        <tr class="sentiment-row">
-          <td class="px-2 py-2">There are no comments found.</td>
-        </tr>
-      </tbody>
-    {% endif %}
   </table>
 </div>
+{% endif %}
 
+<!-- Comments -->
+ 
+{% if youtube_url.created_at is not none and frequent_words %}
 <div class="mt-12 pt-5 relative">
   <img src="{{ url_for('static', filename='comments-text.png' )}}" class="absolute ml-[100px] w-[500px] opacity-25">
   <div class="relative z-10 mt-[-30px]">
@@ -296,6 +296,7 @@
     <div id="neutral-pagination-controls" class="flex justify-center mt-4 hidden"></div>
   </div>
 </div>
+{% endif %}
 
 <!-- SCRIPT FOR ALL COMMENTS -->
 <script>
@@ -872,6 +873,7 @@
 </script>
 
   <!-- WordCloud -->
+{% if youtube_url.created_at is not none and frequent_words %}
 <div id="high-score-comments" class="flex overflow-hidden mt-5 pt-5 relative pb-8">
   <img src="{{ url_for('static', filename='wordcloud-text.png' )}}" class="absolute ml-[100px] w-[600px] opacity-25">
   <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-12">
@@ -904,6 +906,7 @@
       </tbody>
   </table>
 </div>
+{% endif %}
 
   <!-- <div class="rounded ml-[50px] mr-[50px] mt-12 bg-red-600 dark:bg-slate-700 p-1">
     <p class="text-white font-bold ml-2 text-2xl">Word Cloud</p>
