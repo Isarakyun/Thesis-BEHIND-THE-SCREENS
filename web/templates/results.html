@@ -7,7 +7,7 @@
   </button>
   <div class="flex-1 flex items-center space-x-4">
       <a href="{{ url_for('views.home') }}" class="text-base sm:text-m text-black dark:text-white">
-          Behind the Screens
+          <span>Behind the Screens</span>
       </a>
       {% if user.confirmed_email == False %}
       <span class="text-sm sm:text-m text-red-600">
@@ -17,50 +17,74 @@
   </div>
 </div>
 
-<!-- SUMMARY -->
+<!-- SUMMARY / INTERPRETATION -->
 <div class="mt-5 pt-5 flex justify-center overflow-hidden">
   <table id="summary" class="w-full text-center ml-[50px] mr-[50px] mt-4">
     <thead class="text-white">
-      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+      <tr class="bg-red-600 dark:bg-slate-700 text-xl">
         <th class="px-2 py-1">Interpretation of " {{ youtube_url.video_name }} "</th>
       </tr>
     </thead>
-    <tbody class="text-gray-900 dark:text-white text-sm">
+    <tbody class="text-gray-900 dark:text-white font-medium bg-slate-200 dark:bg-[#1c1b1b]">
       <tr>
-        <!-- <td class="px-2 py-2">{{ summary }}</td> -->
+        {% if youtube_url.created_at and count.positive is not none and count.negative is not none and count.neutral is not none and frequent_words %}
         <td class="px-2 py-2">
-          {% if youtube_url.created_at and count.positive is not none and count.negative is not none and count.neutral is not none and frequent_words %}
           {% set overall_sentiment = 'NEUTRAL' %}
           {% if count.positive >= count.negative and count.positive >= count.neutral %}
             {% set overall_sentiment = 'POSITIVE' %}
           {% elif count.negative >= count.positive and count.negative >= count.neutral %}
             {% set overall_sentiment = 'NEGATIVE' %}
           {% endif %}
-            As of {{ youtube_url.created_at|format_date }}, this video has received {{ count.positive }} positive comments, {{ count.negative }} negative comments, and {{ count.neutral }} neutral comments. The most frequently used words are: 
+          As of <span class="font-bold text-2xl">{{ youtube_url.created_at|format_date }}</span>, 
+          this video has received 
+          <span class="font-bold text-2xl text-blue-500">{{ count.positive }} positive</span>, 
+          <span class="font-bold text-2xl text-red-600">{{ count.negative }} negative</span>, and 
+          <span class="font-bold text-2xl text-yellow-700 dark:text-yellow-600">{{ count.neutral }} neutral</span> comments.
+        </td>
+        </tr>
+      </tr>
+        <td class="px-2"> The <span class="font-bold text-2xl">most frequently used words</span> are: 
             {% for word in frequent_words %}
               {% if loop.last %}
-                and '{{ word.word }}'
+                and 
+                {% if word.sentiment == "Positive" %}
+                  <span class="font-bold text-2xl text-blue-500">'{{ word.word }}'</span> ({{ word.count }} times).
+                {% elif word.sentiment == "Negative" %}
+                  <span class="font-bold text-2xl text-red-600">'{{ word.word }}'</span> ({{ word.count }} times).
+                {% else %}
+                  <span class="font-bold text-2xl text-yellow-700 dark:text-yellow-600">'{{ word.word }}'</span> ({{ word.count }} times).
+                {% endif %}
               {% else %}
-                '{{ word.word }}',
+                {% if word.sentiment == "Positive" %}
+                  <span class="font-bold text-2xl text-blue-500">'{{ word.word }}'</span> ({{ word.count }} times),
+                {% elif word.sentiment == "Negative" %}
+                  <span class="font-bold text-2xl text-red-600">'{{ word.word }}'</span> ({{ word.count }} times),
+                {% else %}
+                  <span class="font-bold text-2xl text-yellow-700 dark:text-yellow-600">'{{ word.word }}'</span> ({{ word.count }} times),
+                {% endif %}
               {% endif %}
-            {% endfor %} which were used 
-            {% for word in frequent_words %} 
-              {% if loop.last %}
-                and {{ word.count }} times,
-              {% else %}
-                {{ word.count }},
-              {% endif %}
-            {% endfor %} respectively. The overall sentiment is {{ overall_sentiment }}.
-          {% else %}
-            No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis (such as ongoing live streams).
-          {% endif %}
+            {% endfor %}
         </td>
       </tr>
       <tr>
-        <td class="px-2 py-2 italic text-yellow-700 dark:text-yellow-600">Please note that the model used for the analysis doesn't recognize slangs or inside jokes depending on the content of the video.</td>
+        <td class="px-2 py-2">The <span class="font-bold text-2xl">overall sentiment</span> of the comments is
+          {% if overall_sentiment == 'POSITIVE' %}
+          <span class="font-bold text-2xl text-blue-500">{{ overall_sentiment }}.</span>
+          {% elif overall_sentiment == 'NEGATIVE' %}
+          <span class="font-bold text-2xl text-red-600">{{ overall_sentiment }}.</span>
+          {% else %}
+          <span class="font-bold text-2xl text-yellow-700 dark:text-yellow-600">{{ overall_sentiment }}.</span>
+          {% endif %}
+          {% else %}
+            No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis (such as ongoing live streams).
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td class="px-2 py-2 italic text-yellow-700 dark:text-yellow-600 text-sm">Please note that the model used for the analysis mainly recognizes English language and doesn't recognize slangs or inside jokes which depends on the content of the video.</td>
       </tr>
       <tr>
-        <td class="px-2 italic text-yellow-700 dark:text-yellow-600">Comments with timestamps and replies aren't included in the analysis.</td>
+        <td class="px-2 italic text-yellow-700 dark:text-yellow-600 text-sm">Comments with timestamps and replies aren't included in the analysis.</td>
       </tr>
     </tbody>
   </table>
@@ -71,13 +95,13 @@
   <table class="w-full ml-[50px] mr-[50px]">
     {% if youtube_url.created_at is not none and highscorecomments %}
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1"></th>
           <th class="px-4 py-1">Highlighted Comments</th>
           <th class="px-2 py-1">Score</th>
         </tr>
       </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      <tbody class="text-center text-gray-900 dark:text-white font-medium bg-slate-200 dark:bg-[#1c1b1b]">
         <tr>
           <td class="px-2 py-2 text-blue-700 dark:text-white dark:bg-blue-700 font-bold">Most Positive</td>
           {% if highscorecomments.most_positive_comment is not none %}
@@ -101,11 +125,11 @@
       </tbody>
     {% else %}
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <tr class="bg-red-600 dark:bg-slate-700 text-xl">
           <th class="px-4 py-1">Most Positive and/or Negative Comments</th>
         </tr>
       </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      <tbody class="text-center text-gray-900 dark:text-white text-m">
         <tr class="sentiment-row">
           <td class="px-2 py-2">There are no comments found.</td>
         </tr>
@@ -115,7 +139,7 @@
 </div>
 
   <!-- Dropdown for sentiment selection -->
-<div class="mt-5 pt-5 flex justify-end ml-[50px] mr-[50px] shadow-lg">
+<div class="mt-5 pt-5 flex justify-end ml-[50px] mr-[50px] shadow-lg font-medium">
   {% if youtube_url.created_at is not none and frequent_words %}
   <select id="sentiment-filter" class="mb-4 px-4 py-2 border border-red-600 dark:border-slate-700 rounded bg-slate-200 dark:bg-[#121212] text-black dark:text-white">
     <option value="all">All</option>
@@ -132,12 +156,12 @@
   <table id="labeled-comments" class="w-full ml-[50px] mr-[50px]">
     {% if youtube_url.created_at is not none and frequent_words %}
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1 w-4/5">Comments</th>
           <th class="px-2 py-1 w-1/5">Sentiment</th>
         </tr>
       </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      <tbody class="text-center text-gray-900 dark:text-white font-medium bg-slate-200 dark:bg-[#1c1b1b]">
         {% for comment in comments %}
         <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
           <td class="px-2 py-2">{{ comment.comment }}</td>
@@ -153,11 +177,11 @@
       </tbody>
     {% else %}
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1">Comments</th>
         </tr>
       </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      <tbody class="text-center text-gray-900 dark:text-white">
         <tr class="sentiment-row">
           <td class="px-2 py-2">There are no comments found.</td>
         </tr>
@@ -172,12 +196,12 @@
   <table id="labeled-positive-comments" class="w-full ml-[50px] mr-[50px]">
     {% if youtube_url.created_at is not none and count.positive is not none and frequent_words %}
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1 w-4/5">Comments</th>
           <th class="px-2 py-1 w-1/5">Sentiment</th>
         </tr>
       </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      <tbody class="text-center text-gray-900 dark:text-white font-medium bg-slate-200 dark:bg-[#1c1b1b]">
         {% for comment in comments %}
           {% if comment.sentiment == 'Positive' %}
           <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
@@ -189,11 +213,11 @@
       </tbody>
     {% else %}
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1">Comments</th>
         </tr>
       </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      <tbody class="text-center text-gray-900 dark:text-white">
         <tr class="sentiment-row">
           <td class="px-2 py-2 text-blue-700">There are no positive comments found.</td>
         </tr>
@@ -208,12 +232,12 @@
   <table id="labeled-negative-comments" class="w-full ml-[50px] mr-[50px]">
     {% if youtube_url.created_at is not none and count.negative is not none and frequent_words %}
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1 w-4/5">Comments</th>
           <th class="px-2 py-1 w-1/5">Sentiment</th>
         </tr>
       </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      <tbody class="text-center text-gray-900 dark:text-white font-medium bg-slate-200 dark:bg-[#1c1b1b]">
         {% for comment in comments %}
           {% if comment.sentiment == 'Negative' %}
           <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
@@ -225,11 +249,11 @@
       </tbody>
     {% else %}
     <thead class="text-white">
-      <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+      <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
         <th class="px-4 py-1">Comments</th>
       </tr>
     </thead>
-    <tbody class="text-center text-gray-900 dark:text-white text-sm">
+    <tbody class="text-center text-gray-900 dark:text-white">
       <tr class="sentiment-row">
         <td class="px-2 py-2 text-red-700">There are no negative comments found.</td>
       </tr>
@@ -244,12 +268,12 @@
   <table id="labeled-neutral-comments" class="w-full ml-[50px] mr-[50px]">
     {% if youtube_url.created_at is not none and count.neutral is not none and frequent_words %}
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1 w-4/5">Comments</th>
           <th class="px-2 py-1 w-1/5">Sentiment</th>
         </tr>
       </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      <tbody class="text-center text-gray-900 dark:text-white font-medium bg-slate-200 dark:bg-[#1c1b1b]">
         {% for comment in comments %}
           {% if comment.sentiment == 'Neutral' %}
           <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
@@ -261,11 +285,11 @@
       </tbody>
       {% else %}
         <thead class="text-white">
-          <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+          <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
             <th class="px-4 py-1">Comments</th>
           </tr>
         </thead>
-        <tbody class="text-center text-gray-900 dark:text-white text-sm">
+        <tbody class="text-center text-gray-900 dark:text-white">
           <tr class="sentiment-row">
             <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">There are no neutral comments found.</td>
           </tr>
@@ -745,13 +769,13 @@
 <div id="frequent-words" class="flex justify-center overflow-hidden mt-5 pt-5">
   <table class="w-1/2 ml-[50px] mr-[50px]">
       <thead class="text-white">
-        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+        <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1">Word</th>
           <th class="px-4 py-1">Count</th>
           <th class="px-2 py-1">Sentiment</th>
         </tr>
       </thead>
-      <tbody class="text-center text-gray-900 dark:text-white text-sm">
+      <tbody class="text-center text-gray-900 dark:text-white font-medium bg-slate-200 dark:bg-[#1c1b1b]">
         {% for word in frequent_words %}
         <tr>
           <td class="px-2 py-2">{{ word.word }}</td>
@@ -848,7 +872,7 @@
 
   <!-- WordCloud -->
   <div class="rounded ml-[50px] mr-[50px] mt-5 bg-red-600 dark:bg-slate-700 p-1">
-    <a class="text-white font-bold ml-2">Word Cloud</a>
+    <a class="text-white font-bold ml-2 text-2xl">Word Cloud</a>
   </div>     
   <div class="pb-8">
     <div class="flex justify-center">
@@ -858,9 +882,9 @@
           <img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_positive_data) }}" alt="Positive Word Cloud">
           <!-- <img class="italic text-gray-500 w-full rounded" src="data:image/png;base64,{{ image_positive_data }}" alt="Positive Word Cloud"> -->
         {% else %}
-          <p class="italic text-gray-500 text-center mt-2">Not enough information.</p>
+          <p class="italic text-gray-500 text-center mt-2 text-sm">Not enough information.</p>
         {% endif %}
-        <p class="text-black dark:text-white text-center mt-2">Positive</p>
+        <p class="text-black dark:text-white text-center mt-2 text-lg font-medium">Positive</p>
       </div>
       <!-- NEGATIVE WORD CLOUD -->
       <div class="mt-[20px] ml-4 mr-[50px]">
@@ -868,9 +892,9 @@
           <img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_negative_data) }}" alt="Negative Word Cloud">
           <!-- <img class="italic text-gray-500 w-full rounded" src="data:image/png;base64,{{ image_negative_data }}" alt="Negative Word Cloud"> -->
         {% else %}
-          <p class="italic text-gray-500 text-center mt-2">Not enough information.</p>
+          <p class="italic text-gray-500 text-center mt-2 text-sm">Not enough information.</p>
         {% endif %}
-        <p class="text-black dark:text-white text-center mt-2">Negative</p>
+        <p class="text-black dark:text-white text-center mt-2 text-lg font-medium">Negative</p>
       </div>
     </div>
   </div>
