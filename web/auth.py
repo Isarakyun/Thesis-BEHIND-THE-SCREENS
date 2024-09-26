@@ -976,7 +976,7 @@ def delete_result(url_id):
             db.session.delete(youtube_url)
             db.session.commit()
             
-            user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {url_id}")
+            user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {url_id}, Video Name: {video_name}")
             flash(f"Analysis for {video_name} deleted successfully.", category='success')
         
         except Exception as e:
