@@ -39,6 +39,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 sia = SentimentIntensityAnalyzer()
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
+valid_password = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$'
 
 """
 Audit Trail Logger:
@@ -147,8 +148,8 @@ def sign_up():
             flash('Email must be valid.', category='error')
         elif password != confirmpassword:
             flash('Passwords don\'t match.', category='error')
-        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
-            flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
+        elif not re.match(valid_password, password):
+            flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
         else:
             new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'), created_at=created_at)
             db.session.add(new_user)
@@ -312,8 +313,8 @@ def reset_password(token):
             user = Users.query.filter_by(email=email).first()
             if password != confirmpassword:
                 flash('Passwords don\'t match.', category='error')
-            elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
-                flash('Password must be at least 8 characters long and contain both letters and numbers.', category='error')
+            elif not re.match(valid_password, password):
+                flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
             else:
                 user.password=generate_password_hash(password, method='sha256')
                 db.session.commit()
@@ -394,8 +395,8 @@ def change_password():
         confirm_password = request.form.get('confirmpassword')
         if check_password_hash(current_user.password, current_password):
             if new_password == confirm_password:
-                if len(new_password) < 8:
-                    flash('Password must be at least 8 characters.', category='error')
+                if not re.match(valid_password, new_password):
+                    flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
                 else:
                     current_user.password = generate_password_hash(new_password, method='sha256')
                     db.session.commit()
@@ -763,6 +764,13 @@ def analyze():
                     convert to: https://youtube.com/watch?v=cb0BtfLUnvE
                     """
                     url = url.replace('youtu.be/', 'youtube.com/watch?v=')
+                elif '/shorts/' in url:
+                    
+                    """
+                    example: https://www.youtube.com/shorts/6VQBtlJiFYE (by 不破湊)
+                    convert to: https://youtube.com/watch?v=6VQBtlJiFYE
+                    """
+                    url = url.replace('/shorts/', '/watch?v=')
             try:
                 yt = YouTube(url)
                 video_name = yt.title
@@ -884,7 +892,7 @@ def analyze():
                 db.session.add(new_frequent_word)
                 frequent_words_objects.append(new_frequent_word)
 
-            """GENERATE and INSERT SUMMARY"""
+            """GENERATE and INSERT SUMMARY: uncomment when needed"""
             # summary = get_summary(all_comments_text)
             # summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
             # db.session.add(summarized_comment)
@@ -905,14 +913,18 @@ def analyze():
             # Generate the positive word cloud
             positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
             positive_text = ' '.join(positive_words)
-            # positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
-            positive_img_str = word_cloud_string(positive_text, 'winter')
+            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
+            positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
+            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
+            # positive_img_str = word_cloud_string(positive_text, 'winter')
 
             # Generate the negative word cloud
             negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
             negative_text = ' '.join(negative_words)
-            # negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
-            negative_img_str = word_cloud_string(negative_text, 'hot')
+            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
+            negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
+            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
+            # negative_img_str = word_cloud_string(negative_text, 'hot')
 
             if positive_img_str and negative_img_str:
                 positive_img_data = positive_img_str
@@ -995,6 +1007,8 @@ def analyze2():
             youtube_url = youtube_url.replace('/live/', '/watch?v=')
         elif 'youtu.be' in youtube_url:
             youtube_url = youtube_url.replace('youtu.be/', 'youtube.com/watch?v=')
+        elif '/shorts/' in youtube_url:
+            youtube_url = youtube_url.replace('/shorts/', '/watch?v=')
     
     try:
         yt = YouTube(youtube_url)
@@ -1056,7 +1070,15 @@ def analyze2():
 
     # summary = get_summary(all_comments_text)
 
-    # Generate Word Clouds
+    """Generate Word Clouds: uncomment when needed"""
+    # unlabeled_words = word_tokenize(all_comments_text)
+    # positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
+    # positive_text = ' '.join(positive_words)
+    # positive_img_str = word_cloud_string(positive_text, 'winter')
+    
+    # negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
+    # negative_text = ' '.join(negative_words)
+    # negative_img_str = word_cloud_string(negative_text, 'hot')
 
     response = {
         'video_name2': video_name,
@@ -1065,6 +1087,9 @@ def analyze2():
         'neutral_count2': neutral_count,
         'comments2': sentiments,
         'frequent_words2': frequent_words,
+        # 'summary2': summary,
+        # 'positive_img2': positive_img_str,
+        # 'negative_img2': negative_img_str
     }
 
     return jsonify(response), 200

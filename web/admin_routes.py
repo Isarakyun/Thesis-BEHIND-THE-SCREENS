@@ -274,18 +274,20 @@ def delete_user(user_id):
 @admin_required
 def delete_user_logs():
     thirty_days_ago = datetime.now() - timedelta(days=30)
+    old_user_logs = UserLog.query.filter(UserLog.timestamp < thirty_days_ago).count()
     db.session.query(UserLog).filter(UserLog.timestamp < thirty_days_ago).delete()
     db.session.commit()
-    flash('User logs deleted successfully!', 'success')
+    flash(f'{old_user_logs} User logs deleted successfully!', 'success')
     return redirect(url_for('admin.user_audit'))
 
 @admin_bp.route('/delete-admin-logs', methods=['POST'])
 @admin_required
 def delete_admin_logs():
     thirty_days_ago = datetime.now() - timedelta(days=30)
+    old_admin_logs = AdminLog.query.filter(AdminLog.timestamp < thirty_days_ago).count()
     db.session.query(AdminLog).filter(AdminLog.timestamp < thirty_days_ago).delete()
     db.session.commit()
-    flash('Admin logs deleted successfully!', 'success')
+    flash(f'{old_admin_logs} Admin logs deleted successfully!', 'success')
     return redirect(url_for('admin.admin_audit'))
 
 @admin_bp.route('/logout')
