@@ -15,12 +15,12 @@
         <ul class="mt-4 space-y-4">
             {% for youtube_url in youtube_urls %}
             <li class="group">
-                <div class="text-red-600 dark:text-gray-400 text-xs mb-2 ml-4">{{ youtube_url.created_at|format_date }}</div>
-                <div class="flex items-center justify-between py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md">
-                    <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="flex-1 text-sm video-title truncate">
+                <div class="font-medium text-red-600 dark:text-gray-400 text-xs mb-2 ml-4">{{ youtube_url.created_at|format_date }}</div>
+                <div class="flex items-center justify-between py-2 px-4 text-black dark:text-gray-50 hover:bg-red-500 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md">
+                    <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="font-medium flex-1 text-sm video-title truncate">
                         {{ youtube_url.video_name }}
                     </a>
-                    <button class="ml-4 text-white dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 block sm:block trash-button" data-id="{{ youtube_url.id }}">
+                    <button class="ml-4 text-red-800 dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 block sm:block trash-button" data-id="{{ youtube_url.id }}">
                         <i class="ri-delete-bin-line"></i>
                     </button>
                 </div>
@@ -30,7 +30,7 @@
     </div>
 
 <!-- Account section -->
-<div class="pt-2 juice:py-2 border-t border-gray-800 dark:border-white/20 mt-auto ml-2">
+<div class="pt-2 juice:py-2 border-t border-gray-800 dark:border-white/20 mt-auto ml-2 font-medium">
     <span class="flex w-full flex-row justify-between items-center">
         <div class="flex items-center gap-2">
             <div class="flex flex-col text-gray-900 dark:text-white">
@@ -68,8 +68,8 @@
 <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-slate-400 dark:bg-slate-800 bg-opacity-90 hidden z-50">
     <div class="modal-content bg-slate-200 dark:bg-[#121212] p-4 sm:p-6 rounded-lg shadow-lg max-w-sm w-full">
         <h2 class="text-lg font-semibold light:text-black dark:text-white mb-2">Delete this analysis?</h2>
-        <p class="text-sm text-red-500 mb-4">You can't redo this action.</p>
-        <div class="flex flex-col gap-2 sm:flex-row sm:gap-4 justify-end">
+        <p class="font-medium text-sm text-red-500 mb-4">You can't redo this action.</p>
+        <div class="font-medium flex flex-col gap-2 sm:flex-row sm:gap-4 justify-end">
             <button id="cancelButton" class="button bg-slate-300 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded-md hover:bg-slate-400 dark:hover:bg-gray-600 w-full sm:w-auto">
                 Cancel
             </button>
