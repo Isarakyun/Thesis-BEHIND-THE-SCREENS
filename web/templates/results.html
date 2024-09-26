@@ -20,7 +20,7 @@
 <!-- SUMMARY / INTERPRETATION -->
 <div class="mt-5 pt-5 flex overflow-hidden relative">
   <img src="{{ url_for('static', filename='summary-text.png' )}}" class="pointer-events-none absolute mt-4 mr-[50px] ml-[100px] w-[500px] opacity-25">
-  <table id="summary" class="w-full justify-center text-center ml-[50px] mr-[50px] mt-16 relative z-10">
+  <table id="summary" class="w-full justify-center text-center ml-[50px] mr-[50px] mt-20 relative z-10">
     <thead class="text-white">
       <tr class="bg-red-600 dark:bg-slate-700 text-xl">
         {% if youtube_url.created_at and count.positive is not none and count.negative is not none and count.neutral is not none and frequent_words %}
@@ -108,7 +108,7 @@
 {% if youtube_url.created_at is not none and frequent_words %}
 <div id="high-score-comments" class="flex overflow-hidden mt-12 pt-5 relative">
   <img src="{{ url_for('static', filename='highlights-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
-  <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-12">
+  <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-16">
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1"></th>
@@ -121,7 +121,7 @@
           <td class="px-2 py-2 text-blue-700 dark:text-white dark:bg-blue-700 font-bold">Most Positive</td>
           {% if highscorecomments.most_positive_comment is not none %}
           <td class="px-2 py-2">{{ highscorecomments.most_positive_comment }}</td>
-          <td class="px-2 py-2">{{ (highscorecomments.highest_positive_score * 100) | round(2) }}%</td>
+          <td class="px-2 py-2 text-blue-700">{{ (highscorecomments.highest_positive_score * 100) | round(2) }}%</td>
           {% else %}
           <td class="px-2 py-2 italic text-gray-500">There are no positive comments found.</td>
           <td class="px-2 py-2"></td>
@@ -131,7 +131,7 @@
           <td class="px-2 py-2 text-red-700 dark:text-white dark:bg-red-700 font-bold">Most Negative</td>
           {% if highscorecomments.most_negative_comment is not none %}
           <td class="px-2 py-2">{{ highscorecomments.most_negative_comment }}</td>
-          <td class="px-2 py-2">{{ (highscorecomments.highest_negative_score * 100) | round(2) }}%</td>
+          <td class="px-2 py-2 text-red-700">{{ (highscorecomments.highest_negative_score * 100) | round(2) }}%</td>
           {% else %}
           <td class="px-2 py-2 italic text-gray-500">There are no negative comments found.</td>
           <td class="px-2 py-2"></td>
@@ -145,8 +145,8 @@
 <!-- Comments -->
 {% if youtube_url.created_at is not none and frequent_words %}
 <div class="mt-12 pt-5 relative">
-  <img src="{{ url_for('static', filename='comments-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[500px] opacity-25">
-  <div class="relative z-10 mt-[-30px]">
+  <img src="{{ url_for('static', filename='comments-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
+  <div class="relative z-10 mt-[-12px]">
     <!-- Dropdown for sentiment selection -->
     <div class="pt-5 flex justify-end ml-[50px] mr-[50px] font-medium">
       {% if youtube_url.created_at is not none and frequent_words %}
@@ -880,7 +880,7 @@
 {% if youtube_url.created_at is not none and frequent_words %}
 <div id="high-score-comments" class="flex overflow-hidden mt-5 pt-5 relative pb-8">
   <img src="{{ url_for('static', filename='wordcloud-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
-  <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-12">
+  <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-14">
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
           <th class="px-4 py-1 w-1/2">Positive Words</th>

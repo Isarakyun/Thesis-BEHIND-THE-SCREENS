@@ -690,9 +690,6 @@ video {
 .mb-8 {
   margin-bottom: 2rem;
 }
-.mt-\[-30px\] {
-  margin-top: -30px;
-}
 .me-2 {
   margin-inline-end: 0.5rem;
 }
@@ -735,6 +732,9 @@ video {
 .mr-\[50px\] {
   margin-right: 50px;
 }
+.mt-\[-12px\] {
+  margin-top: -12px;
+}
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -765,8 +765,14 @@ video {
 .mt-12 {
   margin-top: 3rem /* 48px */;
 }
+.mt-14 {
+  margin-top: 3.5rem;
+}
 .mt-16 {
   margin-top: 4rem /* 64px */;
+}
+.mt-18 {
+  margin-top: 4.5rem;
 }
 .mt-20 {
   margin-top: 5rem;
