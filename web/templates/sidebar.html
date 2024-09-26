@@ -15,15 +15,29 @@
         <ul class="mt-4 space-y-4">
             {% for youtube_url in youtube_urls %}
             <li class="group">
+                {% if request.path == '/result/' ~ youtube_url.id ~ '$' ~ youtube_url.video_id %}
+                <div class="hidden">{{ youtube_url.id }}</div>
                 <div class="font-medium text-red-600 dark:text-gray-400 text-xs mb-2 ml-4">{{ youtube_url.created_at|format_date }}</div>
-                <div class="flex items-center justify-between py-2 px-4 text-black dark:text-gray-50 hover:bg-red-500 dark:hover:bg-[#181818] hover:text-white dark:hover:text-gray-100 rounded-md">
+                <div class="flex items-center justify-between py-2 px-4 text-white dark:text-gray-100 bg-red-700 dark:bg-slate-700 rounded-md">
                     <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="font-medium flex-1 text-sm video-title truncate">
                         {{ youtube_url.video_name }}
                     </a>
-                    <button class="ml-4 text-red-800 dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 block sm:block trash-button" data-id="{{ youtube_url.id }}">
+                    <button class="ml-4 text-red-300 dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 block sm:block trash-button" data-id="{{ youtube_url.id }}" onclick="openDeleteModal('{{ youtube_url.id }}')">
                         <i class="ri-delete-bin-line"></i>
                     </button>
                 </div>
+                {% else %}
+                <div class="hidden">{{ youtube_url.id }}</div>
+                <div class="font-medium text-red-600 dark:text-gray-400 text-xs mb-2 ml-4">{{ youtube_url.created_at|format_date }}</div>
+                <div class="flex items-center justify-between py-2 px-4 text-black dark:text-gray-50 hover:bg-red-600 dark:hover:bg-slate-800 hover:text-white dark:hover:text-gray-100 rounded-md">
+                    <a href="/result/{{ youtube_url.id }}${{ youtube_url.video_id }}" class="font-medium flex-1 text-sm video-title truncate">
+                        {{ youtube_url.video_name }}
+                    </a>
+                    <button class="ml-4 text-red-800 dark:text-white hover:text-white dark:hover:text-red-600 flex-shrink-0 block sm:block trash-button" data-id="{{ youtube_url.id }}" onclick="openDeleteModal('{{ youtube_url.id }}')">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
+                {% endif %}
             </li>
             {% endfor %}
         </ul>
@@ -70,62 +84,40 @@
         <h2 class="text-lg font-semibold light:text-black dark:text-white mb-2">Delete this analysis?</h2>
         <p class="font-medium text-sm text-red-500 mb-4">You can't redo this action.</p>
         <div class="font-medium flex flex-col gap-2 sm:flex-row sm:gap-4 justify-end">
-            <button id="cancelButton" class="button bg-slate-300 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded-md hover:bg-slate-400 dark:hover:bg-gray-600 w-full sm:w-auto">
+            <button id="cancelButton" class="button bg-slate-300 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded-md hover:bg-slate-400 dark:hover:bg-gray-600 w-full sm:w-auto" onclick="closeDeleteModal()">
                 Cancel
             </button>
-            <button id="confirmButton" class="button bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 w-full sm:w-auto">
-                Delete
-            </button>
+            <form id="deleteForm" action="" method="POST">
+                <input type="hidden" name="id" id="deleteId">
+                <button id="confirmButton" class="button bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 w-full sm:w-auto">
+                    Delete
+                </button>
+            </form>
         </div>
     </div>
 </div>
 
-
 <script>
-document.addEventListener('DOMContentLoaded', (event) => {
-    const deleteModal = document.getElementById('deleteModal');
-    const trashButtons = document.querySelectorAll('.trash-button');
-    const cancelButton = document.getElementById('cancelButton');
-    const confirmButton = document.getElementById('confirmButton');
-
-    // Show modal when trash icon is clicked
-    trashButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            deleteModal.classList.remove('hidden');
-            deleteModal.setAttribute('data-id', button.dataset.id); // Store the ID of the item to be deleted
-        });
-    });
-
-    // Hide modal when cancel button is clicked
-    cancelButton.addEventListener('click', () => {
+    function openDeleteModal(id) {
+        const deleteModal = document.getElementById('deleteModal');
+        const deleteForm = document.getElementById('deleteForm');
+        const deleteIdInput = document.getElementById('deleteId');
+    
+        // Set the form action to include the id
+        deleteForm.action = `/delete-analysis/${id}`;
+        // Set the hidden input value to the id
+        deleteIdInput.value = id;
+    
+        // Show the modal
+        deleteModal.classList.remove('hidden');
+    }
+    
+    function closeDeleteModal() {
+        const deleteModal = document.getElementById('deleteModal');
+        // Hide the modal
         deleteModal.classList.add('hidden');
-    });
-
-    // Handle delete action when confirm button is clicked
-    confirmButton.addEventListener('click', () => {
-        const itemId = deleteModal.getAttribute('data-id');
-        
-        // Send a DELETE request to the server (this is a placeholder, replace with your actual request)
-        fetch(`/delete-item/${itemId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                // Remove the item from the DOM
-                document.querySelector(`[data-id="${itemId}"]`).closest('li').remove();
-                deleteModal.classList.add('hidden');
-            } else {
-                alert('Failed to delete the analysis.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An unexpected error occurred.');
-        });
-    });
-});
+    }
+    
+    // Add event listener to cancel button to close the modal
+    document.getElementById('cancelButton').addEventListener('click', closeDeleteModal);
 </script>
