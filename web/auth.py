@@ -950,13 +950,11 @@ def analyze():
             return redirect(url_for('views.main'))
     return render_template("analysis_interrupted.html", user=current_user)
 
-@auth.route('/delete-item/<int:item_id>', methods=['DELETE'])
+@auth.route('/delete-analysis/<int:url_id>', methods=['POST'])
 @login_required
-def delete_analysis(item_id):
-    # Check if the item exists and belongs to the current user
-    youtube_url = YoutubeUrl.query.filter_by(id=item_id, user_id=current_user.id).first()
+def delete_result(url_id):
+    youtube_url = YoutubeUrl.query.filter_by(id=url_id, user_id=current_user.id).first()
     video_name = youtube_url.video_name if youtube_url else None
-    
     if youtube_url:
         try:
             # Delete related entries in other tables
@@ -978,22 +976,14 @@ def delete_analysis(item_id):
             db.session.delete(youtube_url)
             db.session.commit()
             
-            user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {item_id}")
+            user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {url_id}")
             flash(f"Analysis for {video_name} deleted successfully.", category='success')
-            return jsonify({'message': 'Previous analysis deleted successfully'}), 200
-            # return redirect(url_for('views.main'))
-            # response = {
-            #     'message': 'Previous analysis deleted successfully',
-            #     'redirect_url': url_for('views.main')
-            # }
-            # return jsonify(response)
         
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f'Error deleting Previous Analysis: {str(e)}')
-            return jsonify({'error': 'Failed to delete Previous Analysis'}), 500
-    else:
-        return jsonify({'error': 'Analysis not found or unauthorized'}), 404
+            flash(f'Failed to delete analysis for {video_name}.', category='error')
+    return redirect(url_for('views.main'))
 
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():

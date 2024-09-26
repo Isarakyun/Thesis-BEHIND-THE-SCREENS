@@ -6,8 +6,8 @@
       <i class="ri-menu-line cursor-pointer"></i>
   </button>
   <div class="flex-1 flex items-center space-x-4">
-      <a href="{{ url_for('views.home') }}" class="text-base sm:text-m text-black dark:text-white">
-          <span>Behind the Screens</span>
+      <a href="{{ url_for('views.home') }}" class="text-base sm:text-m text-black dark:text-white font-medium">
+          Behind the Screens
       </a>
       {% if user.confirmed_email == False %}
       <span class="text-sm sm:text-m text-red-600">
@@ -19,7 +19,7 @@
 
 <!-- SUMMARY / INTERPRETATION -->
 <div class="mt-5 pt-5 flex overflow-hidden relative">
-  <img src="{{ url_for('static', filename='summary-text.png' )}}" class="absolute mt-4 mr-[50px] ml-[100px] w-[500px] opacity-25">
+  <img src="{{ url_for('static', filename='summary-text.png' )}}" class="pointer-events-none absolute mt-4 mr-[50px] ml-[100px] w-[500px] opacity-25">
   <table id="summary" class="w-full justify-center text-center ml-[50px] mr-[50px] mt-16 relative z-10">
     <thead class="text-white">
       <tr class="bg-red-600 dark:bg-slate-700 text-xl">
@@ -100,9 +100,9 @@
 </div>    
 
 <!-- Most Positive and Negative Comments -->
-{% if youtube_url.created_at is not none and highscorecomments %}
+{% if youtube_url.created_at is not none and frequent_words %}
 <div id="high-score-comments" class="flex overflow-hidden mt-12 pt-5 relative">
-  <img src="{{ url_for('static', filename='highlights-text.png' )}}" class="absolute ml-[100px] w-[600px] opacity-25">
+  <img src="{{ url_for('static', filename='highlights-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
   <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-12">
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
@@ -138,10 +138,9 @@
 {% endif %}
 
 <!-- Comments -->
- 
 {% if youtube_url.created_at is not none and frequent_words %}
 <div class="mt-12 pt-5 relative">
-  <img src="{{ url_for('static', filename='comments-text.png' )}}" class="absolute ml-[100px] w-[500px] opacity-25">
+  <img src="{{ url_for('static', filename='comments-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[500px] opacity-25">
   <div class="relative z-10 mt-[-30px]">
     <!-- Dropdown for sentiment selection -->
     <div class="pt-5 flex justify-end ml-[50px] mr-[50px] font-medium">
@@ -767,7 +766,7 @@
 <!-- Table for Word Count and Bar Chart -->
 <div id="frequent-words" class="flex overflow-hidden mt-5 pt-5">
   <div class="w-1/2 ml-[50px] mr-[50px] relative">
-    <img src="{{ url_for('static', filename='words-text.png' )}}" class="absolute ml-[50px] w-[300px] opacity-25">
+    <img src="{{ url_for('static', filename='words-text.png' )}}" class="pointer-events-none absolute ml-[50px] w-[300px] opacity-25">
     <table class="w-full justify-center relative z-10 mt-12">
         <thead class="text-white">
           <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
@@ -875,7 +874,7 @@
   <!-- WordCloud -->
 {% if youtube_url.created_at is not none and frequent_words %}
 <div id="high-score-comments" class="flex overflow-hidden mt-5 pt-5 relative pb-8">
-  <img src="{{ url_for('static', filename='wordcloud-text.png' )}}" class="absolute ml-[100px] w-[600px] opacity-25">
+  <img src="{{ url_for('static', filename='wordcloud-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
   <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-12">
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
@@ -907,30 +906,5 @@
   </table>
 </div>
 {% endif %}
-
-  <!-- <div class="rounded ml-[50px] mr-[50px] mt-12 bg-red-600 dark:bg-slate-700 p-1">
-    <p class="text-white font-bold ml-2 text-2xl">Word Cloud</p>
-  </div>   
-  <div class="pb-8">
-    <div class="flex justify-center">
-      <div class="mt-[20px] ml-[50px] mr-4">
-        {% if image_positive_data %} 
-          <img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_positive_data) }}" alt="Positive Word Cloud">
-        {% else %}
-          <p class="italic text-gray-500 text-center mt-2 text-sm">Not enough information.</p>
-        {% endif %}
-        <p class="text-black dark:text-white text-center mt-2 text-lg font-medium">Positive</p>
-      </div>
-      <div class="mt-[20px] ml-4 mr-[50px]">
-        {% if image_negative_data %}
-          <img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_negative_data) }}" alt="Negative Word Cloud">
-        {% else %}
-          <p class="italic text-gray-500 text-center mt-2 text-sm">Not enough information.</p>
-        {% endif %}
-        <p class="text-black dark:text-white text-center mt-2 text-lg font-medium">Negative</p>
-      </div>
-    </div>
-  </div> -->
-</div>
 
 {% endblock %}

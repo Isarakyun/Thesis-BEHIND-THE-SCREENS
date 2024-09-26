@@ -534,6 +534,25 @@ video {
     max-width: 1536px;
   }
 }
+.floating-image {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 300px; /* Adjust the width as needed */
+  transform: translateY(-50%);
+  z-index: -1;
+  opacity: 0.5; /* Adjust the opacity as needed */
+  animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(-50%);
+  }
+  50% {
+    transform: translateY(-45%);
+  }
+}
 .static {
   position: static;
 }
@@ -1253,6 +1272,9 @@ video {
 }
 .p-6 {
   padding: 1.5rem;
+}
+.pointer-events-none {
+  pointer-events: none;
 }
 .px-2 {
   padding-left: 0.5rem;
