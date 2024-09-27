@@ -142,6 +142,13 @@
 </div>
 {% endif %}
 
+<!-- In your main HTML file -->
+<form action="{{ url_for('auth.download_pdf') }}" method="get">
+  <input type="hidden" name="video_url" value="{{ video_url }}">
+  <button type="submit">Download PDF</button>
+</form>
+
+
 <!-- Comments -->
 {% if youtube_url.created_at is not none and frequent_words %}
 <div class="mt-12 pt-5 relative">

@@ -22,6 +22,9 @@ import logging
 import re
 from flask_wtf import CSRFProtect
 import os
+from flask import send_file
+from weasyprint import HTML
+import io
 
 auth = Blueprint('auth', __name__)
 
@@ -984,6 +987,28 @@ def delete_result(url_id):
             current_app.logger.error(f'Error deleting Previous Analysis: {str(e)}')
             flash(f'Failed to delete analysis for {video_name}.', category='error')
     return redirect(url_for('views.main'))
+
+# PDF download route
+@auth.route('/download_pdf')
+def download_pdf():
+    # Fetch data logic
+    video_url = request.args.get('video_url', '')
+    comments = [
+        {"text": "This is an awesome video!", "sentiment": "Positive"},
+        {"text": "Not so great, could be better.", "sentiment": "Negative"},
+        # ... more comments
+    ]
+
+    # Render the HTML template with data
+    html = render_template('pdf_template.html', video_url=video_url, comments=comments)
+    
+    # Convert rendered HTML to PDF
+    pdf = HTML(string=html).write_pdf()
+
+    # Send the PDF file as response
+    pdf_io = io.BytesIO(pdf)
+    return send_file(pdf_io, mimetype='application/pdf', as_attachment=True, download_name='sentiment_analysis_report.pdf')
+
 
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():

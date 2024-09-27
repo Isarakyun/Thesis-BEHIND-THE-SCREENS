@@ -1,0 +1,32 @@
+<!-- templates/pdf_template.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sentiment Analysis Report</title>
+    <style>
+        /* Add your PDF styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1 {
+            color: #333;
+        }
+        .comment {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sentiment Analysis Report</h1>
+    <p>Video URL: {{ video_url }}</p>
+    <hr>
+    {% for comment in comments %}
+        <div class="comment">
+            <p><strong>Comment:</strong> {{ comment.text }}</p>
+            <p><strong>Sentiment:</strong> {{ comment.sentiment }}</p>
+        </div>
+    {% endfor %}
+</body>
+</html>
