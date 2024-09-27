@@ -4,32 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sentiment Analysis Report</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.2.0/dist/tailwind.min.css" rel="stylesheet">
     <link href="../../static/css/styles.css" rel="stylesheet">
     <style>
         @page {
             size: letter;
-            margin: 1in;
+            margin: 0; /* Remove margins to utilize full page */
+        }
+        body {
+            background-color: #ffffff; /* bg-gray-200 */
+            margin: 0; /* Remove margin for full page usage */
+            padding: 0; /* Remove padding for full page usage */
+        }
+        .container {
+            max-width: 100%; /* Use full width */
+            margin: 0; /* Remove margin */
+            background-color: #FFFFFF; /* bg-white */
+            padding: 1.5rem; /* p-6 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
+        }
+        .header {
+            background-color: #C62828; /* bg-red-700 */
+            color: #FFFFFF; /* text-white */
+            padding: 1rem; /* p-4 */
+        }
+        .section {
+            background-color: #F3F4F6; /* bg-gray-100 */
+            padding: 1rem; /* p-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .section-title {
+            background-color: #C62828; /* bg-red-700 */
+            color: #FFFFFF; /* text-white */
+            padding: 0.5rem; /* p-2 */
+            text-align: center; /* text-center */
+            border-radius: 0.375rem; /* rounded-md */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .flex-center {
+            display: flex; /* flex */
+            align-items: center; /* items-center */
+            justify-content: center; /* justify-center */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .chart {
+            width: 12rem; /* w-48 */
+            height: 12rem; /* h-48 */
+        }
+        .grid {
+            display: grid; /* grid */
+            grid-template-columns: repeat(2, 1fr); /* grid-cols-2 */
+            gap: 1rem; /* gap-4 */
+        }
+        .card {
+            background-color: #FFFFFF; /* bg-white */
+            padding: 0.5rem; /* p-2 */
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-md */
+        }
+        .table {
+            width: 100%; /* min-w-full */
+            background-color: #FFFFFF; /* bg-white */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
+        }
+        .table-header {
+            background-color: #C62828; /* bg-red-700 */
+            color: #FFFFFF; /* text-white */
+        }
+        .table-header th {
+            padding: 0.5rem; /* py-2 */
+            padding-left: 1rem; /* px-4 */
+            padding-right: 1rem; /* px-4 */
+        }
+        .table-body td {
+            padding: 0.5rem; /* py-2 */
+            padding-left: 1rem; /* px-4 */
+            padding-right: 1rem; /* px-4 */
+        }
+        .border {
+            border-bottom: 1px solid #D1D5DB; /* border-gray-300 */
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                background-color: #707070; /* White background for print */
+            }
+            .container {
+                width: 100%; /* Use full width for print */
+                padding: 0; /* Optional: adjust padding */
+            }
+            .header,
+            .section {
+                margin: 0; /* Remove margins for print */
+                padding: 1rem; /* Ensure consistent padding */
+            }
         }
     </style>
 </head>
-<body class="bg-gray-200 p-8">
-    <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+<body>
+    <div class="container"> <!-- Main container -->
         <!-- Report Summary Header -->
-        <div class="bg-red-700 text-white p-4 rounded-t-lg">
-            <h1 class="text-2xl font-bold">Report Summary</h1>
+        <div class="header">
+            <h1 style="font-size: 1.5rem; font-weight: bold; text-align: center;">Report Summary</h1>
             <p><strong>Video name:</strong> {{ video_name }}</p>
             <p><strong>Video URL:</strong> {{ video_url }}</p>
             <p><strong>Date:</strong> {{ date }}</p>
         </div>
 
         <!-- Overall Interpretation Section -->
-        <div class="bg-gray-100 p-4 rounded-b-lg mb-6">
-            <h2 class="bg-red-700 text-white p-2 text-center rounded-md mb-4">Overall Interpretation</h2>
-            <div class="flex items-center justify-center mb-4">
-                <img src="{{ pie_chart_url }}" alt="Sentiment Pie Chart" class="w-48 h-48">
+        <div class="section">
+            <h2 class="section-title">Overall Interpretation</h2>
+            <div class="flex-center">
+                <img src="{{ pie_chart_url }}" alt="Sentiment Pie Chart" class="chart">
             </div>
-            <p class="text-center">
+            <p style="text-align: center;">
                 As of yesterday, this video has received 68 positive, 66 negative, and 119 neutral comments.
                 The most frequently used words are: 
                 <strong>'game' (53 times)</strong>, <strong>'story' (40 times)</strong>, <strong>'diablo' (36 times)</strong>, 
@@ -39,14 +130,14 @@
         </div>
 
         <!-- Highlighted Comments Section -->
-        <div class="bg-gray-100 p-4 rounded-lg mb-6">
-            <h2 class="bg-red-700 text-white p-2 text-center rounded-md mb-4">Highlighted Comments</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white p-2 rounded-md shadow-md">
+        <div class="section">
+            <h2 class="section-title">Highlighted Comments</h2>
+            <div class="grid">
+                <div class="card">
                     <p><strong>Most Positive:</strong></p>
                     <p>{{ most_positive_comment }}</p>
                 </div>
-                <div class="bg-white p-2 rounded-md shadow-md">
+                <div class="card">
                     <p><strong>Most Negative:</strong></p>
                     <p>{{ most_negative_comment }}</p>
                 </div>
@@ -54,19 +145,19 @@
         </div>
 
         <!-- Positive and Negative Words Section -->
-        <div class="grid grid-cols-2 gap-4 mb-6">
-            <div class="bg-gray-100 p-4 rounded-lg">
-                <h2 class="bg-red-700 text-white p-2 text-center rounded-md mb-4">Positive Words</h2>
-                <ul class="list-disc list-inside">
+        <div class="grid" style="margin-bottom: 1.5rem;">
+            <div class="section">
+                <h2 class="section-title">Positive Words</h2>
+                <ul style="list-style-type: disc; padding-left: 1.5rem; list-style-position: inside;">
                     <!-- Loop through positive words -->
                     {% for word in positive_words %}
                         <li>{{ word }}</li>
                     {% endfor %}
                 </ul>
             </div>
-            <div class="bg-gray-100 p-4 rounded-lg">
-                <h2 class="bg-red-700 text-white p-2 text-center rounded-md mb-4">Negative Words</h2>
-                <ul class="list-disc list-inside">
+            <div class="section">
+                <h2 class="section-title">Negative Words</h2>
+                <ul style="list-style-type: disc; padding-left: 1.5rem; list-style-position: inside;">
                     <!-- Loop through negative words -->
                     {% for word in negative_words %}
                         <li>{{ word }}</li>
@@ -76,22 +167,22 @@
         </div>
 
         <!-- Frequent Words Table Section -->
-        <div class="bg-gray-100 p-4 rounded-lg mb-6">
-            <h2 class="bg-red-700 text-white p-2 text-center rounded-md mb-4">Frequent Words</h2>
-            <table class="min-w-full bg-white rounded-lg shadow-lg">
-                <thead class="bg-red-700 text-white">
+        <div class="section" style="page-break-before: always;">
+            <h2 class="section-title">Frequent Words</h2>
+            <table class="table">
+                <thead class="table-header">
                     <tr>
-                        <th class="py-2 px-4">Word</th>
-                        <th class="py-2 px-4">Count</th>
-                        <th class="py-2 px-4">Sentiment</th>
+                        <th>Word</th>
+                        <th>Count</th>
+                        <th>Sentiment</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-body">
                     {% for word in frequent_words %}
-                        <tr class="border-b border-gray-300">
-                            <td class="py-2 px-4">{{ word.text }}</td>
-                            <td class="py-2 px-4">{{ word.count }}</td>
-                            <td class="py-2 px-4">{{ word.sentiment }}</td>
+                        <tr class="border">
+                            <td>{{ word.text }}</td>
+                            <td>{{ word.count }}</td>
+                            <td>{{ word.sentiment }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -99,20 +190,20 @@
         </div>
 
         <!-- Comments Section -->
-        <div class="bg-gray-100 p-4 rounded-lg">
-            <h2 class="bg-red-700 text-white p-2 text-center rounded-md mb-4">Comments</h2>
-            <table class="min-w-full bg-white rounded-lg shadow-lg">
-                <thead class="bg-red-700 text-white">
+        <div class="section">
+            <h2 class="section-title">Comments</h2>
+            <table class="table">
+                <thead class="table-header">
                     <tr>
-                        <th class="py-2 px-4">Comments</th>
-                        <th class="py-2 px-4">Sentiment</th>
+                        <th>Comments</th>
+                        <th>Sentiment</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-body">
                     {% for comment in comments %}
-                        <tr class="border-b border-gray-300">
-                            <td class="py-2 px-4">{{ comment.text }}</td>
-                            <td class="py-2 px-4">{{ comment.sentiment }}</td>
+                        <tr class="border">
+                            <td>{{ comment.text }}</td>
+                            <td>{{ comment.sentiment }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
