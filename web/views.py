@@ -53,7 +53,6 @@ def results(youtube_url_id, youtube_video_id):
     user_id = current_user.id
     youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
     youtubeurl = get_youtube_url_by_id(youtube_url_id)
-    # summary = db.session.query(SummarizedComments).filter_by(url_id=youtube_url_id).first()
     count = db.session.query(SentimentCounter).filter_by(url_id=youtube_url_id).first()
     wordcloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
     comments = Comments.query.filter_by(user_id=user_id, url_id=youtube_url_id).all()
@@ -61,11 +60,6 @@ def results(youtube_url_id, youtube_video_id):
     analysis_checker = WordCloudImage.query.filter_by(user_id=user_id).order_by(WordCloudImage.id.desc()).all()
     frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtube_url_id).order_by(FrequentWords.url_id.desc()).all()
 
-    # if summary:
-    #     summary_text = summary.summary
-    # else:
-    #     summary_text = 'No summary found'
-    
     if wordcloud and wordcloud.image_positive_data:
         image_positive_data = wordcloud.image_positive_data
     else:

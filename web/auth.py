@@ -1,5 +1,5 @@
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app, make_response
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
