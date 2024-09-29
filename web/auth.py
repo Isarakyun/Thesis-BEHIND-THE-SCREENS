@@ -22,6 +22,7 @@ import logging
 import re
 from flask_wtf import CSRFProtect
 import os
+import time
 import asyncio
 import httpx
 
@@ -749,7 +750,7 @@ logging.basicConfig(filename='app.log', level=logging.DEBUG)
 
 @auth.route('/analyze', methods=['GET','POST'])
 @login_required
-async def analyze():
+def analyze():
     if request.method == 'POST':
         try:
             # get_url table as temporary storage for the url
@@ -795,7 +796,8 @@ async def analyze():
 
             # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
             filtered_comments = extract_comments(url)
-            await asyncio.sleep(3)
+            # await asyncio.sleep(3)
+            time.sleep(3)
 
             # Sentiment Analysis
             label_mapping = {
@@ -815,7 +817,8 @@ async def analyze():
                 try:
                     sentiment = sentiment_pipeline([comment])[0]
                     sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
-                    await asyncio.sleep(1)
+                    # await asyncio.sleep(1)
+                    time.sleep(1)
                     sentiments.append(sentiment)
 
                     # get the most positive and most negative comments
@@ -870,7 +873,8 @@ async def analyze():
                 db.session.add(new_comment)
                 comment_objects.append(new_comment)
                 
-                await asyncio.sleep(2)
+                # await asyncio.sleep(2)
+                time.sleep(2)
 
                 # Counting the sentiments
                 if sentiment['label'] == 'Positive':
@@ -882,7 +886,8 @@ async def analyze():
 
             # INSERT frequent words to FrequentWords table in the database
             cleaned_comments = clean_text(all_comments_text)
-            await asyncio.sleep(3)
+            # await asyncio.sleep(3)
+            time.sleep(3)
             word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
             most_common_words = word_count.most_common(5)
             frequent_words_objects = []
@@ -925,7 +930,8 @@ async def analyze():
             """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
             # positive_img_str = word_cloud_string(positive_text, 'winter')
 
-            await asyncio.sleep(3)
+            # await asyncio.sleep(3)
+            time.sleep(3)
             
             # Generate the negative word cloud
             negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
@@ -947,7 +953,8 @@ async def analyze():
                 )
                 db.session.add(wordcloud_image)
             
-            await asyncio.sleep(5)
+            # await asyncio.sleep(5)
+            time.sleep(5)
             successful_analysis = GetUrl.query.filter_by(url=url).order_by(GetUrl.id.desc()).first()
             successful_analysis.attempt = "Success"
             db.session.commit()
@@ -996,7 +1003,7 @@ def delete_result(url_id):
     return redirect(url_for('views.main'))
 
 @auth.route('/analyze2', methods=['POST'])
-async def analyze2():
+def analyze2():
     try:
         data = request.get_json()
         youtube_url = data.get('url2')
@@ -1019,7 +1026,8 @@ async def analyze2():
         
         # Extract comments
         filtered_comments = extract_comments(youtube_url)
-        await asyncio.sleep(3)
+        # await asyncio.sleep(3)
+        time.sleep(3)
 
         # Sentiment Analysis
         label_mapping = {
@@ -1038,7 +1046,8 @@ async def analyze2():
             try:
                 sentiment = sentiment_pipeline([comment])[0]
                 sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
-                await asyncio.sleep(2)
+                # await asyncio.sleep(2)
+                time.sleep(2)
                 sentiments.append({'comment': comment, 'sentiment': sentiment['label']})
             except RuntimeError as e:
                 continue 
@@ -1047,7 +1056,8 @@ async def analyze2():
             except Exception as e:
                 return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 400
             
-            await asyncio.sleep(2)
+            # await asyncio.sleep(2)
+            time.sleep(2)
             
             # Counting the sentiments
             if sentiment['label'] == 'Positive':
@@ -1061,7 +1071,8 @@ async def analyze2():
         cleaned_comments = clean_text(all_comments_text)
         word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
         most_common_words = word_count.most_common(5)
-        await asyncio.sleep(3)
+        # await asyncio.sleep(3)
+        time.sleep(3)
         frequent_words = []
         for word, count in most_common_words:
             word_sentiment_scores = sia.polarity_scores(word)
@@ -1082,7 +1093,8 @@ async def analyze2():
             'comments2': sentiments,
             'frequent_words2': frequent_words,
         }
-        await asyncio.sleep(5)
+        # await asyncio.sleep(5)
+        time.sleep(5)
         return jsonify(response), 200
     except Exception as e:
         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 400
