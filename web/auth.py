@@ -843,6 +843,7 @@ def analyze():
                     flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
                     return redirect(url_for('views.main'))
                 
+            time.sleep(3)
             high_score_comment = HighScoreComments(
                 user_id=current_user.id,
                 url_id=new_youtube_url.id,
@@ -1045,7 +1046,6 @@ def analyze2():
                 sentiment = sentiment_pipeline([comment])[0]
                 sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
                 # await asyncio.sleep(2)
-                time.sleep(2)
                 sentiments.append({'comment': comment, 'sentiment': sentiment['label']})
             except RuntimeError as e:
                 continue 
@@ -1067,6 +1067,7 @@ def analyze2():
 
         all_comments_text = " ".join(filtered_comments)
         cleaned_comments = clean_text(all_comments_text)
+        time.sleep(3)
         word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
         most_common_words = word_count.most_common(5)
         # await asyncio.sleep(3)
