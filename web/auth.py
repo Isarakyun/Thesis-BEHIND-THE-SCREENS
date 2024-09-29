@@ -26,6 +26,9 @@ import httpx
 from flask import send_file
 from weasyprint import HTML
 import io
+from flask import session
+from weasyprint import HTML
+
 
 auth = Blueprint('auth', __name__)
 
@@ -930,6 +933,20 @@ def analyze():
             db.session.commit()
             user_log(f"User ID: {current_user.id} | Completed analysis for video '{video_name}'")
 
+            # Store the result details in session or pass directly to the PDF route
+            session['analysis_data'] = {
+                'video_name': video_name,
+                'positive_count': positive_count,
+                'negative_count': negative_count,
+                'neutral_count': neutral_count,
+                'most_positive_comment': most_positive_comment,
+                'most_negative_comment': most_negative_comment,
+                'most_common_words': most_common_words,
+                'positive_img_data': positive_img_data,
+                'negative_img_data': negative_img_data
+            }
+            current_app.logger.debug(f"Session data: {session['analysis_data']}")
+
             return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id, youtube_video_id=new_youtube_url.video_id))
         except Exception as e:
             current_app.logger.error(f'Error during analysis: {str(e)}')
@@ -972,26 +989,26 @@ def delete_result(url_id):
             flash(f'Failed to delete analysis for {video_name}.', category='error')
     return redirect(url_for('views.main'))
 
-# PDF download route
-@auth.route('/download_pdf')
+@auth.route('/download_pdf', methods=['GET'])
+@login_required
 def download_pdf():
-    # Fetch data logic
-    video_url = request.args.get('video_url', '')
-    comments = [
-        {"text": "This is an awesome video!", "sentiment": "Positive"},
-        {"text": "Not so great, could be better.", "sentiment": "Negative"},
-        # ... more comments
-    ]
-
-    # Render the HTML template with data
-    html = render_template('pdf_template.html', video_url=video_url, comments=comments)
+    analysis_data = session.get('analysis_data')
+    if not analysis_data:
+        flash("No analysis data found.", category="error")
+        return redirect(url_for('views.main'))
     
-    # Convert rendered HTML to PDF
-    pdf = HTML(string=html).write_pdf()
+    # Render the template with the analysis data
+    html_content = render_template('pdf_template.html', data=analysis_data)
+    
+    # Convert HTML to PDF
+    pdf = HTML(string=html_content).write_pdf()
 
-    # Send the PDF file as response
-    pdf_io = io.BytesIO(pdf)
-    return send_file(pdf_io, mimetype='application/pdf', as_attachment=True, download_name='sentiment_analysis_report.pdf')
+    # Send the PDF as a downloadable file
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'attachment; filename=sentiment_analysis_report.pdf'
+    
+    return response
 
 
 @auth.route('/analyze2', methods=['POST'])

@@ -26,13 +26,13 @@ def create_app():
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'commentsanalysisbehindthescreens')
 
     # local mysql database
-    # app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}'
 
     # railway mysql database
     # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}')
     
     # Initialize extensions
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}')
+    # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}')
 
     db.init_app(app)
     mail.init_app(app)

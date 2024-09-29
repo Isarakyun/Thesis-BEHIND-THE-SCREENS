@@ -142,11 +142,8 @@
 </div>
 {% endif %}
 
-<!-- In your main HTML file -->
-<form action="{{ url_for('auth.download_pdf') }}" method="get">
-  <input type="hidden" name="video_url" value="{{ video_url }}">
-  <button type="submit">Download PDF</button>
-</form>
+<a href="{{ url_for('auth.download_pdf') }}" class="btn btn-primary">Download PDF Report</a>
+
 
 
 <!-- Comments -->
