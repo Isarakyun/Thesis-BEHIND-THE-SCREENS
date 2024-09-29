@@ -21,6 +21,5 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP=main.py
 
-# Run the application using Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "web:app"]
-# CMD ["python", "main.py"]
+# Run the application using Gunicorn with uvicorn worker class, 1 worker, and a 1200-second timeout (20 minutes)
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--worker-class=gevent", "--workers=1", "--threads=3", "--timeout=1200", "web:app"]

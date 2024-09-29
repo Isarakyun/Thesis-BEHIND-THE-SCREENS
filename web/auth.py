@@ -1,14 +1,12 @@
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app, make_response
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from .models import Users, Admin, YoutubeUrl, Comments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl, HighScoreComments
-# from .models import SummarizedComments
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .analysis import clean_text, word_cloud, extract_comments, word_cloud_string
-# from .analysis import get_summary
 from flask_login import login_user, login_required, logout_user, current_user
 from pytube import YouTube
 from transformers import pipeline
@@ -22,6 +20,9 @@ import logging
 import re
 from flask_wtf import CSRFProtect
 import os
+import time
+import asyncio
+import httpx
 
 auth = Blueprint('auth', __name__)
 
@@ -39,6 +40,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 sia = SentimentIntensityAnalyzer()
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
+valid_password = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$'
 
 """
 Audit Trail Logger:
@@ -147,8 +149,8 @@ def sign_up():
             flash('Email must be valid.', category='error')
         elif password != confirmpassword:
             flash('Passwords don\'t match.', category='error')
-        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
-            flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
+        elif not re.match(valid_password, password):
+            flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
         else:
             new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'), created_at=created_at)
             db.session.add(new_user)
@@ -312,8 +314,8 @@ def reset_password(token):
             user = Users.query.filter_by(email=email).first()
             if password != confirmpassword:
                 flash('Passwords don\'t match.', category='error')
-            elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
-                flash('Password must be at least 8 characters long and contain both letters and numbers.', category='error')
+            elif not re.match(valid_password, password):
+                flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
             else:
                 user.password=generate_password_hash(password, method='sha256')
                 db.session.commit()
@@ -394,8 +396,8 @@ def change_password():
         confirm_password = request.form.get('confirmpassword')
         if check_password_hash(current_user.password, current_password):
             if new_password == confirm_password:
-                if len(new_password) < 8:
-                    flash('Password must be at least 8 characters.', category='error')
+                if not re.match(valid_password, new_password):
+                    flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
                 else:
                     current_user.password = generate_password_hash(new_password, method='sha256')
                     db.session.commit()
@@ -776,8 +778,8 @@ def analyze():
                 video_id = yt.video_id
             except Exception as e:
                 flash(f'"{url}" is not a YouTube video. Please enter a valid URL.', category='error')
-                # flash(f'Failed to extract video name: {str(e)}', category='error')
                 return redirect(url_for('views.main'))
+            
             attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
             created_at = datetime.now()
             new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt, created_at=created_at)
@@ -792,6 +794,8 @@ def analyze():
 
             # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
             filtered_comments = extract_comments(url)
+            # await asyncio.sleep(3)
+            time.sleep(3)
 
             # Sentiment Analysis
             label_mapping = {
@@ -828,14 +832,13 @@ def analyze():
                     continue  # Skip this comment and continue with the next one
                 except IndexError as e:
                     current_app.logger.error(f'IndexError: {str(e)} - Comment: {comment}')
-                    # flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
-                    # return redirect(url_for('views.main'))
                     continue
                 except Exception as e:
                     current_app.logger.error(f'Exception: {str(e)} - Comment: {comment}')
                     flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
                     return redirect(url_for('views.main'))
                 
+            time.sleep(3)
             high_score_comment = HighScoreComments(
                 user_id=current_user.id,
                 url_id=new_youtube_url.id,
@@ -864,7 +867,7 @@ def analyze():
                 )
                 db.session.add(new_comment)
                 comment_objects.append(new_comment)
-                
+            
                 # Counting the sentiments
                 if sentiment['label'] == 'Positive':
                     positive_count += 1
@@ -875,6 +878,8 @@ def analyze():
 
             # INSERT frequent words to FrequentWords table in the database
             cleaned_comments = clean_text(all_comments_text)
+            # await asyncio.sleep(3)
+            time.sleep(3)
             word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
             most_common_words = word_count.most_common(5)
             frequent_words_objects = []
@@ -890,11 +895,6 @@ def analyze():
                 new_frequent_word = FrequentWords(word=word, count=count, sentiment=word_sentiment_label, url_id=new_youtube_url.id, user_id=current_user.id)
                 db.session.add(new_frequent_word)
                 frequent_words_objects.append(new_frequent_word)
-
-            """GENERATE and INSERT SUMMARY: uncomment when needed"""
-            # summary = get_summary(all_comments_text)
-            # summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
-            # db.session.add(summarized_comment)
 
             # INSERT the counts to the sentiment_counter table
             sentiment_counter = SentimentCounter(
@@ -912,19 +912,15 @@ def analyze():
             # Generate the positive word cloud
             positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
             positive_text = ' '.join(positive_words)
-            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
             positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
-            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
-            # positive_img_str = word_cloud_string(positive_text, 'winter')
-
+           
+            time.sleep(3)
+            
             # Generate the negative word cloud
             negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
             negative_text = ' '.join(negative_words)
-            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
             negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
-            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
-            # negative_img_str = word_cloud_string(negative_text, 'hot')
-
+            
             if positive_img_str and negative_img_str:
                 positive_img_data = positive_img_str
                 negative_img_data = negative_img_str
@@ -936,7 +932,8 @@ def analyze():
                     image_negative_data=negative_img_data
                 )
                 db.session.add(wordcloud_image)
-                
+            
+            time.sleep(5)
             successful_analysis = GetUrl.query.filter_by(url=url).order_by(GetUrl.id.desc()).first()
             successful_analysis.attempt = "Success"
             db.session.commit()
@@ -949,13 +946,11 @@ def analyze():
             return redirect(url_for('views.main'))
     return render_template("analysis_interrupted.html", user=current_user)
 
-@auth.route('/delete-item/<int:item_id>', methods=['DELETE'])
+@auth.route('/delete-analysis/<int:url_id>', methods=['POST'])
 @login_required
-def delete_analysis(item_id):
-    # Check if the item exists and belongs to the current user
-    youtube_url = YoutubeUrl.query.filter_by(id=item_id, user_id=current_user.id).first()
+def delete_result(url_id):
+    youtube_url = YoutubeUrl.query.filter_by(id=url_id, user_id=current_user.id).first()
     video_name = youtube_url.video_name if youtube_url else None
-    
     if youtube_url:
         try:
             # Delete related entries in other tables
@@ -977,118 +972,103 @@ def delete_analysis(item_id):
             db.session.delete(youtube_url)
             db.session.commit()
             
-            user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {item_id}")
+            user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {url_id}, Video Name: {video_name}")
             flash(f"Analysis for {video_name} deleted successfully.", category='success')
-            return jsonify({'message': 'Previous analysis deleted successfully'}), 200
-            # return redirect(url_for('views.main'))
-            # response = {
-            #     'message': 'Previous analysis deleted successfully',
-            #     'redirect_url': url_for('views.main')
-            # }
-            # return jsonify(response)
         
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f'Error deleting Previous Analysis: {str(e)}')
-            return jsonify({'error': 'Failed to delete Previous Analysis'}), 500
-    else:
-        return jsonify({'error': 'Analysis not found or unauthorized'}), 404
+            flash(f'Failed to delete analysis for {video_name}.', category='error')
+    return redirect(url_for('views.main'))
 
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():
-    data = request.get_json()
-    youtube_url = data.get('url2')
-    
-    if not youtube_url:
-        return jsonify({'error': 'Please enter a valid YouTube URL.'}), 400
-    elif youtube_url:
-        if '/live/' in youtube_url:
-            youtube_url = youtube_url.replace('/live/', '/watch?v=')
-        elif 'youtu.be' in youtube_url:
-            youtube_url = youtube_url.replace('youtu.be/', 'youtube.com/watch?v=')
-        elif '/shorts/' in youtube_url:
-            youtube_url = youtube_url.replace('/shorts/', '/watch?v=')
-    
     try:
-        yt = YouTube(youtube_url)
-        video_name = yt.title
-    except Exception as e:
-        return jsonify({'error': f'Failed to extract video name: {str(e)}'}), 400
-    
-    # Extract comments
-    filtered_comments = extract_comments(youtube_url)
-
-    # Sentiment Analysis
-    label_mapping = {
-        "LABEL_0": "Negative",
-        "LABEL_1": "Neutral",
-        "LABEL_2": "Positive"
-    }
-
-    # Sentiment Analysis for each comment
-    sentiments = []
-    positive_count = 0
-    negative_count = 0
-    neutral_count = 0
-
-    for comment in filtered_comments:
-        try:
-            sentiment = sentiment_pipeline([comment])[0]
-            sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
-            sentiments.append({'comment': comment, 'sentiment': sentiment['label']})
-        except RuntimeError as e:
-            continue 
-        except IndexError as e:
-            continue
-        except Exception as e:
-            return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 400
+        data = request.get_json()
+        youtube_url = data.get('url2')
         
-        # Counting the sentiments
-        if sentiment['label'] == 'Positive':
-            positive_count += 1
-        elif sentiment['label'] == 'Negative':
-            negative_count += 1
-        else:
-            neutral_count += 1
+        if not youtube_url:
+            return jsonify({'error': 'Please enter a valid YouTube URL.'}), 400
+        elif youtube_url:
+            if '/live/' in youtube_url:
+                youtube_url = youtube_url.replace('/live/', '/watch?v=')
+            elif 'youtu.be' in youtube_url:
+                youtube_url = youtube_url.replace('youtu.be/', 'youtube.com/watch?v=')
+            elif '/shorts/' in youtube_url:
+                youtube_url = youtube_url.replace('/shorts/', '/watch?v=')
+        
+        try:
+            yt = YouTube(youtube_url)
+            video_name = yt.title
+        except Exception as e:
+            return jsonify({'error': f'Failed to extract video name: {str(e)}'}), 400
+        
+        # Extract comments
+        filtered_comments = extract_comments(youtube_url)
+        time.sleep(3)
 
-    all_comments_text = " ".join(filtered_comments)
-    cleaned_comments = clean_text(all_comments_text)
-    word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
-    most_common_words = word_count.most_common(5)
-    frequent_words = []
-    for word, count in most_common_words:
-        word_sentiment_scores = sia.polarity_scores(word)
-        compound_score = word_sentiment_scores['compound']
-        if compound_score >= 0.05:
-            word_sentiment_label = "Positive"
-        elif compound_score <= -0.05:
-            word_sentiment_label = "Negative"
-        else:
-            word_sentiment_label = "Neutral"
-        frequent_words.append([word, count, word_sentiment_label])
+        # Sentiment Analysis
+        label_mapping = {
+            "LABEL_0": "Negative",
+            "LABEL_1": "Neutral",
+            "LABEL_2": "Positive"
+        }
 
-    # summary = get_summary(all_comments_text)
+        # Sentiment Analysis for each comment
+        sentiments = []
+        positive_count = 0
+        negative_count = 0
+        neutral_count = 0
 
-    """Generate Word Clouds: uncomment when needed"""
-    # unlabeled_words = word_tokenize(all_comments_text)
-    # positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
-    # positive_text = ' '.join(positive_words)
-    # positive_img_str = word_cloud_string(positive_text, 'winter')
-    
-    # negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
-    # negative_text = ' '.join(negative_words)
-    # negative_img_str = word_cloud_string(negative_text, 'hot')
+        for comment in filtered_comments:
+            try:
+                sentiment = sentiment_pipeline([comment])[0]
+                sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
+                sentiments.append({'comment': comment, 'sentiment': sentiment['label']})
+            except RuntimeError as e:
+                continue 
+            except IndexError as e:
+                continue
+            except Exception as e:
+                return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 400
+                        
+            # Counting the sentiments
+            if sentiment['label'] == 'Positive':
+                positive_count += 1
+            elif sentiment['label'] == 'Negative':
+                negative_count += 1
+            else:
+                neutral_count += 1
 
-    response = {
-        'video_name2': video_name,
-        'positive_count2': positive_count,
-        'negative_count2': negative_count,
-        'neutral_count2': neutral_count,
-        'comments2': sentiments,
-        'frequent_words2': frequent_words,
-        # 'summary2': summary,
-        # 'positive_img2': positive_img_str,
-        # 'negative_img2': negative_img_str
-    }
+        all_comments_text = " ".join(filtered_comments)
+        cleaned_comments = clean_text(all_comments_text)
+        time.sleep(3)
+        word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
+        most_common_words = word_count.most_common(5)
 
-    return jsonify(response), 200
+        time.sleep(3)
+        frequent_words = []
+        for word, count in most_common_words:
+            word_sentiment_scores = sia.polarity_scores(word)
+            compound_score = word_sentiment_scores['compound']
+            if compound_score >= 0.05:
+                word_sentiment_label = "Positive"
+            elif compound_score <= -0.05:
+                word_sentiment_label = "Negative"
+            else:
+                word_sentiment_label = "Neutral"
+            frequent_words.append([word, count, word_sentiment_label])
+
+        response = {
+            'video_name2': video_name,
+            'positive_count2': positive_count,
+            'negative_count2': negative_count,
+            'neutral_count2': neutral_count,
+            'comments2': sentiments,
+            'frequent_words2': frequent_words,
+        }
+        
+        time.sleep(5)
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 400

@@ -99,7 +99,7 @@
           </div>
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" id="email" name="email" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            <input type="email" id="email" name="email" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" oninput="validateEmail()">
           </div>
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
@@ -111,7 +111,7 @@
         <div>
             <label for="confirmpassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
             <div class="relative">
-                <input type="password" id="confirmpassword" name="confirmpassword" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+                <input type="password" id="confirmpassword" name="confirmpassword" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" oninput="validateConfirmPassword()">
                 <i class="far fa-eye absolute right-3 top-4 cursor-pointer" id="toggle-confirmpassword" onclick="togglePasswordVisibility()"></i>
             </div>
         </div>
@@ -154,6 +154,32 @@
             toggleConfirmPasswordIcon.classList.add("fa-eye");
         }
     }
+    
+    function validateEmail() {
+        const emailInput = document.getElementById('email');
+        const email = emailInput.value;
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$/;
+        if (emailPattern.test(email)) {
+          emailInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+          emailInput.classList.add('border-gray-300', 'focus:border-gray-200', 'focus:ring-gray-300');
+        } else {
+          emailInput.classList.remove('border-gray-300', 'focus:border-gray-200', 'focus:ring-gray-300');
+          emailInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+        }
+      }
+
+      function validateConfirmPassword() {
+          const passwordInput = document.getElementById('password');
+          const confirmPasswordInput = document.getElementById('confirmpassword');
+          
+          if (confirmPasswordInput.value === passwordInput.value) {
+            confirmPasswordInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+            confirmPasswordInput.classList.add('border-gray-300', 'focus:border-gray-200', 'focus:ring-gray-300');
+          } else {
+            confirmPasswordInput.classList.remove('border-gray-300', 'focus:border-gray-200', 'focus:ring-gray-300');
+            confirmPasswordInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+          }
+        }
     </script>
 <script src="./app.js"></script>
 </body>
