@@ -818,7 +818,6 @@ def analyze():
                     sentiment = sentiment_pipeline([comment])[0]
                     sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
                     # await asyncio.sleep(1)
-                    time.sleep(1)
                     sentiments.append(sentiment)
 
                     # get the most positive and most negative comments
