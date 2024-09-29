@@ -873,7 +873,6 @@ def analyze():
                 comment_objects.append(new_comment)
                 
                 # await asyncio.sleep(2)
-                time.sleep(2)
 
                 # Counting the sentiments
                 if sentiment['label'] == 'Positive':
