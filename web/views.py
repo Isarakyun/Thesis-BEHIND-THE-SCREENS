@@ -51,7 +51,7 @@ def main():
 @login_required
 def results(youtube_url_id, youtube_video_id):
     user_id = current_user.id
-    youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
+    youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.id.desc()).all()
     youtubeurl = get_youtube_url_by_id(youtube_url_id)
     count = db.session.query(SentimentCounter).filter_by(url_id=youtube_url_id).first()
     wordcloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
