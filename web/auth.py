@@ -943,9 +943,12 @@ def analyze():
                 'most_negative_comment': most_negative_comment,
                 'most_common_words': most_common_words,
                 'positive_img_data': positive_img_data,
-                'negative_img_data': negative_img_data
+                'negative_img_data': negative_img_data,
+                'youtube_url': url,  # Add the YouTube URL
+                'analysis_date': created_at  # Store the date of analysis
             }
             current_app.logger.debug(f"Session data: {session['analysis_data']}")
+
 
             return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id, youtube_video_id=new_youtube_url.video_id))
         except Exception as e:

@@ -154,59 +154,90 @@
 </head>
 <body>
     <div class="container">
+        <!-- Report Summary Header -->
         <div class="header">
-            <h1>Sentiment Analysis Report</h1>
-            <h2>Video Title: {{ data['video_name'] }}</h2>
+            <h1>Report Summary</h1>
+            <p><strong>Video Name:</strong> {{ data['video_name'] }}</p>
+            <p><strong>Video URL:</strong> {{ data['video_url'] }}</p>
+            <p><strong>Date:</strong> {{ data['date'] }}</p>
         </div>
 
+        <!-- Overall Interpretation Section -->
         <div class="section-overall">
-            <h3>Sentiment Counts</h3>
-            <ul>
-                <li>Positive: {{ data['positive_count'] }}</li>
-                <li>Negative: {{ data['negative_count'] }}</li>
-                <li>Neutral: {{ data['neutral_count'] }}</li>
-            </ul>
+            <h2 class="section-title">Overall Interpretation</h2>
+            <div class="flex-center">
+                <img src="{{ data['pie_chart_url'] }}" alt="Sentiment Pie Chart" class="chart">
+            </div>
+            <div class="divider"></div>
+            <p class="interpretation-text">
+                As of {{ data['date'] }}, this video has received {{ data['positive_count'] }} positive, {{ data['negative_count'] }} negative, and {{ data['neutral_count'] }} neutral comments.
+                The most frequently used words are: 
+                {% for word, count in data['most_common_words'] %}
+                    <strong>'{{ word }}' ({{ count }} times)</strong>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+                . The overall sentiment of the comments is <strong>{{ data['overall_sentiment'] }}</strong>.
+            </p>
         </div>
 
+        <!-- Highlighted Comments Section -->
         <div class="section-highlight">
-            <h3>Highlighted Comments</h3>
-            <p><strong>Most Positive Comment:</strong> {{ data['most_positive_comment'] }}</p>
-            <p><strong>Most Negative Comment:</strong> {{ data['most_negative_comment'] }}</p>
+            <h2 class="section-title">Highlighted Comments</h2>
+            <div class="comment-row">
+                <p><strong>Most Positive:</strong></p>
+                <p>{{ data['most_positive_comment'] }}</p>
+            </div>
+            <div class="comment-row">
+                <p><strong>Most Negative:</strong></p>
+                <p>{{ data['most_negative_comment'] }}</p>
+            </div>
         </div>
 
+        <!-- Positive and Negative Words Section -->
         <div class="section-words">
-            <h3>Frequent Words</h3>
-            {% if data['most_common_words'] %}
+            <div class="word-box">
+                <h3 class="section-title">Positive Words</h3>
                 <ul>
-                    {% for word, count in data['most_common_words'] %}
-                        <li>{{ word }}: {{ count }}</li>
+                    {% for word in data['positive_words'] %}
+                        <li>{{ word }}</li>
                     {% endfor %}
                 </ul>
-            {% else %}
-                <p>No frequent words found.</p>
-            {% endif %}
+            </div>
+            <div class="word-box">
+                <h3 class="section-title">Negative Words</h3>
+                <ul>
+                    {% for word in data['negative_words'] %}
+                        <li>{{ word }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
 
-        <div class="section">
-            <h3>Word Clouds</h3>
-            <div>
-                <h4>Positive Words</h4>
-                {% if data['positive_img_data'] %}
-                    <img src="{{ data['positive_img_data'] }}" alt="Positive Word Cloud">
-                {% else %}
-                    <p>No positive word cloud generated.</p>
-                {% endif %}
-            </div>
+        <!-- Page Break -->
+        <div style="page-break-before: always;"></div>
 
-            <div>
-                <h4>Negative Words</h4>
-                {% if data['negative_img_data'] %}
-                    <img src="{{ data['negative_img_data'] }}" alt="Negative Word Cloud">
-                {% else %}
-                    <p>No negative word cloud generated.</p>
-                {% endif %}
-            </div>
+        <!-- Frequent Words and Comments Table Section -->
+        <div class="section">
+            <h2 class="section-title">Frequent Words and Comments</h2>
+            <table class="table">
+                <thead class="table-header">
+                    <tr>
+                        <th>Word</th>
+                        <th>Count</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody class="table-body">
+                    {% for word, count, comments in data['frequent_words'] %}
+                        <tr>
+                            <td>{{ word }}</td>
+                            <td>{{ count }}</td>
+                            <td>{{ comments }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </body>
+
 </html>
