@@ -7,6 +7,7 @@ from .models import Users, Admin, YoutubeUrl, Comments, FrequentWords, Sentiment
 # from .models import SummarizedComments
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
+from .celery_worker import analyze_comments_task
 from .analysis import clean_text, word_cloud, extract_comments, word_cloud_string
 # from .analysis import get_summary
 from flask_login import login_user, login_required, logout_user, current_user
@@ -748,12 +749,11 @@ def delete_account():
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG)
 
-@auth.route('/analyze', methods=['GET','POST'])
+@auth.route('/analyze', methods=['GET', 'POST'])
 @login_required
 def analyze():
     if request.method == 'POST':
         try:
-            # get_url table as temporary storage for the url
             url = request.form.get('url')
             if not url:
                 flash('Please enter a valid YouTube URL.', category='error')
@@ -762,17 +762,8 @@ def analyze():
                 if '/live/' in url:
                     url = url.replace('/live/', '/watch?v=')
                 elif 'youtu.be' in url:
-                    """
-                    example: https://youtu.be/cb0BtfLUnvE (ディストーションと抱擁 by 不破湊)
-                    convert to: https://youtube.com/watch?v=cb0BtfLUnvE
-                    """
                     url = url.replace('youtu.be/', 'youtube.com/watch?v=')
                 elif '/shorts/' in url:
-                    
-                    """
-                    example: https://www.youtube.com/shorts/6VQBtlJiFYE (by 不破湊)
-                    convert to: https://youtube.com/watch?v=6VQBtlJiFYE
-                    """
                     url = url.replace('/shorts/', '/watch?v=')
             try:
                 yt = YouTube(url)
@@ -780,191 +771,166 @@ def analyze():
                 video_id = yt.video_id
             except Exception as e:
                 flash(f'"{url}" is not a YouTube video. Please enter a valid URL.', category='error')
-                # flash(f'Failed to extract video name: {str(e)}', category='error')
                 return redirect(url_for('views.main'))
-            attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
-            created_at = datetime.now()
-            new_url = GetUrl(url=url, user_id=current_user.id, attempt=attempt, created_at=created_at)
-            db.session.add(new_url)
-            db.session.commit()
-            user_log(f"User ID: {current_user.id} | requested analysis for video '{video_name}'")
-
-            """THE FOLLOWING CODE BLOCK WILL ONLY BE COMMITTED WHEN THE ANALYSIS IS SUCCESSFUL"""
-            # Adding the URL to the youtube_url table, youtube_url table's id is get_url's id if successful
-            new_youtube_url = YoutubeUrl(id=new_url.id, url=url, user_id=current_user.id, video_name=video_name, video_id=video_id, created_at=created_at)
-            db.session.add(new_youtube_url)
-
-            # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
-            filtered_comments = extract_comments(url)
-            # await asyncio.sleep(3)
-            time.sleep(3)
-
-            # Sentiment Analysis
-            label_mapping = {
-                "LABEL_0": "Negative",
-                "LABEL_1": "Neutral",
-                "LABEL_2": "Positive"
-            }
-
-            # Sentiment Analysis for each comment
-            sentiments = []
-            most_positive_comment = None
-            most_negative_comment = None
-            highest_positive_score = 0
-            highest_negative_score = 0
-
-            for comment in filtered_comments:
-                try:
-                    sentiment = sentiment_pipeline([comment])[0]
-                    sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
-                    # await asyncio.sleep(1)
-                    sentiments.append(sentiment)
-
-                    # get the most positive and most negative comments
-                    if sentiment['label'] == 'Positive' and sentiment['score'] > highest_positive_score:
-                        highest_positive_score = sentiment['score']
-                        most_positive_comment = comment
-                    
-                    if sentiment['label'] == 'Negative' and sentiment['score'] > highest_negative_score:
-                        highest_negative_score = sentiment['score']
-                        most_negative_comment = comment
-                except RuntimeError as e: 
-                    """This occurs because of the length of the comment. 
-                    RoBERTa can only handle a maximum of 512 tokens."""
-                    current_app.logger.error(f'Exception: {str(e)} - Comment: {comment}')
-                    continue  # Skip this comment and continue with the next one
-                except IndexError as e:
-                    current_app.logger.error(f'IndexError: {str(e)} - Comment: {comment}')
-                    # flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
-                    # return redirect(url_for('views.main'))
-                    continue
-                except Exception as e:
-                    current_app.logger.error(f'Exception: {str(e)} - Comment: {comment}')
-                    flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
-                    return redirect(url_for('views.main'))
-                
-            time.sleep(3)
-            high_score_comment = HighScoreComments(
-                user_id=current_user.id,
-                url_id=new_youtube_url.id,
-                most_positive_comment=most_positive_comment,
-                most_negative_comment=most_negative_comment,
-                highest_positive_score=highest_positive_score,
-                highest_negative_score=highest_negative_score
-            )
-            db.session.add(high_score_comment)
-
-            # for sentiment counter
-            positive_count = 0
-            negative_count = 0
-            neutral_count = 0
-
-            # INSERT comments to Comments and Sentiments to Comments table in the database
-            comment_objects = []
-            all_comments_text = " ".join(filtered_comments)
-
-            for comment, sentiment in zip(filtered_comments, sentiments):
-                new_comment = Comments(
-                    comment=comment,
-                    sentiment=sentiment['label'],
-                    url_id=new_youtube_url.id,
-                    user_id=current_user.id
-                )
-                db.session.add(new_comment)
-                comment_objects.append(new_comment)
-                
-                # await asyncio.sleep(2)
-
-                # Counting the sentiments
-                if sentiment['label'] == 'Positive':
-                    positive_count += 1
-                elif sentiment['label'] == 'Negative':
-                    negative_count += 1
-                else:
-                    neutral_count += 1
-
-            # INSERT frequent words to FrequentWords table in the database
-            cleaned_comments = clean_text(all_comments_text)
-            # await asyncio.sleep(3)
-            time.sleep(3)
-            word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
-            most_common_words = word_count.most_common(5)
-            frequent_words_objects = []
-            for word, count in most_common_words:
-                word_sentiment_scores = sia.polarity_scores(word)
-                compound_score = word_sentiment_scores['compound']
-                if compound_score >= 0.05:
-                    word_sentiment_label = "Positive"
-                elif compound_score <= -0.05:
-                    word_sentiment_label = "Negative"
-                else:
-                    word_sentiment_label = "Neutral"
-                new_frequent_word = FrequentWords(word=word, count=count, sentiment=word_sentiment_label, url_id=new_youtube_url.id, user_id=current_user.id)
-                db.session.add(new_frequent_word)
-                frequent_words_objects.append(new_frequent_word)
-
-            """GENERATE and INSERT SUMMARY: uncomment when needed"""
-            # summary = get_summary(all_comments_text)
-            # summarized_comment = SummarizedComments(summary=summary, url_id=new_youtube_url.id, user_id=current_user.id)
-            # db.session.add(summarized_comment)
-
-            # INSERT the counts to the sentiment_counter table
-            sentiment_counter = SentimentCounter(
-                user_id=current_user.id,
-                url_id=new_youtube_url.id,
-                positive=positive_count,
-                negative=negative_count,
-                neutral=neutral_count
-            )
-            db.session.add(sentiment_counter)
-
-            # WORD CLOUD
-            unlabeled_words = word_tokenize(all_comments_text)
-
-            # Generate the positive word cloud
-            positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
-            positive_text = ' '.join(positive_words)
-            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
-            positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
-            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
-            # positive_img_str = word_cloud_string(positive_text, 'winter')
-
-            # await asyncio.sleep(3)
-            time.sleep(3)
             
-            # Generate the negative word cloud
-            negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
-            negative_text = ' '.join(negative_words)
-            """FOR SAVING IN static/wordcloud FOLDER: uncomment when needed"""
-            negative_img_str = word_cloud(negative_text, 'hot', current_user.id, new_youtube_url.id, video_id, 'negative')
-            """FOR SAVING THE IMAGE AS BASE64 STRING: uncomment when needed"""
-            # negative_img_str = word_cloud_string(negative_text, 'hot')
-
-            if positive_img_str and negative_img_str:
-                positive_img_data = positive_img_str
-                negative_img_data = negative_img_str
-                
-                wordcloud_image = WordCloudImage(
-                    user_id=current_user.id,
-                    url_id=new_youtube_url.id,
-                    image_positive_data=positive_img_data,
-                    image_negative_data=negative_img_data
-                )
-                db.session.add(wordcloud_image)
-            
-            # await asyncio.sleep(5)
-            time.sleep(5)
-            successful_analysis = GetUrl.query.filter_by(url=url).order_by(GetUrl.id.desc()).first()
-            successful_analysis.attempt = "Success"
-            db.session.commit()
-            user_log(f"User ID: {current_user.id} | Completed analysis for video '{video_name}'")
-
-            return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id, youtube_video_id=new_youtube_url.video_id))
+            # Call the background task
+            task = analyze_comments_task.delay(url, current_user.id)
+            return jsonify({'task_id': task.id}), 202
         except Exception as e:
             current_app.logger.error(f'Error during analysis: {str(e)}')
             flash(f'An unexpected error occurred: {str(e)}', category='error')
             return redirect(url_for('views.main'))
     return render_template("analysis_interrupted.html", user=current_user)
+
+def analyze_comments(url, user_id):
+    # The long-running task code here
+    try:
+        yt = YouTube(url)
+        video_name = yt.title
+        video_id = yt.video_id
+        attempt = "Failed"
+        created_at = datetime.now()
+        new_url = GetUrl(url=url, user_id=user_id, attempt=attempt, created_at=created_at)
+        db.session.add(new_url)
+        db.session.commit()
+
+        new_youtube_url = YoutubeUrl(id=new_url.id, url=url, user_id=user_id, video_name=video_name, video_id=video_id, created_at=created_at)
+        db.session.add(new_youtube_url)
+
+        filtered_comments = extract_comments(url)
+        time.sleep(3)
+
+        label_mapping = {
+            "LABEL_0": "Negative",
+            "LABEL_1": "Neutral",
+            "LABEL_2": "Positive"
+        }
+
+        sentiments = []
+        most_positive_comment = None
+        most_negative_comment = None
+        highest_positive_score = 0
+        highest_negative_score = 0
+
+        for comment in filtered_comments:
+            try:
+                sentiment = sentiment_pipeline([comment])[0]
+                sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
+                sentiments.append(sentiment)
+
+                if sentiment['label'] == 'Positive' and sentiment['score'] > highest_positive_score:
+                    highest_positive_score = sentiment['score']
+                    most_positive_comment = comment
+                
+                if sentiment['label'] == 'Negative' and sentiment['score'] > highest_negative_score:
+                    highest_negative_score = sentiment['score']
+                    most_negative_comment = comment
+            except RuntimeError as e:
+                current_app.logger.error(f'Exception: {str(e)} - Comment: {comment}')
+                continue
+            except IndexError as e:
+                current_app.logger.error(f'IndexError: {str(e)} - Comment: {comment}')
+                continue
+            except Exception as e:
+                current_app.logger.error(f'Exception: {str(e)} - Comment: {comment}')
+                flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
+                return redirect(url_for('views.main'))
+            
+        time.sleep(3)
+        high_score_comment = HighScoreComments(
+            user_id=user_id,
+            url_id=new_youtube_url.id,
+            most_positive_comment=most_positive_comment,
+            most_negative_comment=most_negative_comment,
+            highest_positive_score=highest_positive_score,
+            highest_negative_score=highest_negative_score
+        )
+        db.session.add(high_score_comment)
+
+        positive_count = 0
+        negative_count = 0
+        neutral_count = 0
+
+        comment_objects = []
+        all_comments_text = " ".join(filtered_comments)
+
+        for comment, sentiment in zip(filtered_comments, sentiments):
+            new_comment = Comments(
+                comment=comment,
+                sentiment=sentiment['label'],
+                url_id=new_youtube_url.id,
+                user_id=user_id
+            )
+            db.session.add(new_comment)
+            comment_objects.append(new_comment)
+
+            if sentiment['label'] == 'Positive':
+                positive_count += 1
+            elif sentiment['label'] == 'Negative':
+                negative_count += 1
+            else:
+                neutral_count += 1
+
+        cleaned_comments = clean_text(all_comments_text)
+        time.sleep(3)
+        word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
+        most_common_words = word_count.most_common(5)
+        frequent_words_objects = []
+        for word, count in most_common_words:
+            word_sentiment_scores = sia.polarity_scores(word)
+            compound_score = word_sentiment_scores['compound']
+            if compound_score >= 0.05:
+                word_sentiment_label = "Positive"
+            elif compound_score <= -0.05:
+                word_sentiment_label = "Negative"
+            else:
+                word_sentiment_label = "Neutral"
+            new_frequent_word = FrequentWords(word=word, count=count, sentiment=word_sentiment_label, url_id=new_youtube_url.id, user_id=user_id)
+            db.session.add(new_frequent_word)
+            frequent_words_objects.append(new_frequent_word)
+
+        sentiment_counter = SentimentCounter(
+            user_id=user_id,
+            url_id=new_youtube_url.id,
+            positive=positive_count,
+            negative=negative_count,
+            neutral=neutral_count
+        )
+        db.session.add(sentiment_counter)
+
+        unlabeled_words = word_tokenize(all_comments_text)
+
+        positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
+        positive_text = ' '.join(positive_words)
+        positive_img_str = word_cloud(positive_text, 'winter', user_id, new_youtube_url.id, video_id, 'positive')
+        time.sleep(3)
+        
+        negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
+        negative_text = ' '.join(negative_words)
+        negative_img_str = word_cloud(negative_text, 'hot', user_id, new_youtube_url.id, video_id, 'negative')
+
+        if positive_img_str and negative_img_str:
+            positive_img_data = positive_img_str
+            negative_img_data = negative_img_str
+            
+            wordcloud_image = WordCloudImage(
+                user_id=user_id,
+                url_id=new_youtube_url.id,
+                image_positive_data=positive_img_data,
+                image_negative_data=negative_img_data
+            )
+            db.session.add(wordcloud_image)
+        
+        time.sleep(5)
+        successful_analysis = GetUrl.query.filter_by(url=url).order_by(GetUrl.id.desc()).first()
+        successful_analysis.attempt = "Success"
+        db.session.commit()
+        user_log(f"User ID: {user_id} | Completed analysis for video '{video_name}'")
+
+        return {'status': 'success', 'youtube_url_id': new_youtube_url.id, 'youtube_video_id': new_youtube_url.video_id}
+    except Exception as e:
+        current_app.logger.error(f'Error during analysis: {str(e)}')
+        return {'status': 'error', 'message': str(e)}
 
 @auth.route('/delete-analysis/<int:url_id>', methods=['POST'])
 @login_required
