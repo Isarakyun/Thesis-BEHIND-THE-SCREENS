@@ -1,5 +1,6 @@
 __pycache__/
 web/__pycache__/
+web/static/wordcloud/
 node_modules/
 dump/
 behindthescreensDB.sql
