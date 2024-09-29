@@ -43,7 +43,7 @@ def home():
 @login_required
 def main():
     user_id = current_user.id 
-    youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
+    youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.id.desc()).all()
     analysis_checker = WordCloudImage.query.filter_by(user_id=user_id).order_by(WordCloudImage.id.desc()).all()
     return render_template("main.html", user=current_user, youtube_urls=youtube_urls, analysis_checker=analysis_checker)
 
