@@ -26,12 +26,6 @@ import httpx
 
 auth = Blueprint('auth', __name__)
 
-try:
-    stop_words = set(stopwords.words('english'))
-except LookupError:
-    import nltk
-    nltk.download('stopwords')
-    nltk.download('vader_lexicon')
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
 MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
@@ -39,6 +33,7 @@ sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 sia = SentimentIntensityAnalyzer()
+stop_words = set(stopwords.words('english'))
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
 valid_password = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$'
 
@@ -756,22 +751,23 @@ def analyze():
             if not url:
                 flash('Please enter a valid YouTube URL.', category='error')
                 return redirect(url_for('views.main'))
-            elif url:
-                if '/live/' in url:
-                    url = url.replace('/live/', '/watch?v=')
-                elif 'youtu.be' in url:
-                    """
-                    example: https://youtu.be/cb0BtfLUnvE (ディストーションと抱擁 by 不破湊)
-                    convert to: https://youtube.com/watch?v=cb0BtfLUnvE
-                    """
-                    url = url.replace('youtu.be/', 'youtube.com/watch?v=')
-                elif '/shorts/' in url:
-                    
-                    """
-                    example: https://www.youtube.com/shorts/6VQBtlJiFYE (by 不破湊)
-                    convert to: https://youtube.com/watch?v=6VQBtlJiFYE
-                    """
-                    url = url.replace('/shorts/', '/watch?v=')
+            
+            if '/live/' in url:
+                url = url.replace('/live/', '/watch?v=')
+            elif 'youtu.be' in url:
+                """
+                example: https://youtu.be/cb0BtfLUnvE (ディストーションと抱擁 by 不破湊)
+                convert to: https://youtube.com/watch?v=cb0BtfLUnvE
+                """
+                url = url.replace('youtu.be/', 'youtube.com/watch?v=')
+            elif '/shorts/' in url:
+                
+                """
+                example: https://www.youtube.com/shorts/6VQBtlJiFYE (by 不破湊)
+                convert to: https://youtube.com/watch?v=6VQBtlJiFYE
+                """
+                url = url.replace('/shorts/', '/watch?v=')
+
             try:
                 yt = YouTube(url)
                 video_name = yt.title
@@ -794,8 +790,6 @@ def analyze():
 
             # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
             filtered_comments = extract_comments(url)
-            # await asyncio.sleep(3)
-            time.sleep(3)
 
             # Sentiment Analysis
             label_mapping = {
@@ -838,7 +832,6 @@ def analyze():
                     flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
                     return redirect(url_for('views.main'))
                 
-            time.sleep(3)
             high_score_comment = HighScoreComments(
                 user_id=current_user.id,
                 url_id=new_youtube_url.id,
@@ -878,8 +871,6 @@ def analyze():
 
             # INSERT frequent words to FrequentWords table in the database
             cleaned_comments = clean_text(all_comments_text)
-            # await asyncio.sleep(3)
-            time.sleep(3)
             word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
             most_common_words = word_count.most_common(5)
             frequent_words_objects = []
@@ -913,9 +904,7 @@ def analyze():
             positive_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] > 0]
             positive_text = ' '.join(positive_words)
             positive_img_str = word_cloud(positive_text, 'winter', current_user.id, new_youtube_url.id, video_id, 'positive')
-           
-            time.sleep(3)
-            
+                       
             # Generate the negative word cloud
             negative_words = [word for word in unlabeled_words if sia.polarity_scores(word)['compound'] < 0]
             negative_text = ' '.join(negative_words)
@@ -933,7 +922,6 @@ def analyze():
                 )
                 db.session.add(wordcloud_image)
             
-            time.sleep(5)
             successful_analysis = GetUrl.query.filter_by(url=url).order_by(GetUrl.id.desc()).first()
             successful_analysis.attempt = "Success"
             db.session.commit()
@@ -1067,7 +1055,7 @@ def analyze2():
             'comments2': sentiments,
             'frequent_words2': frequent_words,
         }
-        
+
         time.sleep(5)
         return jsonify(response), 200
     except Exception as e:

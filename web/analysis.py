@@ -33,12 +33,7 @@ def extract_comments(youtube_url):
         return redirect(url_for('views.main'))
 
 lemmatizer = WordNetLemmatizer()
-try:
-    stop_words = set(stopwords.words('english'))
-except LookupError:
-    import nltk
-    nltk.download('stopwords')
-    nltk.download('vader_lexicon')
+stop_words = set(stopwords.words('english'))
     
 def clean_text(text):
     # Remove special characters
