@@ -1055,7 +1055,6 @@ def analyze2():
                 return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 400
             
             # await asyncio.sleep(2)
-            time.sleep(2)
             
             # Counting the sentiments
             if sentiment['label'] == 'Positive':
