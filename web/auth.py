@@ -1,5 +1,5 @@
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app, make_response
 from flask_mail import Mail, Message
 from random import *
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
@@ -39,6 +39,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 sia = SentimentIntensityAnalyzer()
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
+valid_password = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$'
 
 """
 Audit Trail Logger:
@@ -147,8 +148,8 @@ def sign_up():
             flash('Email must be valid.', category='error')
         elif password != confirmpassword:
             flash('Passwords don\'t match.', category='error')
-        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
-            flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
+        elif not re.match(valid_password, password):
+            flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
         else:
             new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'), created_at=created_at)
             db.session.add(new_user)
@@ -312,8 +313,8 @@ def reset_password(token):
             user = Users.query.filter_by(email=email).first()
             if password != confirmpassword:
                 flash('Passwords don\'t match.', category='error')
-            elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
-                flash('Password must be at least 8 characters long and contain both letters and numbers.', category='error')
+            elif not re.match(valid_password, password):
+                flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
             else:
                 user.password=generate_password_hash(password, method='sha256')
                 db.session.commit()
@@ -394,8 +395,8 @@ def change_password():
         confirm_password = request.form.get('confirmpassword')
         if check_password_hash(current_user.password, current_password):
             if new_password == confirm_password:
-                if len(new_password) < 8:
-                    flash('Password must be at least 8 characters.', category='error')
+                if not re.match(valid_password, new_password):
+                    flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
                 else:
                     current_user.password = generate_password_hash(new_password, method='sha256')
                     db.session.commit()
@@ -949,13 +950,11 @@ def analyze():
             return redirect(url_for('views.main'))
     return render_template("analysis_interrupted.html", user=current_user)
 
-@auth.route('/delete-item/<int:item_id>', methods=['DELETE'])
+@auth.route('/delete-analysis/<int:url_id>', methods=['POST'])
 @login_required
-def delete_analysis(item_id):
-    # Check if the item exists and belongs to the current user
-    youtube_url = YoutubeUrl.query.filter_by(id=item_id, user_id=current_user.id).first()
+def delete_result(url_id):
+    youtube_url = YoutubeUrl.query.filter_by(id=url_id, user_id=current_user.id).first()
     video_name = youtube_url.video_name if youtube_url else None
-    
     if youtube_url:
         try:
             # Delete related entries in other tables
@@ -977,22 +976,14 @@ def delete_analysis(item_id):
             db.session.delete(youtube_url)
             db.session.commit()
             
-            user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {item_id}")
+            user_log(f"User ID: {current_user.id} | {current_user.username} deleted video analysis with ID: {url_id}, Video Name: {video_name}")
             flash(f"Analysis for {video_name} deleted successfully.", category='success')
-            return jsonify({'message': 'Previous analysis deleted successfully'}), 200
-            # return redirect(url_for('views.main'))
-            # response = {
-            #     'message': 'Previous analysis deleted successfully',
-            #     'redirect_url': url_for('views.main')
-            # }
-            # return jsonify(response)
         
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f'Error deleting Previous Analysis: {str(e)}')
-            return jsonify({'error': 'Failed to delete Previous Analysis'}), 500
-    else:
-        return jsonify({'error': 'Analysis not found or unauthorized'}), 404
+            flash(f'Failed to delete analysis for {video_name}.', category='error')
+    return redirect(url_for('views.main'))
 
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():

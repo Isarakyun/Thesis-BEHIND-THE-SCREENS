@@ -22,5 +22,8 @@ EXPOSE 5000
 ENV FLASK_APP=main.py
 
 # Run the application using Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "web:app"]
+# CMD ["gunicorn", "--bind", "0.0.0.0:5000", "web:app"]
 # CMD ["python", "main.py"]
+
+# Run the application using Gunicorn with gevent worker class, 2 workers, and a 1200-second timeout (20 minutes)
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--worker-class", "gevent", "--workers", "2", "--timeout", "1200", "web:app"]
