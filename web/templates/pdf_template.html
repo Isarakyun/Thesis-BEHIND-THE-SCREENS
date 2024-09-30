@@ -158,9 +158,10 @@
         <div class="header">
             <h1>Report Summary</h1>
             <p><strong>Video Name:</strong> {{ youtube_url.video_name }}</p>
-            <p><strong>Video URL:</strong> {{ youtube_url.video_url }}</p>
-            <p><strong>Date:</strong> {{ youtube_url.date }}</p>
+            <p><strong>Video URL:</strong> {{ youtube_url.url }}</p>
+            <p><strong>Date:</strong> {{ youtube_url.created_at.strftime('%Y-%m-%d') }}</p> <!-- Use created_at for date -->
         </div>
+
 
         <!-- Overall Interpretation Section -->
         <div class="section-overall">

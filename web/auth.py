@@ -989,19 +989,14 @@ def download_pdf():
     if not youtube_url:
         return "YouTube URL not found", 404
 
-    # Fetch related comments for the video
+    # Debugging prints
+    print(youtube_url.video_name, youtube_url.url, youtube_url.created_at)
+
+    # Fetch related comments and other data as before
     comments = Comments.query.filter_by(url_id=youtube_url_id).all()
-
-    # Fetch sentiment data
     sentiment_counter = SentimentCounter.query.filter_by(url_id=youtube_url_id).first()
-
-    # Fetch frequent words
     frequent_words = FrequentWords.query.filter_by(url_id=youtube_url_id).all()
-
-    # Fetch high score comments
     high_score_comments = HighScoreComments.query.filter_by(url_id=youtube_url_id).first()
-
-    # Fetch word cloud data
     word_cloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
 
     if word_cloud:
@@ -1032,6 +1027,7 @@ def download_pdf():
     response.headers['Content-Disposition'] = f'attachment; filename={youtube_url.video_name}.pdf'
 
     return response
+
 
 
 
