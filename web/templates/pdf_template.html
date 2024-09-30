@@ -168,14 +168,12 @@
             <div class="flex-center">
                 <img src="{{ youtube_url.pie_chart_url }}" alt="Sentiment Pie Chart" class="chart">
             </div>
-            <div class="divider"></div>
             <p class="interpretation-text">
-                As of {{ youtube_url.date }}, this video has received {{ comments[0].positive_count }} positive, {{ comments[0].negative_count }} negative, and {{ comments[0].neutral_count }} neutral comments.
+                As of {{ youtube_url.date }}, this video has received {{ sentiment_counter.positive }} positive, {{ sentiment_counter.negative }} negative, and {{ sentiment_counter.neutral }} neutral comments.
                 The most frequently used words are: 
-                {% for word, count in comments[0].most_common_words %}
-                    <strong>'{{ word }}' ({{ count }} times)</strong>{% if not loop.last %}, {% endif %}
+                {% for word in frequent_words %}
+                    <strong>'{{ word.word }}' ({{ word.count }} times)</strong>{% if not loop.last %}, {% endif %}
                 {% endfor %}
-                . The overall sentiment of the comments is <strong>{{ comments[0].overall_sentiment }}</strong>.
             </p>
         </div>
 
@@ -184,31 +182,11 @@
             <h2 class="section-title">Highlighted Comments</h2>
             <div class="comment-row">
                 <p><strong>Most Positive:</strong></p>
-                <p>{{ comments[0].most_positive_comment }}</p>
+                <p>{{ high_score_comments.most_positive_comment }}</p>
             </div>
             <div class="comment-row">
                 <p><strong>Most Negative:</strong></p>
-                <p>{{ comments[0].most_negative_comment }}</p>
-            </div>
-        </div>
-
-        <!-- Positive and Negative Words Section -->
-        <div class="section-words">
-            <div class="word-box">
-                <h3 class="section-title">Positive Words</h3>
-                <ul>
-                    {% for word in comments[0].positive_words %}
-                        <li>{{ word }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="word-box">
-                <h3 class="section-title">Negative Words</h3>
-                <ul>
-                    {% for word in comments[0].negative_words %}
-                        <li>{{ word }}</li>
-                    {% endfor %}
-                </ul>
+                <p>{{ high_score_comments.most_negative_comment }}</p>
             </div>
         </div>
 
@@ -219,18 +197,17 @@
         <div class="section">
             <h2 class="section-title">Frequent Words and Comments</h2>
             <table class="table">
-                <thead class="table-header">
+                <thead>
                     <tr>
                         <th>Word</th>
                         <th>Count</th>
-                        <th>Comments</th>
                     </tr>
                 </thead>
-                <tbody class="table-body">
-                    {% for frequent_word in comments[0].frequent_words %}
+                <tbody>
+                    {% for word in frequent_words %}
                         <tr>
-                            <td>{{ frequent_word.word }}</td>
-                            <td>{{ frequent_word.count }}</td>
+                            <td>{{ word.word }}</td>
+                            <td>{{ word.count }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -238,4 +215,5 @@
         </div>
     </div>
 </body>
+
 </html>

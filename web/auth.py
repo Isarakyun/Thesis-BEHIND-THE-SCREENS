@@ -998,24 +998,44 @@ from weasyprint import HTML
 @auth.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf():
-    # Fetch the necessary data from the database
-    # For example, let's say you need a YoutubeUrl and its related Comments
+    # Get the YouTube URL ID from the request
     youtube_url_id = request.args.get('youtube_url_id')
+    
+    # Fetch the YouTube URL and video details
     youtube_url = YoutubeUrl.query.get(youtube_url_id)
+    
+    # Fetch related comments for the video
     comments = Comments.query.filter_by(url_id=youtube_url_id).all()
 
-    # Render the template with the data
-    html_string = render_template('pdf_template.html', youtube_url=youtube_url, comments=comments)
+    # Fetch sentiment data
+    sentiment_counter = SentimentCounter.query.filter_by(url_id=youtube_url_id).first()
 
-    # Convert the HTML to a PDF
+    # Fetch frequent words
+    frequent_words = FrequentWords.query.filter_by(url_id=youtube_url_id).all()
+
+    # Fetch summarized comments or high score comments (if necessary)
+    high_score_comments = HighScoreComments.query.filter_by(url_id=youtube_url_id).first()
+
+    # Render the template with all data
+    html_string = render_template(
+        'pdf_template.html', 
+        youtube_url=youtube_url, 
+        comments=comments, 
+        sentiment_counter=sentiment_counter,
+        frequent_words=frequent_words,
+        high_score_comments=high_score_comments
+    )
+
+    # Convert the rendered HTML to PDF
     pdf = HTML(string=html_string).write_pdf()
 
-    # Create a response with the PDF data and appropriate headers
+    # Create a response with the PDF and headers
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename={youtube_url.video_name}.pdf'
 
     return response
+
 
 
 @auth.route('/analyze2', methods=['POST'])
