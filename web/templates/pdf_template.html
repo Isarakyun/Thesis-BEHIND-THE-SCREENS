@@ -245,22 +245,21 @@
 
 
 
-        <!-- Comments and Sentiments Table -->
+<!-- Comments and Sentiments Table Section -->
         <div class="section">
-            <h2 class="section-title">Comments and Sentiments</h2>
             <table class="table">
-                <thead>
+                <thead class="table-header">
                     <tr>
                         <th>Comment</th>
                         <th>Sentiment</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-body">
                     {% for comment in comments %}
-                        <tr>
-                            <td>{{ comment.comment }}</td>
-                            <td>{{ comment.sentiment }}</td>
-                        </tr>
+                    <tr class="border">
+                        <td>{{ comment.comment }}</td>
+                        <td>{{ comment.sentiment }}</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
