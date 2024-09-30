@@ -157,25 +157,25 @@
         <!-- Report Summary Header -->
         <div class="header">
             <h1>Report Summary</h1>
-            <p><strong>Video Name:</strong> {{ data['video_name'] }}</p>
-            <p><strong>Video URL:</strong> {{ data['video_url'] }}</p>
-            <p><strong>Date:</strong> {{ data['date'] }}</p>
+            <p><strong>Video Name:</strong> {{ youtube_url.video_name }}</p>
+            <p><strong>Video URL:</strong> {{ youtube_url.video_url }}</p>
+            <p><strong>Date:</strong> {{ youtube_url.date }}</p>
         </div>
 
         <!-- Overall Interpretation Section -->
         <div class="section-overall">
             <h2 class="section-title">Overall Interpretation</h2>
             <div class="flex-center">
-                <img src="{{ data['pie_chart_url'] }}" alt="Sentiment Pie Chart" class="chart">
+                <img src="{{ youtube_url.pie_chart_url }}" alt="Sentiment Pie Chart" class="chart">
             </div>
             <div class="divider"></div>
             <p class="interpretation-text">
-                As of {{ data['date'] }}, this video has received {{ data['positive_count'] }} positive, {{ data['negative_count'] }} negative, and {{ data['neutral_count'] }} neutral comments.
+                As of {{ youtube_url.date }}, this video has received {{ comments[0].positive_count }} positive, {{ comments[0].negative_count }} negative, and {{ comments[0].neutral_count }} neutral comments.
                 The most frequently used words are: 
-                {% for word, count in data['most_common_words'] %}
+                {% for word, count in comments[0].most_common_words %}
                     <strong>'{{ word }}' ({{ count }} times)</strong>{% if not loop.last %}, {% endif %}
                 {% endfor %}
-                . The overall sentiment of the comments is <strong>{{ data['overall_sentiment'] }}</strong>.
+                . The overall sentiment of the comments is <strong>{{ comments[0].overall_sentiment }}</strong>.
             </p>
         </div>
 
@@ -184,11 +184,11 @@
             <h2 class="section-title">Highlighted Comments</h2>
             <div class="comment-row">
                 <p><strong>Most Positive:</strong></p>
-                <p>{{ data['most_positive_comment'] }}</p>
+                <p>{{ comments[0].most_positive_comment }}</p>
             </div>
             <div class="comment-row">
                 <p><strong>Most Negative:</strong></p>
-                <p>{{ data['most_negative_comment'] }}</p>
+                <p>{{ comments[0].most_negative_comment }}</p>
             </div>
         </div>
 
@@ -197,7 +197,7 @@
             <div class="word-box">
                 <h3 class="section-title">Positive Words</h3>
                 <ul>
-                    {% for word in data['positive_words'] %}
+                    {% for word in comments[0].positive_words %}
                         <li>{{ word }}</li>
                     {% endfor %}
                 </ul>
@@ -205,7 +205,7 @@
             <div class="word-box">
                 <h3 class="section-title">Negative Words</h3>
                 <ul>
-                    {% for word in data['negative_words'] %}
+                    {% for word in comments[0].negative_words %}
                         <li>{{ word }}</li>
                     {% endfor %}
                 </ul>
@@ -227,11 +227,10 @@
                     </tr>
                 </thead>
                 <tbody class="table-body">
-                    {% for word, count, comments in data['frequent_words'] %}
+                    {% for frequent_word in comments[0].frequent_words %}
                         <tr>
-                            <td>{{ word }}</td>
-                            <td>{{ count }}</td>
-                            <td>{{ comments }}</td>
+                            <td>{{ frequent_word.word }}</td>
+                            <td>{{ frequent_word.count }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -239,5 +238,4 @@
         </div>
     </div>
 </body>
-
 </html>

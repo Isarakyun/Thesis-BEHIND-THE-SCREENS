@@ -992,25 +992,29 @@ def delete_result(url_id):
             flash(f'Failed to delete analysis for {video_name}.', category='error')
     return redirect(url_for('views.main'))
 
+from flask import make_response
+from weasyprint import HTML
+
 @auth.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf():
-    analysis_data = session.get('analysis_data')
-    if not analysis_data:
-        flash("No analysis data found.", category="error")
-        return redirect(url_for('views.main'))
-    
-    # Render the template with the analysis data
-    html_content = render_template('pdf_template.html', data=analysis_data)
-    
-    # Convert HTML to PDF
-    pdf = HTML(string=html_content).write_pdf()
+    # Fetch the necessary data from the database
+    # For example, let's say you need a YoutubeUrl and its related Comments
+    youtube_url_id = request.args.get('youtube_url_id')
+    youtube_url = YoutubeUrl.query.get(youtube_url_id)
+    comments = Comments.query.filter_by(url_id=youtube_url_id).all()
 
-    # Send the PDF as a downloadable file
+    # Render the template with the data
+    html_string = render_template('pdf_template.html', youtube_url=youtube_url, comments=comments)
+
+    # Convert the HTML to a PDF
+    pdf = HTML(string=html_string).write_pdf()
+
+    # Create a response with the PDF data and appropriate headers
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'attachment; filename=sentiment_analysis_report.pdf'
-    
+    response.headers['Content-Disposition'] = f'attachment; filename={youtube_url.video_name}.pdf'
+
     return response
 
 
