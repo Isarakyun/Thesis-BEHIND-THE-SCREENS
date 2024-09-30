@@ -125,23 +125,26 @@
             font-size: 1.1rem; /* Medium font size */
         }
         .table {
-            width: 100%;
-            border-collapse: collapse; /* Remove gaps between cells */
-            margin: 1rem 0; /* Space around table */
-        }
-        .table-header th {
-            background-color: #C62828; /* bg-red-700 */
-            color: #FFFFFF; /* text-white */
-            padding: 0.75rem; /* p-3 */
-            text-align: center; /* Align text to center */
-            border-bottom: 1px solid #CCCCCC; /* Light grey border */
-        }
+    width: 100%;
+    border-collapse: collapse; /* Remove gaps between cells */
+    margin: 1rem 0; /* Space around table */
+    table-layout: fixed; /* Fixes table layout */
+}
 
-                .table-body td {
-            padding: 0.75rem; /* p-3 */
-            text-align: center; /* Align text to the left */
-            border-bottom: 1px solid #CCCCCC; /* Light grey border */
-        }
+.table-header th {
+    background-color: #C62828; /* bg-red-700 */
+    color: #FFFFFF; /* text-white */
+    padding: 0.75rem; /* p-3 */
+    text-align: center; /* Align text to center */
+    border-bottom: 1px solid #CCCCCC; /* Light grey border */
+}
+
+.table-body td {
+    padding: 0.75rem; /* Same padding as header */
+    text-align: center; /* Align text to the center */
+    border-bottom: 1px solid #CCCCCC; /* Light grey border */
+}
+
         .border {
             border-bottom: 1px solid #CCCCCC; /* Light grey border */
         }
@@ -218,27 +221,29 @@
         <div style="page-break-before: always;"></div>
 
         <!-- Words, Count, and Sentiment Table Section -->
-        <div class="section">
-            <h2 class="section-title">Word Count Sentiment</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Word</th>
-                        <th>Count</th>
-                        <th>Sentiment</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for word in frequent_words %}
-                        <tr>
-                            <td>{{ word.word }}</td>
-                            <td>{{ word.count }}</td>
-                            <td>{{ word.sentiment }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="section">
+    <table class="table">
+        <thead class="table-header">
+            <tr>
+                <th>Word</th>
+                <th>Count</th>
+                <th>Sentiment</th>
+            </tr>
+        </thead>
+        <tbody class="table-body">
+            {% for word in frequent_words %}
+                <tr>
+                    <td>{{ word.word }}</td>
+                    <td>{{ word.count }}</td>
+                    <td>{{ word.sentiment }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
 
         <!-- Comments and Sentiments Table -->
         <div class="section">
