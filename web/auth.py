@@ -933,23 +933,6 @@ def analyze():
             db.session.commit()
             user_log(f"User ID: {current_user.id} | Completed analysis for video '{video_name}'")
 
-            # Store the result details in session or pass directly to the PDF route
-            session['analysis_data'] = {
-                'video_name': video_name,
-                'positive_count': positive_count,
-                'negative_count': negative_count,
-                'neutral_count': neutral_count,
-                'most_positive_comment': most_positive_comment,
-                'most_negative_comment': most_negative_comment,
-                'most_common_words': most_common_words,
-                'positive_img_data': positive_img_data,
-                'negative_img_data': negative_img_data,
-                'youtube_url': url,  # Add the YouTube URL
-                'analysis_date': created_at  # Store the date of analysis
-            }
-            current_app.logger.debug(f"Session data: {session['analysis_data']}")
-
-
             return redirect(url_for('views.results', youtube_url_id=new_youtube_url.id, youtube_video_id=new_youtube_url.video_id))
         except Exception as e:
             current_app.logger.error(f'Error during analysis: {str(e)}')
@@ -1003,7 +986,9 @@ def download_pdf():
     
     # Fetch the YouTube URL and video details
     youtube_url = YoutubeUrl.query.get(youtube_url_id)
-    
+    if not youtube_url:
+        return "YouTube URL not found", 404
+
     # Fetch related comments for the video
     comments = Comments.query.filter_by(url_id=youtube_url_id).all()
 
@@ -1013,8 +998,19 @@ def download_pdf():
     # Fetch frequent words
     frequent_words = FrequentWords.query.filter_by(url_id=youtube_url_id).all()
 
-    # Fetch summarized comments or high score comments (if necessary)
+    # Fetch high score comments
     high_score_comments = HighScoreComments.query.filter_by(url_id=youtube_url_id).first()
+
+    # Fetch word cloud data
+    word_cloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
+
+    # Check if word_cloud is not None
+    if word_cloud:
+        positive_words_image = word_cloud.image_positive_data
+        negative_words_image = word_cloud.image_negative_data
+    else:
+        positive_words_image = None
+        negative_words_image = None
 
     # Render the template with all data
     html_string = render_template(
@@ -1023,7 +1019,10 @@ def download_pdf():
         comments=comments, 
         sentiment_counter=sentiment_counter,
         frequent_words=frequent_words,
-        high_score_comments=high_score_comments
+        high_score_comments=high_score_comments,
+        positive_words=positive_words,
+        word_cloud=word_cloud,
+        negative_words=negative_words
     )
 
     # Convert the rendered HTML to PDF
@@ -1035,6 +1034,7 @@ def download_pdf():
     response.headers['Content-Disposition'] = f'attachment; filename={youtube_url.video_name}.pdf'
 
     return response
+
 
 
 

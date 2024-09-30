@@ -194,21 +194,19 @@
         <div class="section-words">
             <div class="word-box">
                 <h3 class="section-title">Positive Words</h3>
-                <ul>
-                    {% for word in positive_words %}
-                        <li>{{ word }}</li>
-                    {% endfor %}
-                </ul>
+                <img src="data:image/png;base64,{{ word_cloud.image_positive_data }}" alt="Positive Words Image" style="max-width: 100%; height: auto;">
             </div>
             <div class="word-box">
                 <h3 class="section-title">Negative Words</h3>
-                <ul>
-                    {% for word in negative_words %}
-                        <li>{{ word }}</li>
-                    {% endfor %}
-                </ul>
+                
+                
+<img src="data:image/png;base64,{{ word_cloud.image_negative_data }}" alt="Negative Words Image" style="max-width: 100%; height: auto;">
+
+
             </div>
         </div>
+
+
 
         <!-- Page Break -->
         <div style="page-break-before: always;"></div>
