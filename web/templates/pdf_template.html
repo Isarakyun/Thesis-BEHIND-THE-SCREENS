@@ -190,17 +190,38 @@
             </div>
         </div>
 
+        <!-- Positive and Negative Words Section -->
+        <div class="section-words">
+            <div class="word-box">
+                <h3 class="section-title">Positive Words</h3>
+                <ul>
+                    {% for word in positive_words %}
+                        <li>{{ word }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="word-box">
+                <h3 class="section-title">Negative Words</h3>
+                <ul>
+                    {% for word in negative_words %}
+                        <li>{{ word }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
         <!-- Page Break -->
         <div style="page-break-before: always;"></div>
 
-        <!-- Frequent Words and Comments Table Section -->
+        <!-- Words, Count, and Sentiment Table Section -->
         <div class="section">
-            <h2 class="section-title">Frequent Words and Comments</h2>
+            <h2 class="section-title">Word Count Sentiment</h2>
             <table class="table">
                 <thead>
                     <tr>
                         <th>Word</th>
                         <th>Count</th>
+                        <th>Sentiment</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -213,6 +234,9 @@
                 </tbody>
             </table>
         </div>
+
+<!-- There should be a table here. (2 columns 1 for comment and 1 for sentiment)-->
+
     </div>
 </body>
 
