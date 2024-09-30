@@ -22,8 +22,6 @@ import re
 from flask_wtf import CSRFProtect
 import os
 import time
-import asyncio
-import httpx
 
 auth = Blueprint('auth', __name__)
 

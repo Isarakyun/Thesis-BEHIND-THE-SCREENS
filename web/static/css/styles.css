@@ -708,6 +708,9 @@ video {
 .ml-64 {
   margin-left: 16rem;
 }
+.ml-auto {
+  margin-left: auto;
+}
 .ml-\[50px\] {
   margin-left: 50px;
 }
@@ -728,6 +731,9 @@ video {
 }
 .mr-8 {
   margin-right: 2rem;
+}
+.mr-\[25px\] {
+  margin-right: 25px;
 }
 .mr-\[50px\] {
   margin-right: 50px;
@@ -848,6 +854,9 @@ video {
 }
 .w-1\/5 {
   width: 20%;
+}
+.w-3\/5 {
+  width: 60%;
 }
 .w-4\/5 {
   width: 80%;
@@ -1379,6 +1388,26 @@ video {
 .text-justify {
   text-align: justify;
 }
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -1394,26 +1423,6 @@ video {
 .text-5xl {
   font-size: 3rem;
   line-height: 1;
-}
-.text-base {
-  font-size: 1rem;
-  line-height: 1.5rem;
-}
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-.text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-.text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-.text-xs {
-  font-size: 0.75rem;
-  line-height: 1rem;
 }
 .font-bold {
   font-weight: 700;
