@@ -191,20 +191,25 @@
         </div>
 
         <!-- Positive and Negative Words Section -->
-        <div class="section-words">
-            <div class="word-box">
-                <h3 class="section-title">Positive Words</h3>
-                <img src="data:image/png;base64,{{ word_cloud.image_positive_data }}" alt="Positive Words Image" style="max-width: 100%; height: auto;">
-            </div>
-            <div class="word-box">
-                <h3 class="section-title">Negative Words</h3>
-                
-                
-<img src="data:image/png;base64,{{ word_cloud.image_negative_data }}" alt="Negative Words Image" style="max-width: 100%; height: auto;">
+<div class="section-words">
+    <div class="word-box">
+        <h3 class="section-title">Positive Words</h3>
+        {% if positive_words_image %}
+            <img src="{{ positive_words_image }}" alt="Positive Word Cloud">
+        {% else %}
+            <p>No positive word cloud available.</p>
+        {% endif %}
+    </div>
+    <div class="word-box">
+        <h3 class="section-title">Negative Words</h3>
+        {% if negative_words_image %}
+            <img src="{{ negative_words_image }}" alt="Negative Word Cloud">
+        {% else %}
+            <p>No negative word cloud available.</p>
+        {% endif %}
+    </div>
+</div>
 
-
-            </div>
-        </div>
 
 
 
