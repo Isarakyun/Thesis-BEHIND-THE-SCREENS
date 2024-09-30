@@ -1004,7 +1004,6 @@ def download_pdf():
     # Fetch word cloud data
     word_cloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
 
-    # Check if word_cloud is not None
     if word_cloud:
         positive_words_image = word_cloud.image_positive_data
         negative_words_image = word_cloud.image_negative_data
