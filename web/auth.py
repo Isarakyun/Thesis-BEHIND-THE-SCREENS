@@ -1020,9 +1020,8 @@ def download_pdf():
         sentiment_counter=sentiment_counter,
         frequent_words=frequent_words,
         high_score_comments=high_score_comments,
-        positive_words=positive_words,
-        word_cloud=word_cloud,
-        negative_words=negative_words
+        positive_words_image=positive_words_image,
+        negative_words_image=negative_words_image
     )
 
     # Convert the rendered HTML to PDF
