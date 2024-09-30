@@ -229,13 +229,33 @@
                         <tr>
                             <td>{{ word.word }}</td>
                             <td>{{ word.count }}</td>
+                            <td>{{ word.sentiment }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-<!-- There should be a table here. (2 columns 1 for comment and 1 for sentiment)-->
+        <!-- Comments and Sentiments Table -->
+        <div class="section">
+            <h2 class="section-title">Comments and Sentiments</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Comment</th>
+                        <th>Sentiment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comment in comments %}
+                        <tr>
+                            <td>{{ comment.text }}</td>
+                            <td>{{ comment.sentiment }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
     </div>
 </body>
