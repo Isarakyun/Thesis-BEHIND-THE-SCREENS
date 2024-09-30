@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .analysis import clean_text, word_cloud, extract_comments, word_cloud_string
 from flask_login import login_user, login_required, logout_user, current_user
+from sqlalchemy import or_
 from pytube import YouTube
 from transformers import pipeline
 from nltk.tokenize import word_tokenize
@@ -75,36 +76,28 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # print(f"Attempting login with email: {email}")
-
         # ADMIN LOGIN
         admin = Admin.query.filter_by(username=email).first()
         if admin:            
             if check_password_hash(admin.password, password):
-                # print("Admin password correct")
                 login_user(admin, remember=True)
                 admin_log(f"Behind the Screens {admin.username} Logged in")
                 return redirect(url_for('admin.dashboard'))
 
             else:
-                # print("Admin password incorrect")
                 flash('Incorrect password, try again.', category='error')
 
         # USER LOGIN
-        user = Users.query.filter_by(email=email).first()
+        user = Users.query.filter(or_(Users.email == email, Users.username == email)).first()
         if user:
-            # print(f"User found: {user.email}")
             if check_password_hash(user.password, password):
-                # print("User password correct")
                 login_user(user, remember=True)
                 user_log(f"User ID: {user.id} | {user.username} Logged in")
                 return redirect(url_for('views.main'))
             else:
-                # print("User password incorrect")
                 flash('Incorrect password, try again.', category='error')
         else:
-            # print("Email does not exist")
-            flash('Email does not exist.', category='error')
+            flash('Email or Username does not exist.', category='error')
     return render_template('login.html', user=current_user)
 
 @auth.route('/logout')
@@ -135,9 +128,9 @@ def sign_up():
         existing_username = Users.query.filter_by(username=username).first()
 
         if existing_email:
-            flash('Email already exists.', category='error')
+            flash(f'Email "{email}" already exists.', category='error')
         elif existing_username:
-            flash('Username already exists.', category='error')
+            flash(f'Username "{username}" already exists.', category='error')
         elif username == 'admin':
             flash('Username cannot be "admin".', category='error')
         elif not re.match(valid_email, email):
@@ -145,7 +138,7 @@ def sign_up():
         elif password != confirmpassword:
             flash('Passwords don\'t match.', category='error')
         elif not re.match(valid_password, password):
-            flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
+            flash('Password must contain at least 8 characters, alphanumeric and 1 special characters.', category='error')
         else:
             new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'), created_at=created_at)
             db.session.add(new_user)
@@ -310,7 +303,7 @@ def reset_password(token):
             if password != confirmpassword:
                 flash('Passwords don\'t match.', category='error')
             elif not re.match(valid_password, password):
-                flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
+                flash('Password must contain at least 8 characters, alphanumeric and 1 special characters.', category='error')
             else:
                 user.password=generate_password_hash(password, method='sha256')
                 db.session.commit()
@@ -392,7 +385,7 @@ def change_password():
         if check_password_hash(current_user.password, current_password):
             if new_password == confirm_password:
                 if not re.match(valid_password, new_password):
-                    flash('Password must be at least 8 characters long, contains alphanumeric and at least 1 special character.', category='error')
+                    flash('Password must contain at least 8 characters, alphanumeric and 1 special characters.', category='error')
                 else:
                     current_user.password = generate_password_hash(new_password, method='sha256')
                     db.session.commit()
@@ -993,7 +986,6 @@ def analyze2():
         
         # Extract comments
         filtered_comments = extract_comments(youtube_url)
-        time.sleep(3)
 
         # Sentiment Analysis
         label_mapping = {
@@ -1030,11 +1022,9 @@ def analyze2():
 
         all_comments_text = " ".join(filtered_comments)
         cleaned_comments = clean_text(all_comments_text)
-        time.sleep(3)
         word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
         most_common_words = word_count.most_common(5)
 
-        time.sleep(3)
         frequent_words = []
         for word, count in most_common_words:
             word_sentiment_scores = sia.polarity_scores(word)
