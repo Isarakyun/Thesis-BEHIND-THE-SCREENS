@@ -20,49 +20,30 @@
     {% endif %}
   </div>
   {% if youtube_url.created_at and count.positive is not none and count.negative is not none and count.neutral is not none and frequent_words %}
-  <div class="ml-auto flex items-center mr-[25px]">
+  <!-- <div class="ml-auto flex items-center mr-[25px]">
     <button class="bg-red-600 px-4 py-2 rounded text-base sm:text-m text-white font-medium flex items-center" onclick="downloadPDF('{{ youtube_url.id }}', '{{ youtube_url.video_id }}')">
+      <i class="fas fa-download mr-2"></i> PDF
+    </button>
+  </div> -->
+  <div class="ml-auto flex items-center mr-[25px]">
+    <button class="bg-red-600 px-4 py-2 rounded text-base sm:text-m text-white font-medium flex items-center" onclick="openAndPrint('{{ youtube_url.id }}', '{{ youtube_url.video_id }}')">
       <i class="fas fa-download mr-2"></i> PDF
     </button>
   </div>
   {% endif %}
 </div>
 
+<!-- for printing/downloading pdf -->
+<iframe id="printFrame" style="display:none;"></iframe>
+
 <!-- SCRIPT FOR DOWNLOADING PDF -->
-<script>
-  async function downloadPDF(urlId, videoId) {
-    try {
-      const response = await fetch(`/pdf-view/${urlId}$${videoId}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok'); // me too sana all ok
-      }
-      const htmlContent = await response.text();
-      console.log('Fetched HTML content:', htmlContent);
-
-      const hiddenElement = document.createElement('div');
-      hiddenElement.style.display = 'block'; // debugging
-      hiddenElement.innerHTML = htmlContent;
-      document.body.appendChild(hiddenElement);
-
-      // no page breaks
-      hiddenElement.querySelectorAll('p, h1, h2, h3, h4, h5, h6, div').forEach(el => {
-        el.classList.add('no-page-break');
-      });
-
-      const opt = {
-        margin:       0.5,
-        filename:     `analysis_${urlId}_${videoId}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-
-      await html2pdf().from(hiddenElement).set(opt).save();
-
-      document.body.removeChild(hiddenElement);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
+ <script>
+  function openAndPrint(urlId, videoId) {
+    const printFrame = document.getElementById('printFrame');
+    printFrame.src = `/pdf-view/${urlId}$${videoId}`;
+    printFrame.onload = function() {
+      printFrame.contentWindow.print();
+    };
   }
 </script>
 
