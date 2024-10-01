@@ -59,68 +59,95 @@
     </style>
 </head>
    <body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-        {% if category == 'error' %}
-        <div class="alert bg-red-500 text-black p-3 text-sm">
-            {{ message }}
-            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-        {% else %}
-        <div class="alert bg-blue-600 text-white p-3 text-sm">
-            {{ message }}
-            <button type="button" class="float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-        {% endif %}
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
    <div class="flex h-screen">
     <!-- Left Pane -->
-    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-200 text-black">
+    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-300 text-black">
       <div class="max-w-md text-center">
         <a href="/"><img src="./static/BTS-logo-with-name.png" width="524.67004" height="531.39694" class="w-full" viewBox="0 0 524.67004 531.39694"></a>
         </div>
     </div>
 
     <!-- Right Pane -->
-    <div class="w-full bg-slate-300 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
+    <div class="w-full bg-slate-200 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
       <div class="max-w-md w-full p-6">
-        <h1 class="text-3xl font-semibold mb-6 text-black text-center">Sign Up</h1>
+        <h1 class="text-3xl font-bold mb-6 text-black text-center">Sign Up</h1>
         <h1 class="text-sm font-semibold mb-6 text-gray-500 text-center">Join Our Community to Save Your Analysis Results</h1>
         <div class="mt-4 flex flex-col items-center">
         </div>
 
         <form action="" method="POST" class="space-y-4">
           <div>
-            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-            <input type="text" id="username" name="username" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            <label for="username" class="block text-sm font-bold text-gray-700">Username</label>
+            <input type="text" id="username" name="username" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                {% if category == 'error' and 'Username' in message %}
+                <div class="alert text-red-500 mt-2 ml-2 text-sm font-medium">
+                    {{ message }}
+                </div>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
           </div>
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" id="email" name="email" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" oninput="validateEmail()">
+            <label for="email" class="block text-sm font-bold text-gray-700">Email</label>
+            <input type="email" id="email" name="email" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300" oninput="validateEmail()">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                {% if category == 'error' and 'Email' in message %}
+                <div class="alert text-red-500 mt-2 ml-2 text-sm font-medium">
+                    {{ message }}
+                </div>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
           </div>
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <label for="password" class="block text-sm font-bold text-gray-700">Password</label>
             <div class="relative">
-                <input type="password" id="password" name="password" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+                <input type="password" id="password" name="password" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300">
                 <i class="far fa-eye absolute right-3 top-4 cursor-pointer" id="toggle-password" onclick="togglePasswordVisibility()"></i>
             </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                {% if category == 'error' and 'Password must contain' in message %}
+                <div class="alert text-red-500 mt-2 ml-2 text-sm font-medium">
+                    {{ message }}
+                </div>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
         </div>
         <div>
-            <label for="confirmpassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <label for="confirmpassword" class="block text-sm font-bold text-gray-700">Confirm Password</label>
             <div class="relative">
-                <input type="password" id="confirmpassword" name="confirmpassword" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" oninput="validateConfirmPassword()">
+                <input type="password" id="confirmpassword" name="confirmpassword" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300" oninput="validateConfirmPassword()">
                 <i class="far fa-eye absolute right-3 top-4 cursor-pointer" id="toggle-confirmpassword" onclick="togglePasswordVisibility()"></i>
             </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                {% if category == 'error' and 'Passwords' in message %}
+                <div class="alert text-red-500 mt-2 ml-2 text-sm font-medium">
+                    {{ message }}
+                </div>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
         </div>
           <div>
-            <button type="submit" class="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Sign Up</button>
+            <button type="submit" class="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 font-bold">Sign Up</button>
           </div>
         </form>
-        <div class="mt-4 text-sm text-gray-600 text-center">
-          <p>Already have an account? <button onclick="location.href='/login'" class="text-black hover:cursor-pointer">Login here</button>
+        <div class="mt-4 text-sm text-gray-600 text-center font-medium">
+          <p>Already have an account? <button onclick="location.href='/login'" class="text-black hover:cursor-pointer font-bold">Login here</button>.
           </p>
 
         </div>
@@ -163,7 +190,7 @@
           emailInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
           emailInput.classList.add('border-gray-300', 'focus:border-gray-200', 'focus:ring-gray-300');
         } else {
-          emailInput.classList.remove('border-gray-300', 'focus:border-gray-200', 'focus:ring-gray-300');
+          emailInput.classList.remove('border-gray-300', 'focus:border-gray-200', 'focus:ring-blue-500');
           emailInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
         }
       }
@@ -176,7 +203,7 @@
             confirmPasswordInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
             confirmPasswordInput.classList.add('border-gray-300', 'focus:border-gray-200', 'focus:ring-gray-300');
           } else {
-            confirmPasswordInput.classList.remove('border-gray-300', 'focus:border-gray-200', 'focus:ring-gray-300');
+            confirmPasswordInput.classList.remove('border-gray-300', 'focus:border-gray-200', 'focus:ring-blue-500');
             confirmPasswordInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
           }
         }

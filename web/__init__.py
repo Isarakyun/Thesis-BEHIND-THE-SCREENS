@@ -71,4 +71,11 @@ def create_app():
 
     app.jinja_env.filters['format_date'] = format_date
 
+    def format_full_date(value):
+        if isinstance(value, datetime):
+            return value.strftime('%B %d, %Y')
+        return value
+    
+    app.jinja_env.filters['format_full_date'] = format_full_date
+
     return app

@@ -60,18 +60,18 @@
    <body>
    <div class="flex h-screen">
     <!-- Left Pane -->
-    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-200 text-red-500">
+    <div class="lg:flex items-center justify-center flex-1 dark:bg-gray-800 bg-slate-300 text-red-500">
       <div class="max-w-md text-center">
         <a href="/"><img src="{{ url_for('static', filename='BTS-logo-with-name.png') }}" width="524.67004" height="531.39694" class="w-full" viewBox="0 0 524.67004 531.39694"></a>
         </div>
     </div>
 
     <!-- Right Pane -->
-    <div class="w-full bg-slate-300 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
+    <div class="w-full bg-slate-200 dark:bg-gray-900 lg:w-1/2 flex items-center justify-center">
       <div class="max-w-md w-full p-6">
-        <h1 class="text-3xl font-semibold mb-6 text-red-500 text-center">Analysis Interrupted</h1>
-        <div class="mt-4 text-sm text-gray-600 text-center">
-          <p>This might be due to server timeout, database timeout, server crash, or network issues. You can go back <button onclick="location.href='/main'" class="text-red-500 hover:cursor-pointer">here</button> to redo the analysis.
+        <h1 class="text-3xl font-bold mb-6 text-red-500 text-center">Analysis Interrupted</h1>
+        <div class="mt-4 text-sm text-gray-600 text-center font-medium">
+          <p>This might be due to server timeout, database timeout, server crash, or network issues. You can go back <button onclick="location.href='/main'" class="text-red-500 hover:cursor-pointer font-bold">here</button> to redo the analysis.
           </p>
         </div>
       </div>
