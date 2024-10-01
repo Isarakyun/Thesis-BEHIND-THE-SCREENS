@@ -923,7 +923,6 @@
           {% if image_positive_data %}
           <td class="px-2 py-2">
             <img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_positive_data) }}" alt="Positive Word Cloud">
-          <!-- <img class="italic text-gray-500 w-full rounded" src="data:image/png;base64,{{ image_positive_data }}" alt="Positive Word Cloud"> -->
           </td>
           {% else %}
           <td class="px-2 py-2 italic text-gray-500">Not enough information.</td>
@@ -931,7 +930,6 @@
           <!-- NEGATIVE WORD CLOUD -->
           {% if image_negative_data%}
           <td class="px-2 py-2"><img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_negative_data) }}" alt="Negative Word Cloud">
-          <!-- <img class="italic text-gray-500 w-full rounded" src="data:image/png;base64,{{ image_negative_data }}" alt="Negative Word Cloud"> -->
           </td>
           {% else %}
           <td class="px-2 py-2 italic text-gray-500">Not enough information.</td>
