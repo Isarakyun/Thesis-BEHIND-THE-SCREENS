@@ -60,6 +60,7 @@ def bar_chart(url_id, video_id):
 
 @views.route('/')
 def home():
+    # return render_template("home_analysis.html", created_at=None, positive_count=None, negative_count=None, neutral_count=None, comments=None, frequent_words=None, user=current_user)
     return render_template("home.html", user=current_user)
 
 @views.route('/main')
