@@ -252,28 +252,37 @@
 </div>
 
 <script>
-    document.getElementById('analysis-form2').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the default form submission
-    
-        const url = document.getElementById('url2').value;
-        document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
-    
-        fetch('/analyze2', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url2: url })
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-    
-            if (data) { // Ensure data exists
-                document.getElementById('results-container').classList.remove('hidden'); // Show results container
-    
-                // Update summary
+document.getElementById('analysis-form2').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const url = document.getElementById('url2').value;
+    document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
+
+    // Clear previous results
+    document.getElementById('results-container').classList.add('hidden'); // Hide results container
+    document.getElementById('summary').innerHTML = ''; // Clear summary
+    document.getElementById('labeled-comments').querySelector('tbody').innerHTML = ''; // Clear comments
+    document.getElementById('pagination-controls').innerHTML = ''; // Clear pagination controls
+
+    fetch('/analyze2', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url2: url })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Received data:', data); // Log the response data
+        document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
+
+        if (data) { // Ensure data exists
+            document.getElementById('results-container').classList.remove('hidden'); // Show results container
+            
+            if (data.frequent_words2 && Array.isArray(data.frequent_words2)) {
                 const summaryText = `As of today, this video has received ${data.positive_count2} positive comments, ${data.negative_count2} negative comments, and ${data.neutral_count2} neutral comments. The most frequently used words are: ${data.frequent_words2.map(word => `'${word[0]}'`).join(', ')} which were used ${data.frequent_words2.map(word => `${word[1]}`).join(', ')} times, respectively.`;
+                
+                // Update summary table
                 document.getElementById('summary').innerHTML = `
                     <thead class="text-white">
                         <tr class="bg-red-600 dark:bg-slate-700 text-lg">
@@ -285,15 +294,18 @@
                             <td class="px-2 py-2">${summaryText}</td>
                         </tr>
                     </tbody>`;
-    
-                // Update comments
-                const commentsTable = document.getElementById('labeled-comments').querySelector('tbody');
-                commentsTable.innerHTML = data.comments2.map(comment => `
-                    <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
-                        <td class="px-2 py-2">${comment.comment}</td>
-                        <td class="px-2 py-2">${comment.sentiment}</td>
-                    </tr>`).join('');
-    
+            } else {
+                console.error("frequent_words2 is undefined or not an array");
+            }
+
+            // Update comments table
+            const commentsTable = document.getElementById('labeled-comments').querySelector('tbody');
+            commentsTable.innerHTML = data.comments2.map(comment => `
+                <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
+                    <td class="px-2 py-2">${comment.comment}</td>
+                    <td class="px-2 py-2">${comment.sentiment}</td>
+                </tr>`).join('');
+
                 // Implement Pagination
                 const rowsPerPage = 5;
                 let currentPage = 1;
@@ -388,17 +400,17 @@
     
                 renderTable();
                 renderPaginationControls();
-            } else {
-                // If no data, hide results container
-                document.getElementById('results-container').classList.add('hidden');
-            }
-        })
-        .catch(error => {
-            document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-            alert(`An error occurred: ${error.message}. Please try again.`);
-            console.error('Error:', error);
-        });
+        } else {
+            // If no data, hide results container
+            document.getElementById('results-container').classList.add('hidden');
+        }
+    })
+    .catch(error => {
+        document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
+        alert(`An error occurred: ${error.message}. Please try again.`);
+        console.error('Error:', error);
     });
+});
 </script>
     
     
