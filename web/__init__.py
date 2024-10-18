@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_mail import Mail, Message
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from itsdangerous import URLSafeTimedSerializer
 import pymysql
 from dotenv import load_dotenv
@@ -29,9 +29,6 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}'
 
     # railway mysql database
-    # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}')
-    
-    # Initialize extensions
     # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}')
 
     db.init_app(app)
@@ -75,5 +72,14 @@ def create_app():
             return value.strftime("%B %d, %Y")
 
     app.jinja_env.filters['format_date'] = format_date
+
+    def format_full_date(value):
+        if isinstance(value, datetime):
+            value = value.date() 
+        if isinstance(value, date):
+            return value.strftime('%B %d, %Y')
+        return value
+    
+    app.jinja_env.filters['format_full_date'] = format_full_date
 
     return app

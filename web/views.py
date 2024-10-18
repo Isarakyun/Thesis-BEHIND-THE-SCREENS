@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash, send_file
 from flask_login import login_required, current_user
 from flask import session
 from . import db
@@ -6,7 +6,8 @@ from sqlalchemy.orm import joinedload, aliased
 from .models import Users, YoutubeUrl, Comments, FrequentWords, SentimentCounter, WordCloudImage, HighScoreComments
 import sys
 import os
-import base64
+import matplotlib.pyplot as plt
+import io
 import json
 
 # Add the parent directory to the Python path
@@ -34,6 +35,28 @@ def get_sentiment_data(url_id, video_id):
             'neutral': 0
         }
     return jsonify(data)
+
+# BAR CHART FOR THE PDF DOWNLOAD LOL
+@views.route('/bar-chart/<int:url_id>$<string:video_id>')
+def bar_chart(url_id, video_id):
+    response = get_sentiment_data(url_id, video_id)
+    data = response.get_json()
+
+    labels = ['Negative', 'Positive', 'Neutral']
+    values = [data['negative'], data['positive'], data['neutral']]
+    colors = ['#b91c1c', '#1d4ed8', '#fbbf24']
+
+    fig, ax = plt.subplots()
+    ax.bar(labels, values, color=colors)
+    ax.set_ylabel('Number of Comments')
+    ax.set_title('Number of Comments Based on Sentiment')
+
+    # Save the plot to a BytesIO object
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+
+    return send_file(img, mimetype='image/png')
 
 @views.route('/')
 def home():
@@ -125,6 +148,31 @@ def results2():
                            comments2=comments2,
                            positive_img_str2=positive_img_str2,
                            negative_img_str2=negative_img_str2)
+
+@views.route('/pdf-view/<int:youtube_url_id>$<string:youtube_video_id>')
+@login_required
+def pdf_template(youtube_url_id, youtube_video_id):
+    user_id = current_user.id
+    youtube_urls = YoutubeUrl.query.filter_by(user_id=user_id).order_by(YoutubeUrl.created_at.desc()).all()
+    youtubeurl = get_youtube_url_by_id(youtube_url_id)
+    count = db.session.query(SentimentCounter).filter_by(url_id=youtube_url_id).first()
+    wordcloud = WordCloudImage.query.filter_by(url_id=youtube_url_id).first()
+    comments = Comments.query.filter_by(user_id=user_id, url_id=youtube_url_id).all()
+    highscorecomments = HighScoreComments.query.filter_by(user_id=user_id, url_id=youtube_url_id).first()
+    analysis_checker = WordCloudImage.query.filter_by(user_id=user_id).order_by(WordCloudImage.id.desc()).all()
+    frequent_words = FrequentWords.query.filter_by(user_id=user_id, url_id=youtube_url_id).order_by(FrequentWords.url_id.desc()).all()
+
+    if wordcloud and wordcloud.image_positive_data:
+        image_positive_data = wordcloud.image_positive_data
+    else:
+        image_positive_data = None
+
+    if wordcloud and wordcloud.image_negative_data:
+        image_negative_data = wordcloud.image_negative_data
+    else:
+        image_negative_data = None
+
+    return render_template("pdf_template.html", user=current_user, youtube_url=youtubeurl, youtube_urls=youtube_urls, count=count, frequent_words=frequent_words, comments=comments, image_positive_data=image_positive_data, image_negative_data=image_negative_data, analysis_checker=analysis_checker, highscorecomments=highscorecomments)
 
 # ERROR HANDLING PAGES
 @views.app_errorhandler(404)

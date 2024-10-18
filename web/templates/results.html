@@ -1,24 +1,54 @@
 {% extends "base.html" %} {% block title %}Results of {{ youtube_url.video_name }}{% endblock %}
 
 {% block content %}
-<div class="py-2 px-4 sm:px-6 bg-slate-200 dark:bg-[#121212] flex items-center fixed top-0 w-full z-50">
+<div class="py-2 px-4 sm:px-6 bg-slate-200 dark:bg-[#121212] flex items-center top-0 w-full z-50 shadow-md">
   <button type="button" class="text-lg text-black dark:text-white mr-4 sm:mr-6" id="menuToggleButton">
-      <i class="ri-menu-line cursor-pointer"></i>
+    <i class="ri-menu-line cursor-pointer"></i>
   </button>
-  <div class="flex-1 flex items-center space-x-4">
+  <div class="flex-1 flex items-center">
+    <div>
       <a href="{{ url_for('views.home') }}" class="text-base sm:text-m text-black dark:text-white font-medium">
-          Behind the Screens
+        Behind the Screens
       </a>
-      {% if user.confirmed_email == False %}
+    </div>
+    {% if user.confirmed_email == False %}
+    <div class="ml-4">
       <span class="text-sm sm:text-m text-red-600">
-          Your email hasn't been verified yet. Go to your settings to confirm your email.
+        Your email hasn't been verified yet. Go to your settings to confirm your email.
       </span>
-      {% endif %}
+    </div>
+    {% endif %}
   </div>
+  {% if youtube_url.created_at and count.positive is not none and count.negative is not none and count.neutral is not none and frequent_words %}
+  <!-- <div class="ml-auto flex items-center mr-[25px]">
+    <button class="bg-red-600 px-4 py-2 rounded text-base sm:text-m text-white font-medium flex items-center" onclick="downloadPDF('{{ youtube_url.id }}', '{{ youtube_url.video_id }}')">
+      <i class="fas fa-download mr-2"></i> PDF
+    </button>
+  </div> -->
+  <div class="ml-auto flex items-center mr-[25px]">
+    <button class="bg-red-600 px-4 py-2 rounded text-base sm:text-m text-white font-medium flex items-center" onclick="openAndPrint('{{ youtube_url.id }}', '{{ youtube_url.video_id }}')">
+      <i class="fas fa-download mr-2"></i> PDF
+    </button>
+  </div>
+  {% endif %}
 </div>
 
+<!-- for printing/downloading pdf -->
+<iframe id="printFrame" style="display:none;"></iframe>
+
+<!-- SCRIPT FOR DOWNLOADING PDF -->
+ <script>
+  function openAndPrint(urlId, videoId) {
+    const printFrame = document.getElementById('printFrame');
+    printFrame.src = `/pdf-view/${urlId}$${videoId}`;
+    printFrame.onload = function() {
+      printFrame.contentWindow.print();
+    };
+  }
+</script>
+
 <!-- SUMMARY / INTERPRETATION -->
-<div class="mt-5 pt-5 flex overflow-hidden relative">
+<div class="mt-2 flex overflow-hidden relative">
   <img src="{{ url_for('static', filename='summary-text.png' )}}" class="pointer-events-none absolute mt-4 mr-[50px] ml-[100px] w-[500px] opacity-25">
   <table id="summary" class="w-full justify-center text-center ml-[50px] mr-[50px] mt-20 relative z-10">
     <thead class="text-white">
@@ -899,7 +929,6 @@
           {% if image_positive_data %}
           <td class="px-2 py-2">
             <img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_positive_data) }}" alt="Positive Word Cloud">
-          <!-- <img class="italic text-gray-500 w-full rounded" src="data:image/png;base64,{{ image_positive_data }}" alt="Positive Word Cloud"> -->
           </td>
           {% else %}
           <td class="px-2 py-2 italic text-gray-500">Not enough information.</td>
@@ -907,7 +936,6 @@
           <!-- NEGATIVE WORD CLOUD -->
           {% if image_negative_data%}
           <td class="px-2 py-2"><img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_negative_data) }}" alt="Negative Word Cloud">
-          <!-- <img class="italic text-gray-500 w-full rounded" src="data:image/png;base64,{{ image_negative_data }}" alt="Negative Word Cloud"> -->
           </td>
           {% else %}
           <td class="px-2 py-2 italic text-gray-500">Not enough information.</td>
@@ -917,5 +945,15 @@
   </table>
 </div>
 {% endif %}
-
+<!-- <script>
+  function downloadPDF(id, videoId) {
+    const url = `/pdf-download/${id}$${videoId}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `analysis_${id}_${videoId}.pdf`; // Optional: Set a default filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+</script> -->
 {% endblock %}
