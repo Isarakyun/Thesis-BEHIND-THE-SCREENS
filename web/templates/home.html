@@ -169,252 +169,78 @@
     <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
     
+      <!-- will redirect to home_analysis.html -->
     <section id="analyze" class="flex flex-col p-6 my-6 scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
-      <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Analyze Your YouTube Video</h2>
-      <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube video you want to analyze below:</p>
-    
-      <!-- Input Bar -->
-      <form id="analysis-form2" method="POST">
-          <div class="flex items-center justify-center mt-[50px]">
-              <input
-                  class="flex w-[500px] flex-col gap-1.5 rounded-[26px] p-1.5 px-4 transition-colors bg-slate-100 text-black dark:bg-token-main-surface-secondary placeholder-gray-500 ml-10"
-                  id="url2"
-                  name="url"
-                  type="text"
-                  placeholder="Youtube URL here..." 
-              />
-              <button type="submit" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600">
-                  <i class="ri-arrow-right-line"></i>
-              </button>
-          </div>
-      </form>
       
-      <div id="loading-message" class="flex flex-col items-center justify-center mt-[50px] hidden">
-          <div class="flex items-center">
-              <!-- Spinner Icon -->
-              <svg class="animate-spin h-5 w-5 text-gray-700 dark:text-gray-300 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-              </svg>
-              <p class="text-lg text-gray-700 dark:text-gray-300 ml-2">Please Wait...</p>
-          </div>
-          <div class="flex items-center mt-2">
-              <p class="text-sm text-gray-700 dark:text-gray-300 ml-2">This may take a while depending on the number of comments.</p>
-          </div>
-      </div>
-    
-<!-- Results Container -->
-<div id="results-container" class="hidden mt-5">
-    <!-- Results Section -->
-    <div id="results-section">
-        <!-- Summary Table -->
-        <div>
-            <table id="summary" class="table-auto text-center w-full mt-4">
-                <thead class="text-white rounded">
-                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                        <th class="px-4 py-1 w-1/2">Summary</th>
-                    </tr>
-                </thead>
-                <tbody class="text-center text-gray-900 dark:text-white text-sm">
-                    <!-- Content will be injected by JavaScript -->
-                </tbody>
-            </table>
+    <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Analyze Your YouTube Video</h2>
+    <p class="text-xl text-slate-700 dark:text-slate-400 mb-4">Paste the URL of the YouTube video you want to analyze below:</p>
+
+    <form action="/limited-analyze" id="analysis-form" method="POST">
+        <div class="flex items-center justify-center mt-[50px]">
+            <input
+                class="flex w-[500px] flex-col gap-1.5 rounded-[26px] p-1.5 px-4 transition-colors bg-slate-100 text-black dark:bg-token-main-surface-secondary placeholder-gray-500 ml-10"
+                id="url"
+                name="url"
+                type="text"
+                placeholder="Youtube URL here..." 
+            />
+            <button type="submit" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600">
+                <i class="ri-arrow-right-line"></i>
+            </button>
         </div>
+    </form>
 
-        <!-- Comments Table -->
-        <div class="mt-5 pt-5 flex justify-center">
-            <table id="labeled-comments" class="table-auto w-full">
-                <thead class="text-white rounded">
-                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                        <th class="px-4 py-1 w-3/4">Comments</th>
-                        <th class="px-2 py-1 w-1/4">Sentiments</th>
-                    </tr>
-                </thead>
-                <tbody class="text-center text-gray-900 dark:text-white text-sm">
-                    <!-- Content will be injected by JavaScript -->
-                </tbody>
-            </table>
+    <div id="loading-message" class="flex flex-col items-center justify-center mt-[50px] hidden">
+        <div class="flex items-center">
+            <!-- Spinner Icon -->
+            <svg class="animate-spin h-5 w-5 text-gray-700 dark:text-gray-300 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <p class="text-lg text-gray-700 dark:text-gray-300 ml-2">Please Wait...</p>
         </div>
-
-        <div id="pagination-controls" class="flex justify-center mt-4"></div>
-
-        <!-- Word Count Table and Bar Chart -->
-
-        <!-- Word Cloud -->
-
-        <!-- Create Account Advertisement -->
-        <div class="mt-5 text-xs italic text-yellow-700 dark:text-yellow-600">
-            <div class="font-bold">Create an account to save your analysis and have detailed results (such as highlighted comments, word counter, word cloud, and bar graph).</div>
-            <div class="mt-2">* Please note that the model used for the analysis doesn't recognize slangs or inside jokes depending on the content of the video.</div>
-            <div class="mt-2">* Comments with timestamps and replies aren't included in the analysis.</div>
+        <div class="flex items-center mt-2">
+            <p class="text-sm text-gray-700 dark:text-gray-300 ml-2">This may take a while depending on the number of comments.</p>
         </div>
     </div>
-</div>
-
+      
+<!-- SCRIPT FOR LOADING -->
 <script>
-document.getElementById('analysis-form2').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    const url = document.getElementById('url2').value;
-    document.getElementById('loading-message').classList.remove('hidden'); // Show loading message
-
-    // Clear previous results
-    document.getElementById('results-container').classList.add('hidden'); // Hide results container
-    document.getElementById('summary').innerHTML = ''; // Clear summary
-    document.getElementById('labeled-comments').querySelector('tbody').innerHTML = ''; // Clear comments
-    document.getElementById('pagination-controls').innerHTML = ''; // Clear pagination controls
-
-    fetch('/analyze2', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url2: url })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Received data:', data); // Log the response data
-        document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-
-        if (data) { // Ensure data exists
-            document.getElementById('results-container').classList.remove('hidden'); // Show results container
-            
-            if (data.frequent_words2 && Array.isArray(data.frequent_words2)) {
-                const summaryText = `As of today, this video has received ${data.positive_count2} positive comments, ${data.negative_count2} negative comments, and ${data.neutral_count2} neutral comments. The most frequently used words are: ${data.frequent_words2.map(word => `'${word[0]}'`).join(', ')} which were used ${data.frequent_words2.map(word => `${word[1]}`).join(', ')} times, respectively.`;
-                
-                // Update summary table
-                document.getElementById('summary').innerHTML = `
-                    <thead class="text-white">
-                        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
-                            <th class="px-2 py-1 w-1/2">Summary</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-center text-gray-900 dark:text-white text-sm">
-                        <tr>
-                            <td class="px-2 py-2">${summaryText}</td>
-                        </tr>
-                    </tbody>`;
-            } else {
-                console.error("frequent_words2 is undefined or not an array");
-            }
-
-            // Update comments table
-            const commentsTable = document.getElementById('labeled-comments').querySelector('tbody');
-            commentsTable.innerHTML = data.comments2.map(comment => `
-                <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
-                    <td class="px-2 py-2">${comment.comment}</td>
-                    <td class="px-2 py-2">${comment.sentiment}</td>
-                </tr>`).join('');
-
-                // Implement Pagination
-                const rowsPerPage = 5;
-                let currentPage = 1;
-    
-                function renderTable() {
-                    commentsTable.innerHTML = '';
-                    const start = (currentPage - 1) * rowsPerPage;
-                    const end = start + rowsPerPage;
-                    const paginatedRows = data.comments2.slice(start, end);
-                    paginatedRows.forEach(comment => {
-                        commentsTable.innerHTML += `
-                            <tr class="sentiment-row" data-sentiment="${comment.sentiment}">
-                                <td class="px-2 py-2">${comment.comment}</td>
-                                <td class="px-2 py-2">${comment.sentiment}</td>
-                            </tr>`;
-                    });
-                }
-    
-                function renderPaginationControls() {
-                    const paginationControls = document.getElementById('pagination-controls');
-                    paginationControls.innerHTML = '';
-                    const totalPages = Math.ceil(data.comments2.length / rowsPerPage);
-    
-                    if (currentPage > 1) {
-                        const prevButton = document.createElement('button');
-                        prevButton.textContent = '←';
-                        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-                        prevButton.addEventListener('click', () => {
-                            if (currentPage > 1) {
-                                currentPage--;
-                                renderTable();
-                                renderPaginationControls();
-                            }
-                        });
-                        paginationControls.appendChild(prevButton);
-                    }
-    
-                    const startPage = Math.max(1, currentPage - 1);
-                    const endPage = Math.min(totalPages, startPage + 2);
-    
-                    for (let i = startPage; i <= endPage; i++) {
-                        const pageButton = document.createElement('button');
-                        pageButton.textContent = i;
-                        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-                        if (i === currentPage) {
-                            pageButton.classList.add('font-bold');
-                        }
-                        pageButton.addEventListener('click', () => {
-                            currentPage = i;
-                            renderTable();
-                            renderPaginationControls();
-                        });
-                        paginationControls.appendChild(pageButton);
-                    }
-    
-                    if (endPage < totalPages - 1) {
-                        const ellipsis = document.createElement('span');
-                        ellipsis.textContent = '...';
-                        ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
-                        paginationControls.appendChild(ellipsis);
-                    }
-    
-                    if (endPage < totalPages) {
-                        const lastPageButton = document.createElement('button');
-                        lastPageButton.textContent = totalPages;
-                        lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-                        if (totalPages === currentPage) {
-                            lastPageButton.classList.add('font-bold');
-                        }
-                        lastPageButton.addEventListener('click', () => {
-                            currentPage = totalPages;
-                            renderTable();
-                            renderPaginationControls();
-                        });
-                        paginationControls.appendChild(lastPageButton);
-                    }
-    
-                    if (currentPage < totalPages) {
-                        const nextButton = document.createElement('button');
-                        nextButton.textContent = '→';
-                        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
-                        nextButton.addEventListener('click', () => {
-                            if (currentPage < totalPages) {
-                                currentPage++;
-                                renderTable();
-                                renderPaginationControls();
-                            }
-                        });
-                        paginationControls.appendChild(nextButton);
-                    }
-                }
-    
-                renderTable();
-                renderPaginationControls();
-        } else {
-            // If no data, hide results container
-            document.getElementById('results-container').classList.add('hidden');
-        }
-    })
-    .catch(error => {
-        document.getElementById('loading-message').classList.add('hidden'); // Hide loading message
-        alert(`An error occurred: ${error.message}. Please try again.`);
-        console.error('Error:', error);
+    document.getElementById('analysis-form').addEventListener('submit', function(event) {
+        document.getElementById('analysis-form').classList.add('hidden');
+        document.getElementById('loading-message').classList.remove('hidden');
     });
-});
+    
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach((alert, index) => {
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        });
+    });
 </script>
-    
-    
-    </section>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed bottom-4 right-4 space-y-4">
+                {% for category, message in messages %}
+                {% if category == 'error' %}
+                <div class="alert bg-red-500 text-black p-3 text-sm rounded shadow-lg">
+                    {{ message }}
+                    <button type="button" class="ml-4 float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+                </div>
+                {% else %}
+                <div class="alert bg-blue-600 text-white p-3 text-sm rounded shadow-lg">
+                    {{ message }}
+                    <button type="button" class="ml-4 float-right" data-dismiss="alert" onclick="this.parentElement.style.display='none'">&times;</button>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+      {% endwith %}
+      </section>
     
     <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
@@ -540,30 +366,6 @@ document.getElementById('analysis-form2').addEventListener('submit', function(ev
     <div id="animationWindow" class="flex">
         <!-- Animation will be rendered here -->
     </div>
-    <footer id="footer" class="bg-red-800 text-white text-sm">
-      <section class="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row sm:justify-between">
-          <address>
-              <!-- TO DO -->
-              <h2>CS-79, Behind the Screens</h2>
-              DHVSU - Main (Bacolor)<br>
-              Pampanga, Philippines<br>
-              Email: <a href="mailto:behindthescreens.thesis@gmail.com">behindthescreens.thesis@gmail.com</a><br>
-              Phone: <a href="tel:+639#########">(+63) 9## ### ####</a>
-          </address>
-          <nav class="hidden md:flex flex-col gap-2" aria-label="footer">
-              <a href="#services" class="hover:opacity-90">Services</a>
-              <a href="/about-us" class="hover:opacity-90">About Us</a>
-              <a href="/user-agreement" class="hover:opacity-90">User Terms</a>
-              <a href="/privacy-policy" class="hover:opacity-90">Privacy Policy</a>
-          </nav>          
-          <div class="flex flex-col sm:gap-2">
-              <p class="text-right">All Rights Reserved &copy; <span id="year">2024</p>
-              <p class="text-right">All Rights Reserved</p>
-          </div>
-      </section>
-  </footer>
-  
-    
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.4/lottie.min.js"></script>
@@ -615,4 +417,27 @@ function fetchAndDisplayResults(url) {
     document.addEventListener('DOMContentLoaded', initApp);
 </script>
 </body>
+
+<footer id="footer" class="bg-red-800 text-white text-sm">
+    <section class="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row sm:justify-between">
+        <address>
+            <!-- TO DO -->
+            <h2>CS-79, Behind the Screens</h2>
+            DHVSU - Main (Bacolor)<br>
+            Pampanga, Philippines<br>
+            Email: <a href="mailto:behindthescreens.thesis@gmail.com">behindthescreens.thesis@gmail.com</a><br>
+            Phone: <a href="tel:+639#########">(+63) 9## ### ####</a>
+        </address>
+        <nav class="hidden md:flex flex-col gap-2" aria-label="footer">
+            <a href="#services" class="hover:opacity-90">Services</a>
+            <a href="/about-us" class="hover:opacity-90">About Us</a>
+            <a href="/user-agreement" class="hover:opacity-90">User Terms</a>
+            <a href="/privacy-policy" class="hover:opacity-90">Privacy Policy</a>
+        </nav>          
+        <div class="flex flex-col sm:gap-2">
+            <p class="text-right">All Rights Reserved &copy; <span id="year">2024</p>
+            <p class="text-right">All Rights Reserved</p>
+        </div>
+    </section>
+</footer>
 </html>
