@@ -755,7 +755,10 @@ def analyze():
                 video_name = yt.title
                 video_id = yt.video_id
             except Exception as e:
-                flash(f'"{url}" is not a YouTube video. Please enter a valid URL.', category='error')
+                if 'youtube' not in url:
+                    flash(f'"{url}" is not a YouTube video. Please enter a valid URL.', category='error')
+                else:
+                    flash(f'Pytube BUG: An error occurred accessing the Video Title and ID. Please file a bug report at https://github.com/pytube/pytube', category='error')
                 return redirect(url_for('views.main'))
             
             attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
