@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_mail import Mail, Message
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from itsdangerous import URLSafeTimedSerializer
 import pymysql
 from dotenv import load_dotenv
@@ -73,6 +73,8 @@ def create_app():
 
     def format_full_date(value):
         if isinstance(value, datetime):
+            value = value.date() 
+        if isinstance(value, date):
             return value.strftime('%B %d, %Y')
         return value
     

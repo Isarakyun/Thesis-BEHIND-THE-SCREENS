@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" class="sm:scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-scrollbar.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Ensure Chart.js is included -->
+    <title>Sentiment Analysis</title>
+    <style>
+        #animationWindow {
+            display: none;
+            background-color: rgb(255, 255, 255);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hide-section {
+            display: none;
+        }
+
+        .analyze-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(10, 10, 10);
+            z-index: 100;
+        }
+        .dark-red-bg {
+          background-color: #8B0000; /* Adjust the color as needed */
+        }
+
+        .dark .dark-red-bg {
+          background-color: #8B0000; /* This ensures the color stays dark red in dark mode */
+        }
+
+        .dark-red-text {
+          color: #8B0000; /* Adjust the color as needed */
+        }
+
+        .dark .dark-red-text {
+          color: #8B0000; /* This ensures the color stays dark red in dark mode */
+        }
+        .flex-container {
+          display: flex;
+          justify-content: center; /* Centering the content */
+          align-items: center; /* Align items in the center */
+          margin: 20px 50px;
+        }
+
+        .flex-item {
+          flex: 1;
+          margin: 0 10px;
+        }
+
+        #frequent-words {
+          width: 100%;
+        }
+
+        #pieChart {
+          max-width: 100%;
+          height: auto;
+        }
+    </style>
+</head>
+
+<header class="text-white bg-red-800 sticky top-0 z-20">
+    <section class="max-w-6xl mx-auto p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">
+            <a href="/#hero"> 🖥️ BEHIND THE SCREENS </a>
+        </h1>
+        <nav class="hidden md:flex space-x-8 text-m" aria-label="main">
+            <a href="/#services" class="hover:opacity-90">Services</a>
+            <a href="/#analyze" class="hover:opacity-90">Analyze</a>
+            <a href="/#features" class="hover:opacity-90">Features</a>
+            <a href="/#contact" class="hover:opacity-90">Contact Us</a>
+        </nav>
+        <div class="flex items-center space-x-4">
+            <nav class="hidden md:flex space-x-4">
+                {% if user.is_authenticated %}
+                <a href="/" id="home" class="hover:opacity-90 text-m">Home</a>
+                <a href="/main" id="home" class="hover:opacity-90 text-m">Analysis</a>
+                <a href="/logout" id="logout" class="hover:opacity-90 text-m">Logout</a>
+                {% else %}
+                <a href="/login" id="login" class="hover:opacity-90 text-m">Log In</a>
+                <a href="/sign-up" id="signUp" class="hover:opacity-90 text-m">Sign Up</a>
+                {% endif %}
+            </nav>
+            <button id="hamburger-button" class="text-3xl sm:hidden cursor-pointer">
+                &#9776;
+            </button>
+        </div>
+    </section>
+
+    <!-- Mobile Menu -->
+    <section id="mobile-menu" class="top-68 justify-center absolute hidden w-full origin-top animate-open-menu flex-col bg-black text-5xl h-screen overflow-y-auto">
+        <nav class="flex flex-col items-center py-8 space-y-6" aria-label="mobile">
+            {% if user.is_authenticated %}
+            <a href="/logout" class="w-full py-6 text-center hover:opacity-90">Log Out</a>
+            <a href="/" class="w-full py-6 text-center hover:opacity-90">Home</a>
+            <a href="/main" class="w-full py-6 text-center hover:opacity-90">Analysis</a> <!-- Added Analysis link -->
+            {% else %}
+            <a href="/login" class="w-full py-6 text-center hover:opacity-90">Log In</a>
+            <a href="/sign-up" class="w-full py-6 text-center hover:opacity-90">Sign Up</a>
+            {% endif %}
+            <a href="/#services" class="w-full py-6 text-center hover:opacity-90">Services</a>
+            <a href="/#features" class="w-full py-6 text-center hover:opacity-90">Features</a>
+            <a href="/#contact" class="w-full py-6 text-center hover:opacity-90">Contact Us</a>
+            <a href="/#footer" class="w-full py-6 text-center hover:opacity-90">Footer</a>
+        </nav>
+    </section>
+</header>
+
+<body class="min-h-screen bg-slate-50 dark:bg-[#121212] dark:text-white">
+<main class="max-w-4xl mx-auto">
+<section class="flex flex-col p-6 my-6 scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
+    <form action="/limited-analyze" id="analysis-form" method="POST">
+        <div class="flex items-center justify-center">
+            <input
+                class="flex w-[500px] flex-col gap-1.5 rounded-[26px] p-1.5 px-4 transition-colors bg-slate-100 text-black dark:bg-token-main-surface-secondary placeholder-gray-500 ml-10"
+                id="url"
+                name="url"
+                type="text"
+                placeholder="Youtube URL here..." 
+            />
+            <button type="submit" class="rounded-full text-sm px-3 py-2 me-2 ml-2 bg-red-600 dark:text-black dark:hover:bg-red-700 dark:hover:border-gray-600">
+                <i class="ri-arrow-right-line"></i>
+            </button>
+        </div>
+    </form>
+    
+    <div id="loading-message" class="flex flex-col items-center justify-center mt-[50px] hidden">
+        <div class="flex items-center">
+            <!-- Spinner Icon -->
+            <svg class="animate-spin h-5 w-5 text-gray-700 dark:text-gray-300 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <p class="text-lg text-gray-700 dark:text-gray-300 ml-2">Please Wait...</p>
+        </div>
+        <div class="flex items-center mt-2">
+            <p class="text-sm text-gray-700 dark:text-gray-300 ml-2">This may take a while depending on the number of comments.</p>
+        </div>
+    </div>
+
+    <div id="results-container" class="mt-5">
+        <div id="results-section">
+            <!-- SUMMARY / INTERPRETATION -->
+            <div>
+                <table id="summary" class="table-auto text-center w-full mt-4">
+                <thead class="text-white rounded">
+                    <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                    {% if created_at and positive_count is not none and negative_count is not none and neutral_count is not none and frequent_words %}
+                    <th class="px-2 py-1">Summary</th>
+                    {% else %}
+                    <th class="px-2 py-1">Analysis Unavailable</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody class="text-center text-gray-900 dark:text-white text-sm">
+                  <tr>
+                    {% if created_at and positive_count is not none and negative_count is not none and neutral_count is not none and frequent_words %}
+                    <td class="px-2 py-2">
+                      {% set overall_sentiment = 'NEUTRAL' %}
+                      {% if positive_count >= negative_count and positive_count >= neutral_count %}
+                        {% set overall_sentiment = 'POSITIVE' %}
+                      {% elif negative_count >= positive_count and negative_count >= neutral_count %}
+                        {% set overall_sentiment = 'NEGATIVE' %}
+                      {% endif %}
+                      As of {{ created_at|format_date }}, 
+                      this video has received 
+                      <span class="font-bold text-blue-500">{{ positive_count }} positive</span>, 
+                      <span class="font-bold text-red-600">{{ negative_count }} negative</span>, and 
+                      <span class="font-bold text-yellow-700 dark:text-yellow-600">{{ neutral_count }} neutral</span> comments.
+                    </td>
+                    </tr>
+                  </tr>
+                    <td class="px-2"> The <span class="font-bold">most frequently used words</span> are: 
+                        {% for word in frequent_words %}
+                          {% if loop.last %}
+                            and 
+                            {% if word.sentiment == "Positive" %}
+                              <span class="font-bold text-blue-500">'{{ word.word }}'</span> ({{ word.count }} times).
+                            {% elif word.sentiment == "Negative" %}
+                              <span class="font-bold text-red-600">'{{ word.word }}'</span> ({{ word.count }} times).
+                            {% else %}
+                              <span class="font-bold text-yellow-700 dark:text-yellow-600">'{{ word.word }}'</span> ({{ word.count }} times).
+                            {% endif %}
+                          {% else %}
+                            {% if word.sentiment == "Positive" %}
+                              <span class="font-bold text-blue-500">'{{ word.word }}'</span> ({{ word.count }} times),
+                            {% elif word.sentiment == "Negative" %}
+                              <span class="font-bold text-red-600">'{{ word.word }}'</span> ({{ word.count }} times),
+                            {% else %}
+                              <span class="font-bold text-yellow-700 dark:text-yellow-600">'{{ word.word }}'</span> ({{ word.count }} times),
+                            {% endif %}
+                          {% endif %}
+                        {% endfor %}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-2 py-2 pb-6">The <span class="font-bold ">overall sentiment</span> of the comments is
+                      {% if overall_sentiment == 'POSITIVE' %}
+                        <span class="font-bold text-blue-500">{{ overall_sentiment }}.</span>
+                      {% elif overall_sentiment == 'NEGATIVE' %}
+                        <span class="font-bold text-red-600">{{ overall_sentiment }}.</span>
+                      {% else %}
+                        <span class="font-bold text-yellow-700 dark:text-yellow-600">{{ overall_sentiment }}.</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% else %}
+                  <tr>
+                    <td class="px-2 py-2 text-lg font-semibold">
+                      Did you, perhaps, enter an upcoming or ongoing live stream, or a private video?
+                  </td>
+                  </tr>
+                  <tr>
+                    <td class="px-2 py-2 pb-6">
+                        No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis (such as ongoing live streams, or private videos such as membership videos).
+                    </td>
+                  </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>    
+            
+            <!-- Comments -->
+            {% if created_at is not none and frequent_words %}
+            <div class="mt-5 pt-5 flex justify-center">
+                <!-- TABLE FOR COMMENTS -->
+                  <!-- ALL COMMENTS -->
+                <table id="labeled-comments" class="table-auto w-full">
+                    {% if created_at is not none and frequent_words %}
+                    <thead class="text-white rounded">
+                        <tr class="bg-red-600 dark:bg-slate-700 text-lg">
+                            <th class="px-4 py-1 w-3/4">Comments</th>
+                            <th class="px-2 py-1 w-1/4">Sentiments</th>
+                        </tr>
+                    <tbody class="text-center text-gray-900 dark:text-white text-sm">
+                        {% for comment in comments %}
+                        <tr class="sentiment-row" data-sentiment="{{ comment.sentiment }}">
+                          <td class="px-2 py-2">{{ comment.comment }}</td>
+                          {% if comment.sentiment == "Positive" %}
+                          <td class="px-2 py-2 text-blue-700">{{ comment.sentiment }}</td>
+                          {% elif comment.sentiment == "Negative" %}
+                          <td class="px-2 py-2 text-red-700">{{ comment.sentiment }}</td>
+                          {% else %}
+                          <td class="px-2 py-2 text-yellow-700 dark:text-yellow-600">{{ comment.sentiment }}</td>
+                          {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% else %}
+                      <thead class="text-white">
+                        <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
+                          <th class="px-4 py-1">Comments</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-center text-gray-900 dark:text-white">
+                        <tr class="sentiment-row">
+                          <td class="px-2 py-2">There are no comments found.</td>
+                        </tr>
+                      </tbody>
+                    {% endif %}
+                  </table>
+                </div>
+                <!-- PAGINATION -->
+            <div id="pagination-controls" class="flex justify-center mt-4"></div>
+            {% endif %}
+            
+            <!-- Create Account Advertisement -->
+            <div class="mt-5 text-xs italic text-yellow-700 dark:text-yellow-600">
+                <div class="font-bold">Create an account to save your analysis, filter the comments based on the sentiment, and have detailed results (highlighted comments, word counter, word cloud, and bar graph).</div>
+                <div class="mt-2">* Please note that the model used for the analysis doesn't recognize slangs or inside jokes depending on the content of the video.</div>
+                <div class="mt-2">* Comments with timestamps and replies aren't included in the analysis.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SCRIPT FOR ALL COMMENTS -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const rowsPerPage = 5;
+    const table = document.getElementById('labeled-comments');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const paginationControls = document.getElementById('pagination-controls');
+    let currentPage = 1;
+
+    function renderTable() {
+      tbody.innerHTML = '';
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedRows = rows.slice(start, end);
+      paginatedRows.forEach(row => tbody.appendChild(row));
+    }
+
+    function renderPaginationControls() {
+      paginationControls.innerHTML = '';
+      const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+      // Create '<<' button
+      if (currentPage > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '←';
+        prevButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        prevButton.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(prevButton);
+      }
+
+      // Create page number buttons
+      const startPage = Math.max(1, currentPage - 1);
+      const endPage = Math.min(totalPages, startPage + 2);
+
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (i === currentPage) {
+          pageButton.classList.add('font-bold');
+        }
+        pageButton.addEventListener('click', () => {
+          currentPage = i;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(pageButton);
+      }
+
+      // Add ellipsis if there are more pages
+      if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.textContent = '...';
+        ellipsis.classList.add('mx-1', 'text-black', 'dark:text-white');
+        paginationControls.appendChild(ellipsis);
+      }
+
+      // Create last page button
+      if (endPage < totalPages) {
+        const lastPageButton = document.createElement('button');
+        lastPageButton.textContent = totalPages;
+        lastPageButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        if (totalPages === currentPage) {
+          lastPageButton.classList.add('font-bold');
+        }
+        lastPageButton.addEventListener('click', () => {
+          currentPage = totalPages;
+          renderTable();
+          renderPaginationControls();
+        });
+        paginationControls.appendChild(lastPageButton);
+      }
+
+      // Create '>>' button
+      if (currentPage < totalPages) {
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '→';
+        nextButton.classList.add('rounded', 'px-2', 'py-1', 'mx-1', 'bg-gray-200', 'dark:bg-gray-700', 'text-black', 'dark:text-white');
+        nextButton.addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+            renderPaginationControls();
+          }
+        });
+        paginationControls.appendChild(nextButton);
+      }
+    }
+
+    renderTable();
+    renderPaginationControls();
+  });
+</script>
+
+<!-- SCRIPT FOR LOADING -->
+<script>
+    document.getElementById('analysis-form').addEventListener('submit', function(event) {
+        document.getElementById('results-container').classList.add('hidden');
+        document.getElementById('analysis-form').classList.add('hidden');
+        document.getElementById('loading-message').classList.remove('hidden');
+    });
+    
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach((alert, index) => {
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        });
+    });
+</script>
+</main>
+<footer id="footer" class="bg-red-800 text-white text-sm">
+    <section class="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row sm:justify-between">
+        <address>
+            <!-- TO DO -->
+            <h2>CS-79, Behind the Screens</h2>
+            DHVSU - Main (Bacolor)<br>
+            Pampanga, Philippines<br>
+            Email: <a href="mailto:behindthescreens.thesis@gmail.com">behindthescreens.thesis@gmail.com</a><br>
+            Phone: <a href="tel:+639#########">(+63) 9## ### ####</a>
+        </address>
+        <nav class="hidden md:flex flex-col gap-2" aria-label="footer">
+            <a href="/#services" class="hover:opacity-90">Services</a>
+            <a href="/about-us" class="hover:opacity-90">About Us</a>
+            <a href="/user-agreement" class="hover:opacity-90">User Terms</a>
+            <a href="/privacy-policy" class="hover:opacity-90">Privacy Policy</a>
+        </nav>            
+        <div class="flex flex-col sm:gap-2">
+            <p class="text-right">Copyright &copy; <span id="year">2024</span></p>
+            <p class="text-right">All Rights Reserved</p>
+        </div>
+    </section>
+</footer>
+</body>
+</html>
+

@@ -115,12 +115,12 @@
       {% else %}
       <tr>
         <td class="px-2 py-2 text-lg font-semibold">
-          Did you, perhaps, enter an ongoing live stream, or a private video?
+          Did you, perhaps, enter an upcoming or ongoing live stream, or a private video?
       </td>
       </tr>
       <tr>
         <td class="px-2 py-2 pb-6">
-            No interpretation for this video. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis (such as ongoing live streams, or private videos such as membership videos).
+            No interpretation available. Either there's not enough information, or there's an error during the analysis. The error might be because of interrupted connection, invalid URL, or the video is not available for analysis (such as ongoing live streams, or private videos such as membership videos).
         </td>
       </tr>
       {% endif %}
@@ -923,7 +923,6 @@
           {% if image_positive_data %}
           <td class="px-2 py-2">
             <img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_positive_data) }}" alt="Positive Word Cloud">
-          <!-- <img class="italic text-gray-500 w-full rounded" src="data:image/png;base64,{{ image_positive_data }}" alt="Positive Word Cloud"> -->
           </td>
           {% else %}
           <td class="px-2 py-2 italic text-gray-500">Not enough information.</td>
@@ -931,7 +930,6 @@
           <!-- NEGATIVE WORD CLOUD -->
           {% if image_negative_data%}
           <td class="px-2 py-2"><img class="italic text-gray-500 w-full rounded" src="{{ url_for('static', filename='wordcloud/' ~ image_negative_data) }}" alt="Negative Word Cloud">
-          <!-- <img class="italic text-gray-500 w-full rounded" src="data:image/png;base64,{{ image_negative_data }}" alt="Negative Word Cloud"> -->
           </td>
           {% else %}
           <td class="px-2 py-2 italic text-gray-500">Not enough information.</td>
@@ -941,15 +939,4 @@
   </table>
 </div>
 {% endif %}
-<!-- <script>
-  function downloadPDF(id, videoId) {
-    const url = `/pdf-download/${id}$${videoId}`;
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `analysis_${id}_${videoId}.pdf`; // Optional: Set a default filename
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-</script> -->
 {% endblock %}
