@@ -247,12 +247,12 @@ def delete_user(user_id):
             db.session.query(GetUrl).filter_by(user_id=user_id).delete()
 
             # Delete images from the web/static/wordcloud directory
-            wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
-            for filename in os.listdir(wordcloud_dir):
-                if filename.startswith(f"{user_id}_"):
-                    file_path = os.path.join(wordcloud_dir, filename)
-                    if os.path.isfile(file_path):
-                        os.remove(file_path)
+            # wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+            # for filename in os.listdir(wordcloud_dir):
+            #     if filename.startswith(f"{user_id}_"):
+            #         file_path = os.path.join(wordcloud_dir, filename)
+            #         if os.path.isfile(file_path):
+            #             os.remove(file_path)
 
             # Finally, delete the user
             db.session.delete(user)
