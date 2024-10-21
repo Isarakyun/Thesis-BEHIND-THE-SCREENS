@@ -5,7 +5,6 @@ from werkzeug.security import generate_password_hash
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from .models import Users, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, WordCloudImage, GetUrl, HighScoreComments
-# fron .models import SummarizedComments
 from datetime import datetime, timedelta
 from . import db
 import re
@@ -15,7 +14,7 @@ admin_bp = Blueprint('admin', __name__)
 
 mail = Mail()
 valid_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,7}$'
-valid_password = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
+valid_password = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$'
 
 def admin_required(view):
     @login_required
@@ -51,10 +50,9 @@ def dashboard():
 @admin_bp.route('/user-logs')
 @admin_required
 def user_audit():
-    audits = UserLog.query.order_by(UserLog.timestamp.desc()).all()
+    audits = UserLog.query.order_by(UserLog.id.desc()).all()
     audit_trails = []
     for audit in audits:
-        # user = User.query.get(audit.user_id)
         audit_trails.append({
             'user_id': audit.user_id,
             'users': audit.users,
@@ -66,7 +64,7 @@ def user_audit():
 @admin_bp.route('/admin-logs')
 @admin_required
 def admin_audit():
-    audits = AdminLog.query.order_by(AdminLog.timestamp.desc()).all()
+    audits = AdminLog.query.order_by(AdminLog.id.desc()).all()
     audit_trails = []
     for audit in audits:
         admin = Admin.query.get(audit.admin_id)
@@ -81,7 +79,7 @@ def admin_audit():
 @admin_bp.route('/all-analyses')
 @admin_required
 def summary_history():
-    analyses = db.session.query(YoutubeUrl).order_by(YoutubeUrl.created_at.desc()).all()
+    analyses = db.session.query(YoutubeUrl).order_by(YoutubeUrl.id.desc()).all()
     analysis_details = []
     for analysis in analyses:
         video = YoutubeUrl.query.get(analysis.id)
@@ -104,7 +102,7 @@ def users():
 @admin_bp.route('/user-requests')
 @admin_required
 def user_requests():
-    requests = db.session.query(GetUrl).order_by(GetUrl.created_at.desc()).all()
+    requests = db.session.query(GetUrl).order_by(GetUrl.id.desc()).all()
     request_details = []
     for request in requests:
         user = Users.query.get(request.user_id)
@@ -153,7 +151,7 @@ def edit_user():
 
         if password:
             if not re.match(valid_password, password):
-                flash('Password must be at least 8 characters long and contain alphanumeric characters.', category='error')
+                flash('Password must contain at least 8 characters, alphanumeric and 1 special characters.', category='error')
             else:
                 user.password = generate_password_hash(password, method='sha256')
                 log_audit_trail(f"Edited PASSWORD of ID: {user_id} | User: {username}")
@@ -241,7 +239,6 @@ def delete_user(user_id):
 
             # Delete related records
             db.session.query(WordCloudImage).filter_by(user_id=user_id).delete()
-            # db.session.query(SummarizedComments).filter_by(user_id=user_id).delete()
             db.session.query(HighScoreComments).filter_by(user_id=user_id).delete()
             db.session.query(SentimentCounter).filter_by(user_id=user_id).delete()
             db.session.query(FrequentWords).filter_by(user_id=user_id).delete()
@@ -250,12 +247,12 @@ def delete_user(user_id):
             db.session.query(GetUrl).filter_by(user_id=user_id).delete()
 
             # Delete images from the web/static/wordcloud directory
-            wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
-            for filename in os.listdir(wordcloud_dir):
-                if filename.startswith(f"{user_id}_"):
-                    file_path = os.path.join(wordcloud_dir, filename)
-                    if os.path.isfile(file_path):
-                        os.remove(file_path)
+            # wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+            # for filename in os.listdir(wordcloud_dir):
+            #     if filename.startswith(f"{user_id}_"):
+            #         file_path = os.path.join(wordcloud_dir, filename)
+            #         if os.path.isfile(file_path):
+            #             os.remove(file_path)
 
             # Finally, delete the user
             db.session.delete(user)
@@ -267,8 +264,6 @@ def delete_user(user_id):
         db.session.rollback()
         print(f"Error deleting user: {e}")
         return jsonify({'error': str(e)}), 500
-
-    # return redirect(url_for('admin.users'))
 
 @admin_bp.route('/delete-user-logs', methods=['POST'])
 @admin_required

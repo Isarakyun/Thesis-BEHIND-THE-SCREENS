@@ -138,7 +138,7 @@ def sign_up():
         elif not re.match(valid_password, password):
             flash('Password must contain at least 8 characters, alphanumeric and 1 special characters.', category='error')
         else:
-            new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='sha256'), created_at=created_at)
+            new_user = Users(username=username, email=email, confirmed_email=False, password=generate_password_hash(password, method='pbkdf2:sha256'), created_at=created_at)
             db.session.add(new_user)
             db.session.commit()
 
@@ -303,7 +303,7 @@ def reset_password(token):
             elif not re.match(valid_password, password):
                 flash('Password must contain at least 8 characters, alphanumeric and 1 special characters.', category='error')
             else:
-                user.password=generate_password_hash(password, method='sha256')
+                user.password=generate_password_hash(password, method='pbkdf2:sha256')
                 db.session.commit()
                 
                 token = s.dumps(email, salt='email-confirm')
@@ -385,7 +385,7 @@ def change_password():
                 if not re.match(valid_password, new_password):
                     flash('Password must contain at least 8 characters, alphanumeric and 1 special characters.', category='error')
                 else:
-                    current_user.password = generate_password_hash(new_password, method='sha256')
+                    current_user.password = generate_password_hash(new_password, method='pbkdf2:sha256')
                     db.session.commit()
                     user_log(f"User ID: {current_user.id} | {current_user.username} has changed their password")
                     flash('Password changed successfully!', category='success')
@@ -698,9 +698,6 @@ def delete_account():
                 """.format()
                 mail.send(msg)
 
-                # log the action first before deleting the account
-                user_log(f"User ID: {current_user.id} | {current_user.username} deleted their account")
-
                 # Delete related rows from other tables
                 db.session.query(WordCloudImage).filter_by(user_id=current_user.id).delete()
                 db.session.query(SentimentCounter).filter_by(user_id=current_user.id).delete()
@@ -711,17 +708,11 @@ def delete_account():
                 db.session.query(YoutubeUrl).filter_by(user_id=current_user.id).delete()
                 db.session.query(GetUrl).filter_by(user_id=current_user.id).delete()
 
-                # Delete images from the web/static/wordcloud directory
-                wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
-                for filename in os.listdir(wordcloud_dir):
-                    if filename.startswith(f"{current_user.id}_"):
-                        file_path = os.path.join(wordcloud_dir, filename)
-                        if os.path.isfile(file_path):
-                            os.remove(file_path)
-
                 # Delete the user
                 db.session.delete(current_user)
                 db.session.commit()
+                # log the action first before deleting the account
+                user_log(f"User ID: {current_user.id} | {current_user.username} deleted their account")
                 return redirect(url_for('views.home'))
             else:
                 flash('Passwords do not match.', category='error')
@@ -764,7 +755,10 @@ def analyze():
                 video_name = yt.title
                 video_id = yt.video_id
             except Exception as e:
-                flash(f'"{url}" is not a YouTube video. Please enter a valid URL.', category='error')
+                if 'youtube' not in url:
+                    flash(f'"{url}" is not a YouTube video. Please enter a valid URL.', category='error')
+                else:
+                    flash(f'Pytube BUG: An error occurred accessing the Video Title and ID. Please file a bug report at https://github.com/pytube/pytube', category='error')
                 return redirect(url_for('views.main'))
             
             attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
@@ -960,6 +954,105 @@ def delete_result(url_id):
             flash(f'Failed to delete analysis for {video_name}.', category='error')
     return redirect(url_for('views.main'))
 
+@auth.route('/limited-analyze', methods=['GET','POST'])
+def limited_analyze():
+    if request.method == 'POST':
+        try:
+            url = request.form.get('url')
+            if not url:
+                flash('Please enter a valid YouTube URL.', category='error')
+                return redirect(url_for('views.home')) # this was mail_sent during testing
+            elif url:
+                if '/live/' in url:
+                    url = url.replace('/live/', '/watch?v=')
+                elif 'youtu.be' in url:
+                    url = url.replace('youtu.be/', 'youtube.com/watch?v=')
+                elif '/shorts/' in url:
+                    url = url.replace('/shorts/', '/watch?v=')
+
+            """UNCOMMENT IF NOT BUGGY ANYMORE"""
+            # try:
+            #     yt = YouTube(url)
+            #     video_name = yt.title
+            # except Exception as e:
+            #     flash(f'Cannot extract "{url}". Please try again later.', category='error')
+            #     return redirect(url_for('views.home')) # this was about_us during testing
+            
+            created_at = datetime.now()
+
+            # Extracting comments from YouTube video, FOR SOME REASON REPLIES ARE STILL INCLUDED
+            filtered_comments = extract_comments(url)
+
+            # Sentiment Analysis
+            label_mapping = {
+                "LABEL_0": "Negative",
+                "LABEL_1": "Neutral",
+                "LABEL_2": "Positive"
+            }
+
+            # Sentiment Analysis for each comment
+            sentiments = []
+            # for sentiment counter
+            positive_count = 0
+            negative_count = 0
+            neutral_count = 0
+
+            for comment in filtered_comments:
+                try:
+                    sentiment = sentiment_pipeline([comment])[0]
+                    sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
+                    sentiments.append({
+                        "comment": comment,
+                        "sentiment": sentiment['label']
+                        })
+                except RuntimeError as e: 
+                    current_app.logger.error(f'Exception: {str(e)} - Comment: {comment}')
+                    continue  # Skip this comment and continue with the next one
+                except IndexError as e:
+                    current_app.logger.error(f'IndexError: {str(e)} - Comment: {comment}')
+                    continue
+                except Exception as e:
+                    current_app.logger.error(f'Exception: {str(e)} - Comment: {comment}')
+                    flash(f'An unexpected error occurred during sentiment analysis: {str(e)}', category='error')
+                    return redirect(url_for('views.home')) # this was privacy_policy during testing
+                
+                # Counting the sentiments
+                if sentiment['label'] == 'Positive':
+                    positive_count += 1
+                elif sentiment['label'] == 'Negative':
+                    negative_count += 1
+                else:
+                    neutral_count += 1
+
+            all_comments_text = " ".join(filtered_comments)
+            cleaned_comments = clean_text(all_comments_text)
+            word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
+            most_common_words = word_count.most_common(5)
+
+            frequent_words = []
+            for word, count in most_common_words:
+                word_sentiment_scores = sia.polarity_scores(word)
+                compound_score = word_sentiment_scores['compound']
+                if compound_score >= 0.05:
+                    word_sentiment_label = "Positive"
+                elif compound_score <= -0.05:
+                    word_sentiment_label = "Negative"
+                else:
+                    word_sentiment_label = "Neutral"
+                frequent_words.append({
+                    "word": word,
+                    "count": count,
+                    "sentiment": word_sentiment_label
+                })
+
+            return render_template('home_analysis.html', created_at=created_at, positive_count=positive_count, negative_count=negative_count, neutral_count=neutral_count, comments=sentiments, frequent_words=frequent_words, user=current_user)
+        except Exception as e:
+            current_app.logger.error(f'Error during analysis: {str(e)}')
+            flash(f'An unexpected error occurred: {str(e)}', category='error')
+            return redirect(url_for('views.home')) # this was user_agreement during testing
+    return redirect(url_for('views.home'))
+
+# UNUSED
 @auth.route('/analyze2', methods=['POST'])
 def analyze2():
     try:
@@ -1043,8 +1136,6 @@ def analyze2():
             'comments2': sentiments,
             'frequent_words2': frequent_words,
         }
-
-        time.sleep(5)
         return jsonify(response), 200
     except Exception as e:
         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 400

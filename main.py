@@ -13,7 +13,7 @@ def create_admin(id, username, password):
         print(f"Admin account with username '{username}' already exists.")
         return
 
-    hashed_password = generate_password_hash(password, method='sha256')
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
     new_admin = Admin(id=id, username=username, password=hashed_password)
     db.session.add(new_admin)
     db.session.commit()
