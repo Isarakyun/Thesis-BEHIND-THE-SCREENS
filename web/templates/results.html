@@ -136,8 +136,8 @@
 
 <!-- Most Positive and Negative Comments -->
 {% if youtube_url.created_at is not none and frequent_words %}
-<div id="high-score-comments" class="flex overflow-hidden mt-12 pt-5 relative">
-  <img src="{{ url_for('static', filename='highlights-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
+<div id="high-score-comments" class="flex overflow-hidden mt-12 pt-5 relative justify-center">
+  <img src="{{ url_for('static', filename='highlights-text.png' )}}" class="pointer-events-none absolute w-[600px] opacity-25 left-1/2 transform -translate-x-1/2">
   <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-16">
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
@@ -172,27 +172,23 @@
 </div>
 {% endif %}
 
+
 <!-- Comments -->
-{% if youtube_url.created_at is not none and frequent_words %}
-<div class="mt-12 pt-5 relative">
-  <img src="{{ url_for('static', filename='comments-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
-  <div class="relative z-10 mt-[-12px]">
-<!-- Dropdown for sentiment selection -->
-<div class="pt-5 flex justify-end ml-[50px] mr-[50px] font-medium">
-  <!-- Download PDF button -->
-  <a href="{{ url_for('auth.download_pdf', youtube_url_id=youtube_url.id) }}" 
-     class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none">
-     Download Report
-  </a>
   {% if youtube_url.created_at is not none and frequent_words %}
-  <select id="sentiment-filter" class="ml-2 px-4 py-2 border border-red-600 dark:border-slate-700 rounded bg-slate-200 dark:bg-[#121212] text-black dark:text-white">
-      <option value="all">All</option>
-      <option value="Positive">Positive</option>
-      <option value="Negative">Negative</option>
-      <option value="Neutral">Neutral</option>
-  </select>
-  {% endif %}
-</div>
+  <div class="mt-12 pt-5 relative">
+    <img src="{{ url_for('static', filename='comments-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
+    <div class="relative z-10 mt-[-12px]">
+  <!-- Dropdown for sentiment selection -->
+  <div class="pt-5 flex justify-end ml-[50px] mr-[50px] font-medium">
+    {% if youtube_url.created_at is not none and frequent_words %}
+    <select id="sentiment-filter" class="ml-2 px-4 py-2 border border-red-600 dark:border-slate-700 rounded bg-slate-200 dark:bg-[#121212] text-black dark:text-white">
+        <option value="all">All</option>
+        <option value="Positive">Positive</option>
+        <option value="Negative">Negative</option>
+        <option value="Neutral">Neutral</option>
+    </select>
+    {% endif %}
+  </div>
 
     <!-- TABLE FOR COMMENTS -->
     <div id="labeled-comments" class="flex overflow-hidden relative z-10 mt-4">
