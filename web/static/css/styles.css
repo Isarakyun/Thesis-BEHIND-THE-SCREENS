@@ -32,7 +32,7 @@
   }
 
   #frequent-words > div {
-      margin-bottom: 20px; /* Space between table and chart */
+      margin-bottom: 50px; /* Space between table and chart */
   }
 
   table {
