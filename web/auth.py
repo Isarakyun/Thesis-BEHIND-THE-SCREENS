@@ -707,7 +707,14 @@ def delete_account():
                 db.session.query(Comments).filter_by(user_id=current_user.id).delete()
                 db.session.query(YoutubeUrl).filter_by(user_id=current_user.id).delete()
                 db.session.query(GetUrl).filter_by(user_id=current_user.id).delete()
-
+                
+                # wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+                # for filename in os.listdir(wordcloud_dir):
+                #     if filename.startswith(f"{current_user.id}_{youtube_url.id}_"):
+                #         file_path = os.path.join(wordcloud_dir, filename)
+                #         if os.path.isfile(file_path):
+                #             os.remove(file_path)
+                
                 # Delete the user
                 db.session.delete(current_user)
                 db.session.commit()
@@ -936,12 +943,12 @@ def delete_result(url_id):
             db.session.query(WordCloudImage).filter_by(url_id=youtube_url.id).delete()
 
             # Delete images from the web/static/wordcloud directory
-            wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
-            for filename in os.listdir(wordcloud_dir):
-                if filename.startswith(f"{current_user.id}_{youtube_url.id}_"):
-                    file_path = os.path.join(wordcloud_dir, filename)
-                    if os.path.isfile(file_path):
-                        os.remove(file_path)
+            # wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+            # for filename in os.listdir(wordcloud_dir):
+            #     if filename.startswith(f"{current_user.id}_{youtube_url.id}_"):
+            #         file_path = os.path.join(wordcloud_dir, filename)
+            #         if os.path.isfile(file_path):
+            #             os.remove(file_path)
 
             db.session.delete(youtube_url)
             db.session.commit()
