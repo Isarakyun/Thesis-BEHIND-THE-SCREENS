@@ -49,6 +49,13 @@
   }
 }
 
+.relative2 {
+  display: block;
+  margin-left: auto;
+  margin-right: auto; /* Explicitly center the bar chart */
+  margin: 0 auto; /* Center the bar chart */
+  text-align: center; /* Ensure canvas is centered */
+}
 
 *,
 ::before,
