@@ -6,10 +6,26 @@ from nltk.probability import FreqDist
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 from textblob import TextBlob
+from googleapiclient.discovery import build
 from youtube_comment_downloader import YoutubeCommentDownloader
 import re
 from nltk.stem import WordNetLemmatizer
 import os
+
+def get_video_name(youtube_url):
+    api_key = os.getenv('YOUTUBE_API')
+    youtube = build('youtube', 'v3', developerKey=api_key)
+    video_id = youtube_url.split('v=')[1]
+    request = youtube.videos().list(
+        part='snippet',
+        id=video_id
+    )
+    response = request.execute()
+    if response['items']:
+        video_name = response['items'][0]['snippet']['title']
+        return video_name
+    else:
+        raise Exception('Video not found')
 
 def extract_comments(youtube_url):
     try:
