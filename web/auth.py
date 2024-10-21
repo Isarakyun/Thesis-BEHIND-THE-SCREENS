@@ -6,7 +6,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 from .models import Users, Admin, YoutubeUrl, Comments, FrequentWords, SentimentCounter, WordCloudImage, UserLog, AdminLog, GetUrl, HighScoreComments
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from .analysis import clean_text, word_cloud, extract_comments, word_cloud_string
+from .analysis import clean_text, word_cloud, extract_comments, get_video_name
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy import or_
 from pytube import YouTube
@@ -707,7 +707,14 @@ def delete_account():
                 db.session.query(Comments).filter_by(user_id=current_user.id).delete()
                 db.session.query(YoutubeUrl).filter_by(user_id=current_user.id).delete()
                 db.session.query(GetUrl).filter_by(user_id=current_user.id).delete()
-
+                
+                # wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+                # for filename in os.listdir(wordcloud_dir):
+                #     if filename.startswith(f"{current_user.id}_{youtube_url.id}_"):
+                #         file_path = os.path.join(wordcloud_dir, filename)
+                #         if os.path.isfile(file_path):
+                #             os.remove(file_path)
+                
                 # Delete the user
                 db.session.delete(current_user)
                 db.session.commit()
@@ -749,17 +756,18 @@ def analyze():
                 convert to: https://youtube.com/watch?v=6VQBtlJiFYE
                 """
                 url = url.replace('/shorts/', '/watch?v=')
-
+            
+            video_id = url.split('v=')[1]
             try:
                 yt = YouTube(url)
                 video_name = yt.title
-                video_id = yt.video_id
             except Exception as e:
                 if 'youtube' not in url:
                     flash(f'"{url}" is not a YouTube video. Please enter a valid URL.', category='error')
+                    return redirect(url_for('views.main'))
                 else:
-                    flash(f'Pytube BUG: An error occurred accessing the Video Title and ID. Please file a bug report at https://github.com/pytube/pytube', category='error')
-                return redirect(url_for('views.main'))
+                    video_name = get_video_name(url)
+                    # flash(f'Pytube ERROR: Cannot access Video Title. Please file a bug report at https://github.com/pytube/pytube', category='error')
             
             attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
             created_at = datetime.now()
@@ -935,12 +943,12 @@ def delete_result(url_id):
             db.session.query(WordCloudImage).filter_by(url_id=youtube_url.id).delete()
 
             # Delete images from the web/static/wordcloud directory
-            wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
-            for filename in os.listdir(wordcloud_dir):
-                if filename.startswith(f"{current_user.id}_{youtube_url.id}_"):
-                    file_path = os.path.join(wordcloud_dir, filename)
-                    if os.path.isfile(file_path):
-                        os.remove(file_path)
+            # wordcloud_dir = os.path.join('web', 'static', 'wordcloud')
+            # for filename in os.listdir(wordcloud_dir):
+            #     if filename.startswith(f"{current_user.id}_{youtube_url.id}_"):
+            #         file_path = os.path.join(wordcloud_dir, filename)
+            #         if os.path.isfile(file_path):
+            #             os.remove(file_path)
 
             db.session.delete(youtube_url)
             db.session.commit()
