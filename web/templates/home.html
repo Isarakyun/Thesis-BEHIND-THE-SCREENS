@@ -93,7 +93,7 @@
                     <a href="/main" id="home" class="hover:opacity-90 text-m">Analysis</a>
                     <a href="/logout" id="logout" class="hover:opacity-90 text-m">Logout</a>
                     {% else %}
-                    <a href="/login" id="login" class="hover:opacity-90 text-m">Log In</a>
+                    <a href="/login" id="login" class="hover:opacity-90 text-s">Log In</a>
                     <a href="/sign-up" id="signUp" class="hover:opacity-90 text-m">Sign Up</a>
                     {% endif %}
                 </nav>
@@ -104,8 +104,8 @@
         </section>
     
         <!-- Mobile Menu -->
-        <section id="mobile-menu" class="top-68 justify-center absolute hidden w-full origin-top animate-open-menu flex-col bg-black text-5xl h-screen overflow-y-auto">
-            <nav class="flex flex-col items-center py-8 space-y-6" aria-label="mobile">
+        <section id="mobile-menu" class="top-68 justify-center absolute hidden w-full origin-top animate-open-menu flex-col bg-black text-3xl h-screen overflow-y-auto">
+            <nav class="flex flex-col items-center pt-4 pb-4 space-y-4" aria-label="mobile">
                 {% if user.is_authenticated %}
                 <a href="/logout" class="w-full py-6 text-center hover:opacity-90">Log Out</a>
                 <a href="/" class="w-full py-6 text-center hover:opacity-90">Home</a>
