@@ -9,7 +9,6 @@ html {
   scroll-behavior: smooth;
 }
 
-
 #slideshow {
   display: flex;
   transition: transform 0.7s ease-in-out;
