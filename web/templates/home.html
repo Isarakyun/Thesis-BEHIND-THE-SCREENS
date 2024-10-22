@@ -140,54 +140,53 @@
     
     </section>
   
-    <section id="services" class="flex flex-col mt-3 py-6 scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
-      <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Our Services</h2>
+    <section id="services" class="flex flex-col scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
       <div class="relative overflow-hidden">
-          <ul id="slideshow" class="flex transition-transform duration-700 ease-in-out">
-              <li class="h-[5vh] relative w-full flex">
-                  <div class="w-3/5">
-                      <img class="h-full object-cover" src="./static/sentiment3.png" alt="Productivity Illustration">
-                  </div>
-                  <div class="w-2/5 flex items-center justify-center p-4">
-                      <span>Hello world! I am testing my application right now.</span>
-                  </div>
-              </li>
-              <li class="h-[5vh] relative w-full flex">
-                  <div class="w-3/5">
-                      <img class="h-full object-cover" src="./static/analytics.png" alt="Productivity Illustration">
-                  </div>
-                  <div class="w-2/5 flex items-center justify-center p-4">
-                      <span>Hello world! I am testing my application right now.</span>
-                  </div>
-              </li>
-              <li class="h-[5vh] relative w-full flex">
-                  <div class="w-3/5">
-                      <img class="h-full object-cover" src="./static/results.png" alt="Productivity Illustration">
-                  </div>
-                  <div class="w-2/5 flex items-center justify-center p-4">
-                      <span>Hello world! I am testing my application right now.</span>
-                  </div>
-              </li>
-              <!-- Add more <li> elements for additional images with text -->
-          </ul>
+        <ul id="slideshow" class="flex transition-transform duration-700 ease-in-out">
+          <li class="h-[40vh] relative w-full flex md:flex-row"> <!-- Flex direction changes at medium screen -->
+            <div class="w-full md:w-7/10"> <!-- Full width on mobile, specific width on PC -->
+              <img class="h-full w-full object-cover" src="./static/sentiment3.png" alt="Productivity Illustration">
+            </div>
+            <div class="w-full md:w-1/4 flex flex-col items-center justify-center p-4"> <!-- Full width on mobile, specific width on PC -->
+              <h3 class="text-2xl font-semibold mb-2 text-red-700">Sentiment</h3>
+              <span class="text-justify">Get to know what your audience feels! Behind the Screens lets you analyze the overall sentiments expressed in your YouTube video!</span>
+            </div>
+          </li>
+          <li class="h-[40vh] relative w-full flex md:flex-row"> <!-- Flex direction changes at medium screen -->
+            <div class="w-full md:w-7/10"> <!-- Full width on mobile, specific width on PC -->
+              <img class="h-full w-full object-cover" src="./static/analytics.png" alt="Analytics Illustration">
+            </div>
+            <div class="w-full md:w-1/4 flex flex-col items-center justify-center p-4"> <!-- Full width on mobile, specific width on PC -->
+              <h3 class="text-2xl font-semibold mb-2 text-red-700">Analytics</h3>
+              <span class="text-justify">View information regarding a video in terms of highlighted comments, word clouds, and summary!</span>
+            </div>
+          </li>
+          <li class="h-[40vh] relative w-full flex md:flex-row"> <!-- Flex direction changes at medium screen -->
+            <div class="w-full md:w-7/10"> <!-- Full width on mobile, specific width on PC -->
+              <img class="h-full w-full object-cover" src="./static/results.png" alt="Results Illustration">
+            </div>
+            <div class="w-full md:w-1/4 flex flex-col items-center justify-center p-4"> <!-- Full width on mobile, specific width on PC -->
+              <h3 class="text-2xl font-semibold mb-2 text-red-700">Results</h3>
+              <span class="text-justify">Quickly gauge the results of your selected YouTube video! Users can also download it in PDF format!</span>
+            </div>
+          </li>
+        </ul>
       </div>
-  </section>
-  
+    </section>
     
-  
-
-  <script>
-    let currentIndex = 0;
-    const slideshow = document.getElementById('slideshow');
-    const slides = slideshow.getElementsByTagName('li');
-
-    function showNextSlide() {
-        currentIndex = (currentIndex + 1) % slides.length; // Loop back to the first slide
-        slideshow.style.transform = `translateX(-${currentIndex * 100}%)`;
-    }
-
-    setInterval(showNextSlide, 4000); // Change slide every 5 seconds
-</script>
+    <script>
+      let currentIndex = 0;
+      const slideshow = document.getElementById('slideshow');
+      const slides = slideshow.getElementsByTagName('li');
+    
+      function showNextSlide() {
+          currentIndex = (currentIndex + 1) % slides.length; // Loop back to the first slide
+          slideshow.style.transform = `translateX(-${currentIndex * 100}%)`;
+      }
+    
+      setInterval(showNextSlide, 8000); // Change slide every 8 seconds
+    </script>
+    
 
 
   
