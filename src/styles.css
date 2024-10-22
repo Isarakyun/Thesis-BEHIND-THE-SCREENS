@@ -4,6 +4,24 @@
 
 @layer utilities {
     .section-min-height {
-        min-height: calc(100vh - 68px)
+        min-height: calc(100vh - 68px);
+    }
+    
+    @screen sm {
+        .section-min-height {
+            min-height: calc(100vh - 50px); /* Example for small screens */
+        }
+    }
+    
+    @screen md {
+        .section-min-height {
+            min-height: calc(100vh - 60px); /* Example for medium screens */
+        }
+    }
+    
+    @screen lg {
+        .section-min-height {
+            min-height: calc(100vh - 68px); /* Default for large screens */
+        }
     }
 }
