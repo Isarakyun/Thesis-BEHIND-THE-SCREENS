@@ -60,9 +60,69 @@
         header, footer {
             background-color: #dc2626; /* Set the background color for both header and footer */
         }
+        #animationWindow {
+            display: none;
+            background-color: rgb(255, 255, 255);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hide-section {
+            display: none;
+        }
+
+        .analyze-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(10, 10, 10);
+            z-index: 100;
+        }
+        .dark-red-bg {
+          background-color: #8B0000; /* Adjust the color as needed */
+        }
+
+        .dark .dark-red-bg {
+          background-color: #8B0000; /* This ensures the color stays dark red in dark mode */
+        }
+
+        .dark-red-text {
+          color: #8B0000; /* Adjust the color as needed */
+        }
+
+        .dark .dark-red-text {
+          color: #8B0000; /* This ensures the color stays dark red in dark mode */
+        }
+        .flex-container {
+          display: flex;
+          justify-content: center; /* Centering the content */
+          align-items: center; /* Align items in the center */
+          margin: 20px 50px;
+        }
+
+        .flex-item {
+          flex: 1;
+          margin: 0 10px;
+        }
+
+        #frequent-words {
+          width: 100%;
+        }
+
+        #pieChart {
+          max-width: 100%;
+          height: auto;
+        }
     </style>
 </head>
-<body>
     <header class="text-white bg-red-800 sticky top-0 z-20">
         <section class="max-w-6xl mx-auto p-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold">
@@ -75,23 +135,61 @@
                 <a href="/#contact" class="hover:opacity-90">Contact Us</a>
             </nav>
             <div class="flex items-center space-x-4">
-                {% if user.is_authenticated %}
-                <a href="/" id="home" class="hover:opacity-90 text-m">Home</a>
-                <a href="/main" id="home" class="hover:opacity-90 text-m">Analysis</a>
-                <a href="/logout" id="logout" class="hover:opacity-90 text-m">Logout</a>
-                {% else %}
-                <a href="/login" id="login" class="hover:opacity-90 text-m">Log In</a>
-                <a href="/sign-up" id="signUp" class="hover:opacity-90 text-m">Sign Up</a>
-                {% endif %}
-                <button id="mobile-open-button" class="text-3xl sm:hidden focus:outline-none">
+                <nav class="hidden md:flex space-x-4">
+                    {% if user.is_authenticated %}
+                    <a href="/" id="home" class="hover:opacity-90 text-m">Home</a>
+                    <a href="/main" id="home" class="hover:opacity-90 text-m">Analysis</a>
+                    <a href="/logout" id="logout" class="hover:opacity-90 text-m">Logout</a>
+                    {% else %}
+                    <a href="/login" id="login" class="hover:opacity-90 text-m">Log In</a>
+                    <a href="/sign-up" id="signUp" class="hover:opacity-90 text-m">Sign Up</a>
+                    {% endif %}
+                </nav>
+                <button id="hamburger-button" class="text-3xl sm:hidden cursor-pointer">
                     &#9776;
                 </button>
             </div>
         </section>
+
+        <!-- Mobile Menu -->
+        <section id="mobile-menu" class="top-68 justify-center absolute hidden w-full origin-top animate-open-menu flex-col bg-gray-100 dark:bg-gray-900 text-3xl h-screen overflow-y-auto">
+            <nav class="flex flex-col items-center pt-4 pb-4 space-y-4" aria-label="mobile">
+                {% if user.is_authenticated %}
+                <a href="/logout" class="w-full text-red-500 py-6 text-center hover:opacity-90">Log Out</a>
+                <a href="/" class="w-full text-black dark:text-white py-6 text-center hover:opacity-90">Home</a>
+                <a href="/main" class="w-full text-black dark:text-white py-6 text-center hover:opacity-90">Analysis</a> <!-- Added Analysis link -->
+                {% else %}
+                <a href="/login" class="w-full text-black dark:text-white py-6 text-center hover:opacity-90">Log In</a>
+                <a href="/sign-up" class="w-full text-black dark:text-white py-6 text-center hover:opacity-90">Sign Up</a>
+                {% endif %}
+                <a href="/#services" class="w-full text-black dark:text-white py-6 text-center hover:opacity-90">Services</a>
+                <a href="/#features" class="w-full text-black dark:text-white py-6 text-center hover:opacity-90">Features</a>
+                <a href="/privacy-policy" class="w-full text-black dark:text-white py-6 text-center hover:opacity-90">Privacy Policy</a>
+                <a href="/user-agreement" class="w-full text-black dark:text-white py-6 text-center hover:opacity-90">User Agreement</a>
+            </nav>
+        </section>
     </header>
 
+<script>
+    const initApp = () => {
+        const hamburgerBtn = document.getElementById('hamburger-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        const toggleMenu = () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+            hamburgerBtn.classList.toggle('toggle-btn');
+        };
+
+        hamburgerBtn.addEventListener('click', toggleMenu);
+        mobileMenu.addEventListener('click', toggleMenu);
+    };
+
+    document.addEventListener('DOMContentLoaded', initApp);
+</script>
     <!-- About Us Sections -->
 
+    <body>
     <section class="flex flex-col justify-center items-center p-6 gap-8 mt-30 mb-12 scroll-mt-40 widescreen:section-min-height tallscreen:section-min-height">
         <div class="max-w-2xl text-center">
             <p class="text-2xl font-semibold leading-relaxed md:text-3xl text-justify">
@@ -133,8 +231,15 @@
                         <br class="block sm:hidden" />Emmanuel Gonzales
                     </h2>
                     <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
-                        A farmer in Stardew Valley.
-                    </p>
+                        Ola ! I’m a fourth-year Computer Science student and the appointed project manager for this website.
+                    </p>                       
+                    
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
+                        I love playing video games, especially Lethal Company, Space Agency 2138, and Stardew Valley.
+                    </p> 
+                    <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
+                        I also enjoy playing football as a center midfielder.
+                    </p> 
                 </div>
                 <div class="order-2 md:order-1">
                     <div class="flex justify-center items-center">
@@ -157,7 +262,7 @@
                         <br class="block sm:hidden" />Jarelle Pamintuan
                     </h2>
                     <p class="max-w-lg mt-3 text-xl leading-relaxed md:mt-8">
-                        Digital Illustrator and 不破狂
+                        Digital Illustrator and 不破狂（不破湊のファン）
                         <!-- @juuchiruru for art!!! @mounerujaruu for ,,,, fandom i guess. it's nijisanji centric -->
                     </p>
                     <!-- September 5, 2024: go listen to Fuwa Minato's 1st Mini Album! マジで好き！最高だよ！！沢山聴いてね！！！ -->
@@ -291,7 +396,6 @@
     <footer id="footer" class="bg-red-800 text-white text-sm">
         <section class="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row sm:justify-between">
             <address>
-                <!-- TO DO -->
                 <h2>CS-79, Behind the Screens</h2>
                 DHVSU - Main (Bacolor)<br>
                 Pampanga, Philippines<br>

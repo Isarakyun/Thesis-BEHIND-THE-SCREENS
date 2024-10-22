@@ -225,7 +225,10 @@
                 </div>
                 <div id="email-button" class="relative text-black dark:text-white dark:hover:bg-slate-700 hover:bg-slate-300 rounded-md cursor-pointer" onclick="toggleEmailSettings()">
                     <div class="ml-4">
-                        <button class="pt-3 pb-3">Email</button>
+                        <button class="pt-3 pb-3">Email 
+                            {% if user.confirmed_email == False %}
+                            <i class="fas fa-exclamation-circle text-red-600 ml-2" title="Unverified Account"></i>
+                            {% endif %}</button>
                         <i class="ri-arrow-right-line absolute right-3 top-3"></i>
                     </div>
                 </div>
