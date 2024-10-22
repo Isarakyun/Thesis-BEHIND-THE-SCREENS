@@ -11,9 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
     <style>
-        .hidden {
-            display: none;
-        }
         .video-title {
             display: inline-block;
             max-width: 100%;
@@ -27,29 +24,6 @@
             align-items: center;
             margin-left: auto;
             margin-right: 20px;
-        }
-        /* Modal CSS */
-        #deleteModal {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: fixed;
-            inset: 0;
-            z-index: 50;
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        #deleteModal.hidden {
-            display: none;
-        }
-
-        #deleteModal .modal-content {
-            background: #121212;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 400px;
         }
 
         /* Sidebar transition */
@@ -74,33 +48,13 @@
             transition: margin-left 0.3s ease; /* Add a smooth transition */
         }
 
-        /* Mobile adjustments */
-        @media (max-width: 640px) {
-            #deleteModal .modal-content {
-                width: 90%;
-                padding: 1rem;
-            }
-            #deleteModal .button {
-                width: 100%;
-                margin-top: 0.5rem;
-            }
-        }
-
-        /* Ensure heading text is always white */
-        #deleteModal h2 {
-            color: #ffffff; /* White text color */
-        }
-
         /* Ensure dropdown menu appears above other content */
         #dropdownMenu {
             z-index: 60; /* Ensure this is higher than other elements */
-            position: absolute;
         }
-
-
     </style>
 </head>
-<body>
+<body class="dark:bg-[#181818]">
     {% if user is defined %}
         {% include 'sidebar.html' %}
     {% endif %}
@@ -206,6 +160,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const toggleSidebar = document.getElementById('menuToggleButtonMobile');
+
+    toggleSidebar.addEventListener('click', function () {
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    });
+
+    overlay.addEventListener('click', function () {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    });
+});
     </script>
 </body>
 </html>
