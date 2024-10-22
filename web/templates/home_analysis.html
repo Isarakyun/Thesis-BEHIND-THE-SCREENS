@@ -101,23 +101,23 @@
         </div>
     </section>
 
-    <!-- Mobile Menu -->
-    <section id="mobile-menu" class="top-68 justify-center absolute hidden w-full origin-top animate-open-menu flex-col bg-black text-5xl h-screen overflow-y-auto">
-        <nav class="flex flex-col items-center py-8 space-y-6" aria-label="mobile">
-            {% if user.is_authenticated %}
-            <a href="/logout" class="w-full py-6 text-center hover:opacity-90">Log Out</a>
-            <a href="/" class="w-full py-6 text-center hover:opacity-90">Home</a>
-            <a href="/main" class="w-full py-6 text-center hover:opacity-90">Analysis</a> <!-- Added Analysis link -->
-            {% else %}
-            <a href="/login" class="w-full py-6 text-center hover:opacity-90">Log In</a>
-            <a href="/sign-up" class="w-full py-6 text-center hover:opacity-90">Sign Up</a>
-            {% endif %}
-            <a href="/#services" class="w-full py-6 text-center hover:opacity-90">Services</a>
-            <a href="/#features" class="w-full py-6 text-center hover:opacity-90">Features</a>
-            <a href="/#contact" class="w-full py-6 text-center hover:opacity-90">Contact Us</a>
-            <a href="/#footer" class="w-full py-6 text-center hover:opacity-90">Footer</a>
-        </nav>
-    </section>
+        <!-- Mobile Menu -->
+        <section id="mobile-menu" class="top-68 justify-center absolute hidden w-full origin-top animate-open-menu flex-col bg-black text-3xl h-screen overflow-y-auto">
+          <nav class="flex flex-col items-center pt-4 pb-4 space-y-4" aria-label="mobile">
+              {% if user.is_authenticated %}
+              <a href="/logout" class="w-full py-6 text-center hover:opacity-90">Log Out</a>
+              <a href="/" class="w-full py-6 text-center hover:opacity-90">Home</a>
+              <a href="/main" class="w-full py-6 text-center hover:opacity-90">Analysis</a> <!-- Added Analysis link -->
+              {% else %}
+              <a href="/login" class="w-full py-6 text-center hover:opacity-90">Log In</a>
+              <a href="/sign-up" class="w-full py-6 text-center hover:opacity-90">Sign Up</a>
+              {% endif %}
+              <a href="/#services" class="w-full py-6 text-center hover:opacity-90">Services</a>
+              <a href="/#features" class="w-full py-6 text-center hover:opacity-90">Features</a>
+              <a href="/#contact" class="w-full py-6 text-center hover:opacity-90">Contact Us</a>
+              <a href="/#footer" class="w-full py-6 text-center hover:opacity-90">Footer</a>
+          </nav>
+      </section>
 </header>
 
 <body class="min-h-screen bg-slate-50 dark:bg-[#121212] dark:text-white">
@@ -287,6 +287,24 @@
         </div>
     </div>
 </section>
+
+<script>
+  const initApp = () => {
+      const hamburgerBtn = document.getElementById('hamburger-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+
+      const toggleMenu = () => {
+          mobileMenu.classList.toggle('hidden');
+          mobileMenu.classList.toggle('flex');
+          hamburgerBtn.classList.toggle('toggle-btn');
+      };
+
+      hamburgerBtn.addEventListener('click', toggleMenu);
+      mobileMenu.addEventListener('click', toggleMenu);
+  };
+
+  document.addEventListener('DOMContentLoaded', initApp);
+</script>
 
 <!-- SCRIPT FOR ALL COMMENTS -->
 <script>
