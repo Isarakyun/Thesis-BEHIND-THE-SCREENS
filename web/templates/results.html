@@ -136,8 +136,8 @@
 
 <!-- Most Positive and Negative Comments -->
 {% if youtube_url.created_at is not none and frequent_words %}
-<div id="high-score-comments" class="flex overflow-hidden mt-12 pt-5 relative">
-  <img src="{{ url_for('static', filename='highlights-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
+<div id="high-score-comments" class="flex overflow-hidden mt-12 pt-5 relative justify-center">
+  <img src="{{ url_for('static', filename='highlights-text.png' )}}" class="pointer-events-none absolute w-[600px] opacity-25 left-1/2 transform -translate-x-1/2">
   <table class="w-full ml-[50px] mr-[50px] justify-center relative z-10 mt-16">
       <thead class="text-white">
         <tr class="bg-red-600 dark:bg-slate-700 text-2xl">
@@ -172,22 +172,24 @@
 </div>
 {% endif %}
 
+
 <!-- Comments -->
-{% if youtube_url.created_at is not none and frequent_words %}
-<div class="mt-12 pt-5 relative">
-  <img src="{{ url_for('static', filename='comments-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
-  <div class="relative z-10 mt-[-12px]">
-    <!-- Dropdown for sentiment selection -->
-    <div class="pt-5 flex justify-end ml-[50px] mr-[50px] font-medium">
-      {% if youtube_url.created_at is not none and frequent_words %}
-      <select id="sentiment-filter" class="px-4 py-2 border border-red-600 dark:border-slate-700 rounded bg-slate-200 dark:bg-[#121212] text-black dark:text-white">
+  {% if youtube_url.created_at is not none and frequent_words %}
+  <div class="mt-12 pt-5 relative">
+    <img src="{{ url_for('static', filename='comments-text.png' )}}" class="pointer-events-none absolute ml-[100px] w-[600px] opacity-25">
+    <div class="relative z-10 mt-[-12px]">
+  <!-- Dropdown for sentiment selection -->
+  <div class="pt-5 flex justify-end ml-[50px] mr-[50px] font-medium">
+    {% if youtube_url.created_at is not none and frequent_words %}
+    <select id="sentiment-filter" class="ml-2 px-4 py-2 border border-red-600 dark:border-slate-700 rounded bg-slate-200 dark:bg-[#121212] text-black dark:text-white">
         <option value="all">All</option>
         <option value="Positive">Positive</option>
         <option value="Negative">Negative</option>
         <option value="Neutral">Neutral</option>
-      </select>
-      {% endif %}
-    </div>
+    </select>
+    {% endif %}
+  </div>
+
     <!-- TABLE FOR COMMENTS -->
     <div id="labeled-comments" class="flex overflow-hidden relative z-10 mt-4">
       <!-- ALL COMMENTS -->
@@ -800,7 +802,7 @@
 {% if frequent_words %}
 <!-- Table for Word Count and Bar Chart -->
 <div id="frequent-words" class="flex overflow-hidden mt-5 pt-5">
-  <div class="w-1/2 ml-[50px] mr-[50px] relative">
+  <div class="relative2">
     <img src="{{ url_for('static', filename='words-text.png' )}}" class="pointer-events-none absolute ml-[50px] w-[300px] opacity-25">
     <table class="w-full justify-center relative z-10 mt-12">
         <thead class="text-white">

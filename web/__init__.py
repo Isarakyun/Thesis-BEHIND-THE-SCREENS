@@ -32,12 +32,12 @@ def create_app():
     # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}')
 
     db.init_app(app)
-
-    app.config.from_pyfile('config.cfg')
     mail.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 
+
+    # Register blueprints
     from .views import views
     from .auth import auth
     from .admin_routes import admin_bp
@@ -46,14 +46,16 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
+    # User loader for flask-login
     from .models import Users, Admin, YoutubeUrl, Comments
-
+    
     @login_manager.user_loader
     def load_user(user_id):
         if user_id.startswith('admin_'):
             return Admin.query.get(int(user_id.split('_')[1]))
         return Users.query.get(int(user_id))
 
+    # Custom Jinja filter for date formatting
     def format_date(value):
         today = datetime.today().date()
         if isinstance(value, datetime):
