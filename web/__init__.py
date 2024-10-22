@@ -8,7 +8,6 @@ import pymysql
 from dotenv import load_dotenv
 import os
 
-# Initialize extensions
 db = SQLAlchemy()
 mail = Mail()
 login_manager = LoginManager()
@@ -17,7 +16,6 @@ def create_app():
     # This is for railway mysql database
     pymysql.install_as_MySQLdb()
 
-    # Load environment variables from .env file
     load_dotenv()
 
     app = Flask(__name__)
@@ -47,7 +45,7 @@ def create_app():
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
     from .models import Users, Admin, YoutubeUrl, Comments
-
+    
     @login_manager.user_loader
     def load_user(user_id):
         if user_id.startswith('admin_'):

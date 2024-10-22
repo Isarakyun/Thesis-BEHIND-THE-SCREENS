@@ -252,32 +252,32 @@
     <section>
       {% if frequent_words %}
       <!-- Table for Word Count and Bar Chart -->
-      <div id="frequent-words" class="flex overflow-hidden mt-4 pt-3">
+      <div class="flex overflow-hidden mt-4 pt-3">
         <div class="w-1/2">
-            <div class="w-full flex flex-col items-center">
-                <div class="text-white w-full">
-                  <div class="bg-red-600 text-lg flex text-center font-bold">
-                    <div class="px-4 py-1 w-1/3">Word</div>
-                    <div class="px-4 py-1 w-1/3">Count</div>
-                    <div class="px-2 py-1 w-1/3">Sentiment</div>
-                  </div>
-                </div>
-                <div class="text-center text-gray-900 text-sm w-full">
-                  {% for word in frequent_words %}
-                  <div class="flex w-full">
-                    <div class="px-2 py-2 w-1/3">{{ word.word }}</div>
-                    <div class="px-2 py-2 w-1/3">{{ word.count }} times</div>
-                    {% if word.sentiment == "Positive" %}
-                    <div class="px-2 py-2 w-1/3 text-blue-700">{{ word.sentiment }}</div>
-                    {% elif word.sentiment == "Negative" %}
-                    <div class="px-2 py-2 w-1/3 text-red-700">{{ word.sentiment }}</div>
-                    {% else %}
-                    <div class="px-2 py-2 w-1/3 text-yellow-700">{{ word.sentiment }}</div>
-                    {% endif %}
-                  </div>
-                  {% endfor %}
+          <div class="w-full flex flex-col items-center">
+              <div class="text-white w-full">
+                <div class="bg-red-600 text-lg flex text-center font-bold">
+                  <div class="px-4 py-1 w-1/3">Word</div>
+                  <div class="px-4 py-1 w-1/3">Count</div>
+                  <div class="px-2 py-1 w-1/3">Sentiment</div>
                 </div>
               </div>
+              <div class="text-center text-gray-900 text-sm w-full">
+                {% for word in frequent_words %}
+                <div class="flex w-full">
+                  <div class="px-2 py-2 w-1/3">{{ word.word }}</div>
+                  <div class="px-2 py-2 w-1/3">{{ word.count }} times</div>
+                  {% if word.sentiment == "Positive" %}
+                  <div class="px-2 py-2 w-1/3 text-blue-700">{{ word.sentiment }}</div>
+                  {% elif word.sentiment == "Negative" %}
+                  <div class="px-2 py-2 w-1/3 text-red-700">{{ word.sentiment }}</div>
+                  {% else %}
+                  <div class="px-2 py-2 w-1/3 text-yellow-700">{{ word.sentiment }}</div>
+                  {% endif %}
+                </div>
+                {% endfor %}
+              </div>
+            </div>
         </div>
         <!-- bar chart image generated from matplotlib -->
         <div class="w-1/2">
