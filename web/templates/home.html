@@ -72,6 +72,9 @@
           max-width: 100%;
           height: auto;
         }
+        html {
+            scroll-behavior: smooth; /* Ensures smooth scrolling in all browsers */
+        }
     </style>
 </head>
 <body class="min-h-screen bg-slate-50 dark:bg-[#121212] dark:text-white">
@@ -136,27 +139,44 @@
         <img class="w-1/2"src="./static/BTS-Logo.png" alt="Rocket Dab">
     
     </section>
-    <hr class="mx-auto bg-white dark:bg-gray-900 w-1/2">
+  
     
 
 
     
-    <section id="services" class="flex flex-col scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
+    <section id="services" class="flex flex-col mt-3 py-6 scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
+      <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8">Our Services</h2>
       <div class="relative overflow-hidden">
           <ul id="slideshow" class="flex transition-transform duration-700 ease-in-out">
-              <li class="h-[5vh] relative w-full">
-                  <img class="h-full object-cover" src="./static/vecteezy_enhancing-productivity-with-laptop-use-on-sofas-3d-illustration_20946634.png" alt="Productivity Illustration">
+              <li class="h-[5vh] relative w-full flex">
+                  <div class="w-3/5">
+                      <img class="h-full object-cover" src="./static/vecteezy_enhancing-productivity-with-laptop-use-on-sofas-3d-illustration_20946634.png" alt="Productivity Illustration">
+                  </div>
+                  <div class="w-2/5 flex items-center justify-center p-4">
+                      <span>Hello world! I am testing my application right now.</span>
+                  </div>
               </li>
-              <li class="h-[5vh] relative w-full">
-                  <img class="h-full object-cover" src="./static/3d-pie-charts-and-diagram-icons-charts-and-graphs-pie-line-candlestick-chart-png.png" alt="Productivity Illustration">
+              <li class="h-[5vh] relative w-full flex">
+                  <div class="w-3/5">
+                      <img class="h-full object-cover" src="./static/3d-pie-charts-and-diagram-icons-charts-and-graphs-pie-line-candlestick-chart-png.png" alt="Productivity Illustration">
+                  </div>
+                  <div class="w-2/5 flex items-center justify-center p-4">
+                      <span>Hello world! I am testing my application right now.</span>
+                  </div>
               </li>
-              <li class="h-[5vh] relative w-full">
-                  <img class="h-full object-cover" src="./static/3d-youtube-logo-7130.png" alt="Productivity Illustration">
+              <li class="h-[5vh] relative w-full flex">
+                  <div class="w-3/5">
+                      <img class="h-full object-cover" src="./static/3d-youtube-logo-7130.png" alt="Productivity Illustration">
+                  </div>
+                  <div class="w-2/5 flex items-center justify-center p-4">
+                      <span>Hello world! I am testing my application right now.</span>
+                  </div>
               </li>
-              <!-- Add more <li> elements for additional images -->
+              <!-- Add more <li> elements for additional images with text -->
           </ul>
       </div>
-    </section>
+  </section>
+  
     
   
 
@@ -174,9 +194,7 @@
 </script>
 
 
-    <hr class="mx-auto bg-black dark:bg-white w-1/2">
-    
-    <hr class="mx-auto bg-black dark:bg-white w-1/2">
+  
     
     
       <!-- will redirect to home_analysis.html -->
