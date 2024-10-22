@@ -138,32 +138,42 @@
     </section>
     <hr class="mx-auto bg-white dark:bg-gray-900 w-1/2">
     
-    <section id="services" class="p-6 my-12 scroll-mt-20 widescreen:section-min-height tallscreen:section-min-height">
-        <h2 class="text-4xl font-bold text-center sm:text-5xl mb-6 text-slate-900 dark:text-white">
-            Our Services
-        </h2>
-        <ul class="list-none mx-auto my-12 flex flex-col sm:flex-row items-center gap-8">
-            <li class="shadow-xl w-2/3 sm:w-5/6 flex flex-col items-center border border-solid border-slate-100 dark:border-gray-100 bg-white dark:bg-black py-6 px-2 rounded-3xl">
-            <img src="./static/sentiment.png" alt="Explorer" class="w-1/2 mb-6"> 
-            <h3 class="text-3xl text-center text-slate-900 dark:text-white">Sentiment</h3>        
-            <p class="hidden sm:block text-3xl text-center mt-2 text-slate-500 dark:text-slate-400"></p>        
-            <p class="sm: hidden text-2xl text-center mt-2 text-slate-900 dark:text-slate-500">Affordable Exploration</p>        
-            </li>
-            <li class="shadow-xl w-2/3 sm:w-5/6 flex flex-col items-center border border-solid border-slate-100 dark:border-gray-100 bg-white dark:bg-black py-6 px-2 rounded-3xl">
-                <img src="./static/Google-Analytics-Logo6.png" alt="Explorer" class="w-1/2 mb-6"> 
-                <h3 class="text-3xl text-center text-slate-900 dark:text-white">Analytics</h3>        
-                <p class="hidden sm:block text-3xl text-center mt-2 text-slate-500 dark:text-slate-400"></p>        
-                <p class="sm: hidden text-2xl text-center mt-2 text-slate-900 dark:text-slate-500">Affordable Exploration</p>        
-                </li>
-                <li class="shadow-xl w-2/3 sm:w-5/6 flex flex-col items-center border border-solid border-slate-100 dark:border-gray-100 bg-white dark:bg-black py-6 px-2 rounded-3xl">
-                    <img src="./static/summary.png" alt="Explorer" class="w-1/2 mb-6"> 
-                    <h3 class="text-3xl text-center text-slate-900 dark:text-white">Summary</h3>        
-                    <p class="hidden sm:block text-3xl text-center mt-2 text-slate-500 dark:text-slate-400"></p>        
-                    <p class="sm: hidden text-2xl text-center mt-2 text-slate-900 dark:text-slate-500">Affordable Exploration</p>        
-                    </li>
-    </ul>
+
+
+    
+    <section id="services" class="flex flex-col scroll-mt-16 widescreen:section-min-height tallscreen:section-min-height min-h-screen text-center">
+      <div class="relative overflow-hidden">
+          <ul id="slideshow" class="flex transition-transform duration-700 ease-in-out">
+              <li class="h-[5vh] relative w-full">
+                  <img class="h-full object-cover" src="./static/vecteezy_enhancing-productivity-with-laptop-use-on-sofas-3d-illustration_20946634.png" alt="Productivity Illustration">
+              </li>
+              <li class="h-[5vh] relative w-full">
+                  <img class="h-full object-cover" src="./static/3d-pie-charts-and-diagram-icons-charts-and-graphs-pie-line-candlestick-chart-png.png" alt="Productivity Illustration">
+              </li>
+              <li class="h-[5vh] relative w-full">
+                  <img class="h-full object-cover" src="./static/3d-youtube-logo-7130.png" alt="Productivity Illustration">
+              </li>
+              <!-- Add more <li> elements for additional images -->
+          </ul>
+      </div>
     </section>
     
+  
+
+  <script>
+    let currentIndex = 0;
+    const slideshow = document.getElementById('slideshow');
+    const slides = slideshow.getElementsByTagName('li');
+
+    function showNextSlide() {
+        currentIndex = (currentIndex + 1) % slides.length; // Loop back to the first slide
+        slideshow.style.transform = `translateX(-${currentIndex * 100}%)`;
+    }
+
+    setInterval(showNextSlide, 4000); // Change slide every 5 seconds
+</script>
+
+
     <hr class="mx-auto bg-black dark:bg-white w-1/2">
     
     <hr class="mx-auto bg-black dark:bg-white w-1/2">
