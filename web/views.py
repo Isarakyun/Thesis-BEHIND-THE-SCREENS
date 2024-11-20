@@ -228,9 +228,3 @@ def gateway_timeout(e):
 def http_version_not_supported(e):
     return render_template('505HTTPVersionNotSupported.html', user=current_user), 505
 
-# This route is for testing pages
-# @views.route('/test')
-# def test():
-#     user = session.get('user') 
-#     return render_template('404NotFound.html', user=user)
-
