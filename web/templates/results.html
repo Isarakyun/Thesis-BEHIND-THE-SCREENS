@@ -798,7 +798,7 @@
 
 {% if frequent_words %}
 <!-- Table for Word Count and Bar Chart -->
-<div id="frequent-words" class="flex overflow-hidden mt-5 pt-5">
+<div id="frequent-words" class="flex overflow-hidden mt-5 pt-5 results-page-margin">
   <div class="relative2">
     <img src="{{ url_for('static', filename='words-text.png' )}}" class="results-bg-freqwords-text">
     <table class="w-full justify-center relative z-10 mt-12">
@@ -826,8 +826,8 @@
         </tbody>
     </table>
   </div>
-  <div class="mr-[50px] mobile-w-1/2">
-    <canvas id="barChart" width="250px" height="250px"></canvas>
+  <div class="mobile-w-1/2">
+    <canvas id="barChart" width="400px" height="250px"></canvas>
   </div>
 </div>
 {% endif %}

@@ -767,6 +767,7 @@ def analyze():
                     return redirect(url_for('views.main'))
                 else:
                     video_name = get_video_name(url)
+                    user_log(f"User ID: {current_user.id} | PYTUBE ERROR for video '{video_name}'")
                     # flash(f'Pytube ERROR: Cannot access Video Title. Please file a bug report at https://github.com/pytube/pytube', category='error')
             
             attempt = "Failed" # default is failed, it will be changed to 'success' if it commits
@@ -1060,90 +1061,3 @@ def limited_analyze():
             return redirect(url_for('views.home')) # this was user_agreement during testing
     return redirect(url_for('views.home'))
 
-# UNUSED
-@auth.route('/analyze2', methods=['POST'])
-def analyze2():
-    try:
-        data = request.get_json()
-        youtube_url = data.get('url2')
-        
-        if not youtube_url:
-            return jsonify({'error': 'Please enter a valid YouTube URL.'}), 400
-        elif youtube_url:
-            if '/live/' in youtube_url:
-                youtube_url = youtube_url.replace('/live/', '/watch?v=')
-            elif 'youtu.be' in youtube_url:
-                youtube_url = youtube_url.replace('youtu.be/', 'youtube.com/watch?v=')
-            elif '/shorts/' in youtube_url:
-                youtube_url = youtube_url.replace('/shorts/', '/watch?v=')
-        
-        try:
-            yt = YouTube(youtube_url)
-            video_name = yt.title
-        except Exception as e:
-            return jsonify({'error': f'Failed to extract video name: {str(e)}'}), 400
-        
-        # Extract comments
-        filtered_comments = extract_comments(youtube_url)
-
-        # Sentiment Analysis
-        label_mapping = {
-            "LABEL_0": "Negative",
-            "LABEL_1": "Neutral",
-            "LABEL_2": "Positive"
-        }
-
-        # Sentiment Analysis for each comment
-        sentiments = []
-        positive_count = 0
-        negative_count = 0
-        neutral_count = 0
-
-        for comment in filtered_comments:
-            try:
-                sentiment = sentiment_pipeline([comment])[0]
-                sentiment['label'] = label_mapping.get(sentiment['label'], sentiment['label'])
-                sentiments.append({'comment': comment, 'sentiment': sentiment['label']})
-            except RuntimeError as e:
-                continue 
-            except IndexError as e:
-                continue
-            except Exception as e:
-                return jsonify({'error': f'An unexpected error occurred during sentiment analysis: {str(e)}'}), 400
-                        
-            # Counting the sentiments
-            if sentiment['label'] == 'Positive':
-                positive_count += 1
-            elif sentiment['label'] == 'Negative':
-                negative_count += 1
-            else:
-                neutral_count += 1
-
-        all_comments_text = " ".join(filtered_comments)
-        cleaned_comments = clean_text(all_comments_text)
-        word_count = Counter(word for word in cleaned_comments.split() if word not in stop_words)
-        most_common_words = word_count.most_common(5)
-
-        frequent_words = []
-        for word, count in most_common_words:
-            word_sentiment_scores = sia.polarity_scores(word)
-            compound_score = word_sentiment_scores['compound']
-            if compound_score >= 0.05:
-                word_sentiment_label = "Positive"
-            elif compound_score <= -0.05:
-                word_sentiment_label = "Negative"
-            else:
-                word_sentiment_label = "Neutral"
-            frequent_words.append([word, count, word_sentiment_label])
-
-        response = {
-            'video_name2': video_name,
-            'positive_count2': positive_count,
-            'negative_count2': negative_count,
-            'neutral_count2': neutral_count,
-            'comments2': sentiments,
-            'frequent_words2': frequent_words,
-        }
-        return jsonify(response), 200
-    except Exception as e:
-        return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 400

@@ -5,6 +5,22 @@
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
 */
 
+html {
+  scroll-behavior: smooth;
+}
+
+#slideshow {
+  display: flex;
+  transition: transform 0.7s ease-in-out;
+}
+
+#slideshow li {
+  min-width: 100%;
+  /* Remove the height setting if it's set elsewhere */
+}
+
+
+
 #frequent-words {
   display: flex;
   flex-direction: column; /* Stack elements in mobile view */
