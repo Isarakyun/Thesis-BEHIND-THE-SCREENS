@@ -11,6 +11,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy import or_
 from pytube import YouTube
 from transformers import pipeline
+import sentencepiece
 from nltk.tokenize import word_tokenize
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
@@ -27,8 +28,8 @@ auth = Blueprint('auth', __name__)
 
 mail = Mail()
 s = URLSafeTimedSerializer('SECRET_KEY')
-MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
-sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL)
+MODEL = 'cardiffnlp/twitter-xlm-roberta-base-sentiment'
+sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL, tokenizer=MODEL)
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 sia = SentimentIntensityAnalyzer()
@@ -787,9 +788,9 @@ def analyze():
 
             # Sentiment Analysis
             label_mapping = {
-                "LABEL_0": "Negative",
-                "LABEL_1": "Neutral",
-                "LABEL_2": "Positive"
+                "negative": "Negative",
+                "neutral": "Neutral",
+                "positive": "Positive"
             }
 
             # Sentiment Analysis for each comment
