@@ -34,6 +34,7 @@ def create_app():
     # railway mysql database (uncomment when deploying in railway, comment local above)
     # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{db_name}')
 
+
     db.init_app(app)
 
     app.config.from_pyfile('config.cfg')
