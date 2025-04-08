@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, current_user
-from flask_mail import Mail, Message
-from datetime import datetime, timedelta, date
+from flask_login import LoginManager
+from flask_mail import Mail
+from datetime import datetime, date
 from itsdangerous import URLSafeTimedSerializer
 import pymysql
 from dotenv import load_dotenv
@@ -21,13 +21,19 @@ def create_app():
     app = Flask(__name__)
     
     # Apply configuration
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'commentsanalysisbehindthescreens')
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    if not app.config['SECRET_KEY']:
+        raise ValueError("Set the SECRET_KEY environment variable.")
 
-    # local mysql database connection
-    # app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}'
+    # local mysql database
+    db_name = os.getenv("DB_NAME")
+    if not db_name:
+        raise ValueError("Set the DB_NAME environment variable.")
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root@localhost/{db_name}'
 
-    # railway mysql database connection
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{os.getenv("DB_NAME", "behindthescreens")}')
+    # railway mysql database (uncomment when deploying in railway, comment local above)
+    # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'mysql+pymysql://root@localhost/{db_name}')
+
 
     db.init_app(app)
 
