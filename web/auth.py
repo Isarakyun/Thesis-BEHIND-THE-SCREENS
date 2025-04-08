@@ -146,7 +146,7 @@ def sign_up():
             new_user_log(new_user.id, new_user.username, f"User ID: {new_user.id} | {new_user.username} has signed up")
 
             token = s.dumps(email, salt='email-confirm')
-            msg = Message('Email Confirmation', sender='behindthescreens.thesis@gmail.com', recipients=[email])
+            msg = Message('Email Confirmation', sender= os.getenv('EMAIL_SENDER'), recipients=[email])
             link = url_for('auth.confirm_email', token=token, _external=True)
             msg.html = """
                 <html>
@@ -230,7 +230,7 @@ def forgot_password():
     user = Users.query.filter_by(email=email).first()
     if user:
         token = s.dumps(email, salt='email-confirm')
-        msg = Message('Reset Password', sender='behindthescreens.thesis@gmail.com', recipients=[email])
+        msg = Message('Reset Password', sender=os.getenv('EMAIL_SENDER'), recipients=[email])
         link = url_for('auth.reset_password', token=token, _external=True)
         msg.html = """
             <html>
@@ -308,7 +308,7 @@ def reset_password(token):
                 db.session.commit()
                 
                 token = s.dumps(email, salt='email-confirm')
-                msg = Message('Password Changed', sender='behindthescreens.thesis@gmail.com', recipients=[email])
+                msg = Message('Password Changed', sender=os.getenv('EMAIL_SENDER'), recipients=[email])
                 link = url_for('views.home', _external=True)
                 msg.html = """
                     <html>
@@ -420,7 +420,7 @@ def change_username():
 def resend_confirmation():
     email = current_user.email
     token = s.dumps(email, salt='email-confirm')
-    msg = Message('Email Confirmation', sender='behindthescreens.thesis@gmail.com', recipients=[email])
+    msg = Message('Email Confirmation', sender=os.getenv('EMAIL_SENDER'), recipients=[email])
     link = url_for('auth.confirm_email', token=token, _external=True)
     msg.html = """
         <html>
@@ -502,7 +502,7 @@ def change_email():
 
             # send mail to the new email for email confirmation/verification
             token = s.dumps(new_email, salt='email-confirm')
-            msg = Message('Email Change Confirmation', sender='behindthescreens.thesis@gmail.com', recipients=[new_email])
+            msg = Message('Email Change Confirmation', sender=os.getenv('EMAIL_SENDER'), recipients=[new_email])
             link = url_for('auth.change_email_confirmation', token=token, _external=True)
             msg.html = """
                 <html>
@@ -560,7 +560,7 @@ def change_email():
             mail.send(msg)
 
             # send mail to the old email that user changed their email
-            old_email_msg = Message('Email Changed', sender='behindthescreens.thesis@gmail.com', recipients=[old_email])
+            old_email_msg = Message('Email Changed', sender=os.getenv('EMAIL_SENDER'), recipients=[old_email])
             old_email_msg.html = """
                 <html>
                 <head>
@@ -643,7 +643,7 @@ def delete_account():
             if password == confirm_delete:
                 email = current_user.email
                 # send mail user's email to inform them that their account has been deleted
-                msg = Message('Account Deleted', sender='behindthescreens.thesis@gmail.com', recipients=[email])
+                msg = Message('Account Deleted', sender=os.getenv('EMAIL_SENDER'), recipients=[email])
                 msg.html = """
                     <html>
                     <head>
