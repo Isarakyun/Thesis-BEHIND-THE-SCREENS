@@ -5,7 +5,7 @@
 BSCS-3A CS-79 Undergraduate Thesis Project 2024
 
 Behind the Screens is a web-based system that focuses on categorizing YouTube comments into sentiments to assist content creators in analyzing viewer insights. The developers of Behind the Screens are also the researchers of the study, "BEHIND THE SCREENS: A SENTIMENT ANALYSIS OF VIEWERS IN YOUTUBE LIVE STREAMS USING ROBERTA."
-This thesis was successfully defended on November 26, 2024.
+This thesis was successfully defended on November 26, 2024 a partial fullfilment of requirements in BS Computer Science.
 
 - CONTENTS
   - [Scope and Limitations](#scope-and-limitations)
@@ -77,7 +77,7 @@ python main.py
 
 Everyone helped in the manuscript.
 
-1. Project Manager, Frontend (General): [Emmanual Gonzales](https://github.com/Kamoteng-Kahoyy)
+1. Project Manager, Frontend (General): [Emmanuel Gonzales](https://github.com/Kamoteng-Kahoyy)
 2. Backend (All), Data Analysis, Repository Manager: [Jarelle Pamintuan](https://github.com/Isarakyun)
 3. UI/UX Design, Frontend: [Ziggy Co](https://github.com/nausicai)
 4. Frontend (General, mainly for User): [Joshua Casupang](https://github.com/Zeddy0621)
