@@ -11,7 +11,7 @@ This thesis was successfully defended on November 26, 2024 as a partial fullfilm
   - [Scope and Limitations](#scope-and-limitations)
   - [Features](#features)
   - [Technologies](#technologies)
-  - [How to Use](#how)
+  - [How to Use](#how-to-use)
   - [Installation](#installation)
   - [Researchers](#researchers)
 
