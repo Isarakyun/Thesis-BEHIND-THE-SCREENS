@@ -11,6 +11,7 @@ This thesis was successfully defended on November 26, 2024.
   - [Technologies](#technologies)
   - [How to Use](#how)
   - [Installation](#installation)
+  - [Researchers](#researchers)
 
 ## Scope and Limitations
 
@@ -75,8 +76,10 @@ python main.py
 Everyone helped in the manuscript.
 
 1. Project Manager, Frontend (General): [Emmanual Gonzales](https://github.com/Kamoteng-Kahoyy)
-2. Backend, Repository Manager: [Jarelle Pamintuan](https://github.com/Isarakyun)
-3. UI/UX Designer, Frontend (General): [Ziggy Co](https://github.com/nausicai)
-4. Frontend (General): [Joshua Casupang](https://github.com/Zeddy0621)
+2. Backend (All), Data Analysis, Repository Manager: [Jarelle Pamintuan](https://github.com/Isarakyun)
+3. UI/UX Design, Frontend: [Ziggy Co](https://github.com/nausicai)
+4. Frontend (General, mainly for User): [Joshua Casupang](https://github.com/Zeddy0621)
 5. Frontend (Admin): [EJ Feliciano](https://github.com/Haya-jay)
 6. Manuscript: [Nathaniel Fernandez](https://github.com/Nae8)
+
+If you are interested to read the Thesis manuscript, please contact any of the researchers.
