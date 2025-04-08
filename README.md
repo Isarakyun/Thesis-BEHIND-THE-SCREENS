@@ -5,7 +5,7 @@
 BSCS-3A CS-79 Undergraduate Thesis Project 2024
 
 Behind the Screens is a web-based system that focuses on categorizing YouTube comments into sentiments to assist content creators in analyzing viewer insights. The developers of Behind the Screens are also the researchers of the study, "BEHIND THE SCREENS: A SENTIMENT ANALYSIS OF VIEWERS IN YOUTUBE LIVE STREAMS USING ROBERTA."
-This thesis was successfully defended on November 26, 2024 a partial fullfilment of requirements in BS Computer Science.
+This thesis was successfully defended on November 26, 2024 as a partial fullfilment of requirements in BS Computer Science.
 
 - CONTENTS
   - [Scope and Limitations](#scope-and-limitations)
