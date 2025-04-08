@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash,
 from flask_login import login_required, current_user, logout_user
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash
-from flask_admin import Admin, AdminIndexView, expose
+from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from .models import Users, Comments, YoutubeUrl, AdminLog, UserLog, Admin, SentimentCounter, FrequentWords, WordCloudImage, GetUrl, HighScoreComments
 from datetime import datetime, timedelta
@@ -179,7 +179,7 @@ def delete_user(user_id):
         print(f"Received request to delete user with ID: {user_id}")
         if user:
             # Send an email to the user informing them of the deletion
-            msg = Message('Force Account Deletion', sender='behindthescreens.thesis@gmail.com', recipients=[email])
+            msg = Message('Force Account Deletion', sender=os.getenv('EMAIL_SENDER'), recipients=[email])
             msg.html = """
                 <html>
                 <head>

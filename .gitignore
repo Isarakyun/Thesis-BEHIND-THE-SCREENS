@@ -4,7 +4,7 @@ web/static/wordcloud/
 node_modules/
 dump/
 behindthescreensDB.sql
-config.cfg
+web/config.cfg
 config.py
 app.log
 .env
