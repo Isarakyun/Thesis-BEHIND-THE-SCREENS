@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash, send_file
+from flask import Blueprint, render_template, request, jsonify, send_file
 from flask_login import login_required, current_user
 from flask import session
 from . import db
@@ -227,10 +227,4 @@ def gateway_timeout(e):
 @views.app_errorhandler(505)
 def http_version_not_supported(e):
     return render_template('505HTTPVersionNotSupported.html', user=current_user), 505
-
-# This route is for testing pages
-# @views.route('/test')
-# def test():
-#     user = session.get('user') 
-#     return render_template('404NotFound.html', user=user)
 
