@@ -41,11 +41,10 @@ This thesis was successfully defended on November 26, 2024 as a partial fullfilm
 
 ## Technologies
 
-- Backend: Python
+- Backend Web Framework: Python Flask
 - Pre-trained Model for Sentiment Analysis: [RoBERTa base](https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment)
-- Web Framework: Python Flask
-- CSS Framework: Tailwind
-- Deployment Platform during Thesis process: [Railway](https://docs.railway.com/overview/about-railway) (no longer deployed)
+- CSS Framework: TailwindCSS
+- Cloud Platform for deployment (during Thesis): [Railway](https://docs.railway.com/overview/about-railway) (no longer deployed)
 - YouTube Comments Extraction: [YouTubeCommentDownloader](https://pypi.org/project/youtube-comment-downloader/)
 - YouTube Title Extraction: YouTube Data API v3 (previously PyTube, but it keeps having bugs)
 - Text Processing: Natural Language Toolkit (NLTK)
@@ -78,10 +77,10 @@ python main.py
 Everyone helped in the manuscript.
 
 1. Project Manager, Frontend (General): [Emmanuel Gonzales](https://github.com/Kamoteng-Kahoyy)
-2. Backend (All), Data Analysis, Repository Manager: [Jarelle Pamintuan](https://github.com/Isarakyun)
+2. Backend (All), Data Analysis (for choosing the model): [Jarelle Pamintuan](https://github.com/Isarakyun)
 3. UI/UX Design, Frontend: [Ziggy Co](https://github.com/nausicai)
-4. Frontend (General, mainly for User): [Joshua Casupang](https://github.com/Zeddy0621)
-5. Frontend (Admin): [EJ Feliciano](https://github.com/Haya-jay)
+4. Frontend (General, mainly for User side): [Joshua Casupang](https://github.com/Zeddy0621)
+5. Frontend (Admin side): [EJ Feliciano](https://github.com/Haya-jay)
 6. Manuscript: [Nathaniel Fernandez](https://github.com/Nae8)
 
 If you are interested to read the Thesis manuscript, please contact any of the researchers.
